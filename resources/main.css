@@ -1,0 +1,119 @@
+body {
+	overflow:hidden;
+	background-color:gray;
+}
+
+a {
+	text-decoration:none;
+	color: #EEE;
+	transition:color 0.5s;
+}
+
+a:hover {
+	transition:color 0.5s;
+	color:#FFF;
+}
+
+#background, #background-blur {
+	position:fixed;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+}
+
+#background {
+	background-color:lightgray;
+	background-image: url("https://source.unsplash.com/collection/561528/2560x1440/");
+	filter: blur(2px);
+}
+
+#background-blur {
+	background-color:#FFF;
+	opacity:0.3;
+}
+
+
+#content, #background-content {
+	position:fixed;
+	z-index:999;
+	top:0;
+	left:0;
+	right: 60%;
+	bottom:0;
+	
+}
+
+#background-content {
+	opacity:0.5;
+	background-color:#111;
+}
+
+#content {
+	text-align: center;
+	font-family: "Helvetica Neue", "Segoe UI Light", sans-serif;
+	color: #EEE;
+}
+
+.data {
+	width:80%;
+	left:10%;
+	position:relative;
+	transition: color 0.5s;
+}
+
+#header {
+	border-bottom: 1px solid #EEE;
+	margin-bottom: 5px;
+}
+
+#header h1{
+	margin-bottom: 10px;
+}
+
+.data:hover {
+	transition: color 0.5s;
+	color: #FFF;
+}
+
+#list table{
+	width: 100%;
+	height: 300px;
+	text-align:center;
+	margin-top: 200px;
+	font-size:20px;
+}
+
+#list td {
+	transition: color 0.5s;
+	color:#EEE;
+}
+
+#list td:hover{
+	transition: color 0.5s;
+	color:#FFF;
+}
+
+.left-table {
+	border-left:none;	
+	padding-left:1px;
+	transition:border-left 1s;
+}
+
+.left-table:hover {
+	border-left:1px solid #EEE;
+	padding-left:0px;
+	transition:border-left 1s;	
+}
+
+.right-table {
+	border-right:none;	
+	padding-right:1px;
+	transition:border-right 1s;
+}
+
+.right-table:hover {
+	border-right:1px solid #EEE;
+	padding-right:0px;
+	transition:border-right 1s;	
+}
