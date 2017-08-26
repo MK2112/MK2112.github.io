@@ -87,11 +87,14 @@ a:hover {
 #list td {
 	transition: color 0.5s;
 	color:#EEE;
+	background-color:none;
 }
 
 #list td:hover{
 	transition: color 0.5s;
 	color:#FFF;
+	/*background-color:#666;*/
+	/*opacity:0.8;*/
 }
 
 .left-table {
