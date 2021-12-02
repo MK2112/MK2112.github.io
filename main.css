@@ -1,0 +1,60 @@
+body{
+	
+	background-repeat: repeat;
+	background-attachment: fixed;
+	overflow:hidden;
+}
+
+::-webkit-scrollbar {display: none;}
+
+.main-header input{
+	padding-bottom:9px;
+	margin-top:35px;	
+}
+
+.main-header{
+	padding-bottom:9px;
+}
+.main-intro {
+	width:100%;
+}
+.main-intro img{
+	opacity:0.6;
+}
+
+nav {
+	opacity: 0.6;
+}
+
+.main-content {
+	color: #FFFFFF;
+	}
+
+.clock {
+	transition: opacity 0.75s;
+	width: 17%;
+	left: 83%;
+	z-index: 10000;
+ 	position: fixed;
+ 	color: #EEE;
+  	font-size: 12px;
+  	text-align:center;
+  	top:67px;
+  	opacity: 0;
+  	overflow: hidden;
+}
+
+.clock:hover {
+	transition: opacity 0.5s;
+	opacity:0.6;
+}
+
+.quotes {
+	width:750px;
+	height:40px;
+	top: 67px;
+	left:4.5%;
+	position:fixed;
+	overflow:hidden;
+	font-size: 12px;
+}
