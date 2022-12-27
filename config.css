@@ -214,3 +214,23 @@ ul a:hover {
 	transition: 0.2s ease;
 	/*transform: scale(1.04);*/
 }
+
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.warning {
+	border-radius: 3px;
+  	animation-name: fade;
+  	animation-duration: 2s;
+  	animation-iteration-count: infinite;
+}
