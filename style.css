@@ -13,27 +13,44 @@
 
 
 @media only screen and (max-width: 799px) {
-  body {
+  .fade-in {
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  header {
     margin-left: 2%;
     margin-right: 2%;
   }
 }
 
 @media only screen and (min-width: 800px) and (max-width: 999px) {
-  body {
+  .fade-in {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+
+  header {
     margin-left: 10%;
     margin-right: 10%;
   }
 }
 
 @media only screen and (min-width: 1000px) {
-  body {
+  .fade-in {
+    margin-left: 27%;
+    margin-right: 27%;
+  }
+
+  header {
     margin-left: 27%;
     margin-right: 27%;
   }
 }
 
 body {
+    margin-left: 0;
+    margin-right: 0;
     font-size: large;
     font-family: ui-sans-serif, Segoe UI, Helvetica Neue, Roboto, Arial, sans-serif;
 }
@@ -42,6 +59,7 @@ header {
     margin-top: 8rem;
     display: flex;
     justify-content: space-between;
+    width: auto;
 }
   
 h1 {
@@ -86,13 +104,14 @@ nav {
     color: rgba(150, 150, 150, 1);
     text-decoration: none;
     transition: 0.2s;
+    margin-left: 0.5rem;
 }
 
 .dynamic-anchor:hover {
     color: inherit;
 }
 
-#i-am {
+.thin {
     margin-bottom: 3rem;
     font-weight: 100;
 }
@@ -103,6 +122,14 @@ nav {
 
 .spacer {
     margin-top: 3.5rem;
+}
+
+.black {
+    width: 100%;
+    background-color: black;
+    color: #FEFEFE;
+    padding-top: 1.25rem;
+    padding-bottom: 2rem;
 }
 
 .notable {
@@ -296,4 +323,49 @@ nav b {
     display: inline-block;
     width: 1em;
     margin-left: -1.2em;
+}
+
+.post {
+    display: inline-block;
+    text-decoration: none;
+    grid-template-columns: 1fr 1fr;
+    display: grid;
+    row-gap: 0.25rem;
+    color: inherit;
+    margin-top: 20px;
+    transition: border-bottom 0.3s;
+}
+
+.post-title:hover {
+    border-bottom: 1px solid rgba(100, 100, 100, 0.25);
+}
+
+.post-title {
+    margin-top: 7px;
+    margin-bottom: 5px;
+    margin-right: auto;
+    margin-left: 0;
+    border-bottom: 1px solid black;
+}
+
+.post-details {
+    margin-top: 7px;
+    margin-bottom: 0px;
+    text-align: left;
+    color:rgba(125, 125, 125, 1);
+    font-size: 1rem;
+}
+
+.post p {
+    margin-top: -0.75rem;
+}
+
+.post-title aside {
+    margin-top: -0.85rem;
+    color:rgba(150, 150, 150, 1);
+    font-size: 0.9rem;
+}
+
+::-webkit-scrollbar {
+    display: none;
 }
