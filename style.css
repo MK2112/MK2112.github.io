@@ -103,6 +103,7 @@ nav {
 .dynamic-anchor {
     color: rgba(150, 150, 150, 1);
     text-decoration: none;
+    background-color: white;
     transition: 0.2s;
     margin-left: 0.5rem;
 }
@@ -334,10 +335,6 @@ nav b {
     color: inherit;
     margin-top: 20px;
     transition: border-bottom 0.3s;
-}
-
-.post-title:hover {
-    border-bottom: 1px solid rgba(100, 100, 100, 0.25);
 }
 
 .post-title {
