@@ -108,6 +108,10 @@ nav {
     margin-left: 0.5rem;
 }
 
+.dynamic-anchor:focus {
+    outline: none;
+}
+
 .dynamic-anchor:hover {
     color: inherit;
 }
