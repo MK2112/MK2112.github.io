@@ -205,6 +205,10 @@ nav {
     padding-left: 1.5rem;
 }
 
+.ed-thesis {
+	font-size: 1rem;
+}
+
 .ed-specific ul li::before {
     content: "\2022";
     color: rgba(150, 150, 150, 1);
@@ -288,10 +292,6 @@ footer a {
     color:rgba(125, 125, 125, 1);
     font-size: 1rem;
     font-weight: 100;
-}
-
-.xp-description b {
-    font-weight: 600;
 }
 
 .certs ul {
