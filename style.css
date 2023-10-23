@@ -249,7 +249,7 @@ footer a {
 
 .work-details aside {
     margin-top: -0.85rem;
-    margin-bottom: -0.75rem;
+    margin-bottom: -0.5rem;
     color:rgba(150, 150, 150, 1);
     font-size: 0.9rem;
 }
@@ -366,6 +366,8 @@ nav b {
     color:rgba(150, 150, 150, 1);
     font-size: 0.9rem;
 }
+
+.katex { font-size: large !important; }
 
 ::-webkit-scrollbar {
     display: none;
