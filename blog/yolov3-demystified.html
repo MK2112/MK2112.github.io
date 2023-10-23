@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="content-security-policy" content="" />
+    <link href="../style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css" integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js" integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"
+        onload='renderMathInElement(
+          document.body,
+          {
+              delimiters: [
+                  {left: "$$", right: "$$", display: true},
+                  {left: "\\[", right: "\\]", display: true},
+                  {left: "$", right: "$", display: false},
+                  {left: "\\(", right: "\\)", display: false}
+              ]
+          }
+      );'></script>
+    <title>YOLOv3: Clearly Explained</title>
+  </head>
+  <body>
+      <header>
+        <h1>
+            <a class="static-anchor" href="../index.html">Marcus Koppelmann</a>
+            <p><a class="static-anchor" href="../blog.html">Blog</a></p>
+        </h1>
+        <nav>
+            <a class="dynamic-anchor" href="../blog.html"><b>blog</b></a>
+            <a class="dynamic-anchor" href="../resume.html">resume</a>
+        </nav>
+      </header>
+      <div class="fade-in">
+      <main style="margin-top: 3.5rem">
+        <h3>YOLOv3: Clearly Explained</h3>
+        <p class="thin">November 2, 2023 - Deep Learning</p>
+        <p align="justify">
+    			When delving into the realm of Computer Vision (CV), you're likely to encounter an algorithm called You Only Look Once (YOLO). YOLO is a well-established family of algorithms for proficient object detection in both images and videos. Its applications span a wide spectrum, encompassing tasks like scene text detection or in-parallel detection of pedestrians, vehicles, and traffic signs - vital capabilities in the domain of self-driving cars.<br/><br/>
+          Let's zoom in on YOLOv3, a refined approach to object detection, to grasp the operational principles of the YOLO family. Given YOLO's current substantial influence on CV and wide-ranging applicability, it's vital to provide an accessible explanation. Let's imagine tackling the task of scene text detection. This perspective will guide our exploration of how YOLOv3 can address our detection challenge effectively.<br/><br/>
+        </p>
+        <h4 style="font-weight: 600">Scene Text Detection</h4>
+        <p align="justify">
+          Scene text detection aims to determine text-containing regions within images. These determined image-subspaces form an important basis for multimedia processing tasks [6].<br/>
+          While there exist multiple commercial solutions specifically for optical character recognition (OCR) from documents, extracting text from natural scenes or complex images can be way more challenging due to diverse lighting, depth, perspective, and orientation conditions. An effective text detection system in diverse environments serves to distill complex images, isolating smaller, text-containing regions for further, more extensive processing. General-purpose object detection approaches exist in multitude [13]–[16], but YOLO's one-stage detection process stands out for its efficiency and versatility. How does is this feat accomplished?<br/><br/>
+          With YOLOv3, a given image is subdivided into static grid cells [17]. The resolution of the applied grids is up to us. For example, we can choose $16\times 16$ grid cells to subdivide the image. Objects displayed in the image, their identifier and probability will be detected per each grid cell by respectively estimating bounding box coordinates relative to the respective cell coordinates (cx, cy). The probability scores associated with each grid-local box-decision are subsequently filtered for the ones done with highest certainty. Then, the bounding boxes with the greatest intersection over union are iteratively suppressed by the current highest probability bounding box estimation.<br/><br/>
+          We now had to build a model capable of described bounding box predictions for text detection. To do so, the publicly available MobileNetV2 provides a smartphone-optimized neural network structure [7]. The input layer is modified to fit scaled 512x512 pixel RGB images as input. Three convolutional layers are appended to MobileNetV2’s architecture to further decouple the text’s position in the image from its detectability. For the former two of these appended layers, a Dropout rate of 0.4 is applied. This is in order to avoid overfitting on dataset-specific characteristics and a potential lack of ability to generalize from learned data [8], [9]. Training is done on the ICDAR dataset for 28 epochs on batches of 81 images, which per epoch were randomly drawn from the reshuffled dataset [10]. The addition of the two dropouts and convolutional layers caused a significant bump in accuracy to 82, 89% (from 72, 54% on pure MobileNetV2) for unseen dataset-images and 80, 32% (from 28, 47%) for random images from Google, suggesting high generalization and low overfitting. The overall accuracy is close, but still not on a level with integrated text region detectors like CRAFT with 84, 3% [11]. However, this is due to the small set of training data. Our smartphone-optimized model was trained on just 461 images. Fig. 1 shows that the model is already able to efficiently generalize region detection. The total implementation process took one week, resulting in a functioning smartphone-optimized text detector architecture, which was presented to Translue’s team and the course.<br/><br/>
+          The implementation of robust neural network models on edge devices raises concerns about hardware restrictions such as restricted memory footprint and computational capabilities [20]. With our extended version of MobileNetV2, each neuron is connected to units in the layer below, while exerting an individual effect on this lower layer. Our architecture requires 8.7 million network parameters to be loaded, updated and stored. This number of neurons is required to achieve an adequate network generalization and performance without overfitting.<br/><br/>
+          Our goal with Translue is to reduce the energy required to run such a complex network so that it can run efficiently in real time on mobile devices. Pruning can help us achieve just that [12] through significantly and effectively reducing the number of parameters, thus lowering memory demands and raising performance. In any case, removing these neurons must not result in a noticeably decreasing classification accuracy. If achieved, this approach of learning in a complex network and then reducing the model can become generalizable to future components of Translue, thus resulting in a high yield of experience.<br/><br/>
+          With the goal of creating a pruned model, the team applies Keras’ built-in low magnitude pruning routines on a batch size of 32 images for 2 epochs. A sparsity goal and the ideal neuron volume to be pruned is set to 80%. After conversion into a mobile-deployable Tensorflow Lite model, the final model size decreased by 74.28% from 34.6 MB to 8.9 MB. The measured accuracy remains largely unaffected, dropping slightly from 0.0477 scoring points to 0.0470. The pruning step concludes the building of a pipeline that takes in images, learns from them, and builds a network model which not only is capable of generalizing, but is also highly optimized for mobile deployment.<br/><br/>
+          From an implementation view, one potential flaw of the used YOLOv3 algorithm is that it may not be as accurate as object detection algorithms like Faster R-CNN, Single Shot Detector (SSD), and RetinaNet on small objects or objects in highly obstructed scenes. This is because YOLOv3 uses a single, fixed-size grid to predict bounding boxes for objects. Left unoptimized, it may struggle to accurately locate small objects or objects that are located in close proximity to each other. But as YOLOv3 is a one-stage detection process, it provides a fieldtested factor of efficiency. The other described shortcomings can be addressed, e.g. by using image augmentation techniques during training and rapid testing cycles.<br/><br/>
+          One potential flaw of the applied MobileNetV2 architecture is that it may struggle to capture the fine-grained details and spatial relationships needed to accurately detect objects in complex scenes. The team experimented with different network architectures and hyperparameters to address this issue, resulting in an extended MobileNetV2 being applied in the model.
+		    </p>
+		<div class="img-center">
+			<img src="../img/test.jpg" alt="Artificial Intelligence">
+			<p class="img-subtitle">Figure 1: This is a test</p>
+		</div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">@mk2112</div>
+        </a>
+        <a class="highlight" target="_blank" href="mailto:mkoppelmann@protonmail.ch">
+          <div>Mail</div>
+          <div class="emphasise">mkoppelmann@protonmail.ch</div>
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>
