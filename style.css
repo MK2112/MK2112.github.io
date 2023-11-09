@@ -52,6 +52,7 @@ body {
     margin-left: 0;
     margin-right: 0;
     font-size: large;
+    background-color: whitesmoke;
     font-family: ui-sans-serif, Segoe UI, Helvetica Neue, Roboto, Arial, sans-serif;
 }
 
@@ -371,4 +372,36 @@ nav b {
 
 ::-webkit-scrollbar {
     display: none;
+}
+
+#main-projects {
+    margin-top: 3.6rem;
+}
+
+.github-iframe {
+    margin-bottom: -14px;
+    margin-left: 5px;
+}
+
+.project-description {
+    display: flex; 
+    align-items: center;
+}
+
+.project-p {
+    font-size: 16px; 
+    margin-top: 8px;
+    margin-bottom: 21px;
+}
+
+.project-img {
+    object-fit: cover;
+    object-position: 0% 0%;
+    height: 220px;
+    width: 220px;
+    margin-left: 30px;
+}
+
+.project-h3 {
+    margin-bottom: 0;
 }
