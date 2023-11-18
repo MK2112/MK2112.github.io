@@ -1,58 +1,59 @@
 .fade-in {
     animation: fade-in 0.75s forwards;
 }
-  
+
 @keyframes fade-in {
     from {
         opacity: 0;
     }
+
     to {
-      opacity: 1;
+        opacity: 1;
     }
 }
 
 
 @media only screen and (max-width: 799px) {
-  .fade-in {
-    margin-left: 2%;
-    margin-right: 2%;
-  }
+    .fade-in {
+        margin-left: 2%;
+        margin-right: 2%;
+    }
 
-  header {
-    margin-left: 2%;
-    margin-right: 2%;
-  }
+    header {
+        margin-left: 2%;
+        margin-right: 2%;
+    }
 }
 
 @media only screen and (min-width: 800px) and (max-width: 999px) {
-  .fade-in {
-    margin-left: 10%;
-    margin-right: 10%;
-  }
+    .fade-in {
+        margin-left: 10%;
+        margin-right: 10%;
+    }
 
-  header {
-    margin-left: 10%;
-    margin-right: 10%;
-  }
+    header {
+        margin-left: 10%;
+        margin-right: 10%;
+    }
 }
 
 @media only screen and (min-width: 1000px) {
-  .fade-in {
-    margin-left: 27%;
-    margin-right: 27%;
-  }
+    .fade-in {
+        margin-left: 27%;
+        margin-right: 27%;
+    }
 
-  header {
-    margin-left: 27%;
-    margin-right: 27%;
-  }
+    header {
+        margin-left: 27%;
+        margin-right: 27%;
+    }
 }
 
 body {
     margin-left: 0;
     margin-right: 0;
     font-size: large;
-    background-color: whitesmoke;
+    background-color: white;
     font-family: ui-sans-serif, Segoe UI, Helvetica Neue, Roboto, Arial, sans-serif;
 }
 
@@ -62,13 +63,14 @@ header {
     justify-content: space-between;
     width: auto;
 }
-  
+
 h1 {
     margin: 0;
     font-size: 1.75rem;
 }
 
-h3, h4 {
+h3,
+h4 {
     font-weight: 500;
 }
 
@@ -84,7 +86,7 @@ nav {
     margin-top: auto;
     font-size: 1.1rem;
 }
-  
+
 .static-anchor {
     color: inherit;
     text-decoration: none;
@@ -154,7 +156,7 @@ nav {
     margin-top: -0.25rem;
     margin-bottom: 0.5rem;
     color: inherit;
-    background-color: rbga(0,0,0,0);
+    background-color: rbga(0, 0, 0, 0);
     transition: background-color 0.3s;
 }
 
@@ -179,7 +181,7 @@ nav {
     margin-top: 7px;
     margin-bottom: 0px;
     text-align: right;
-    color:rgba(125, 125, 125, 1);
+    color: rgba(125, 125, 125, 1);
     font-size: 1rem;
 }
 
@@ -190,7 +192,7 @@ nav {
 .ed-title aside {
     margin-top: -0.85rem;
     font-family: ui-serif, Georgia, Times New Roman, serif;
-    color:rgba(100, 100, 100, 1);
+    color: rgba(100, 100, 100, 1);
     font-size: 1rem;
     font-weight: 100;
     font-style: italic;
@@ -207,7 +209,7 @@ nav {
 }
 
 .ed-thesis {
-	font-size: 1rem;
+    font-size: 1rem;
 }
 
 .ed-specific ul li::before {
@@ -251,7 +253,7 @@ footer a {
 .work-details aside {
     margin-top: -0.85rem;
     margin-bottom: -0.5rem;
-    color:rgba(150, 150, 150, 1);
+    color: rgba(150, 150, 150, 1);
     font-size: 0.9rem;
 }
 
@@ -290,7 +292,7 @@ footer a {
     margin-top: 0px;
     margin-bottom: 5px;
     text-align: left;
-    color:rgba(125, 125, 125, 1);
+    color: rgba(125, 125, 125, 1);
     font-size: 1rem;
     font-weight: 100;
 }
@@ -354,7 +356,7 @@ nav b {
     margin-top: 7px;
     margin-bottom: 0px;
     text-align: left;
-    color:rgba(125, 125, 125, 1);
+    color: rgba(125, 125, 125, 1);
     font-size: 1rem;
 }
 
@@ -364,11 +366,13 @@ nav b {
 
 .post-title aside {
     margin-top: -0.85rem;
-    color:rgba(150, 150, 150, 1);
+    color: rgba(150, 150, 150, 1);
     font-size: 0.9rem;
 }
 
-.katex { font-size: large !important; }
+.katex {
+    font-size: large !important;
+}
 
 ::-webkit-scrollbar {
     display: none;
@@ -384,12 +388,12 @@ nav b {
 }
 
 .project-description {
-    display: flex; 
+    display: flex;
     align-items: center;
 }
 
 .project-p {
-    font-size: 16px; 
+    font-size: 16px;
     margin-top: 8px;
     margin-bottom: 21px;
 }
