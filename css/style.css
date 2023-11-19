@@ -205,11 +205,6 @@ nav {
 .ed-specific ul {
     list-style: none;
     font-size: 1rem;
-    padding-left: 1.5rem;
-}
-
-.ed-thesis {
-    font-size: 1rem;
 }
 
 .ed-specific ul li::before {
@@ -261,6 +256,13 @@ footer a {
     font-weight: 600;
 }
 
+.emphasise .brackets {
+    font-weight: 300;
+    color: black;
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
 .historic {
     font-family: Newsreader, ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
 }
@@ -274,13 +276,13 @@ footer a {
     margin-top: 0px;
 }
 
-.xp ul {
+.xp-description ul {
     margin-top: 0px;
     font-size: 1rem;
     list-style: none;
 }
 
-.xp ul li::before {
+.xp-description ul li::before {
     content: "\2022";
     color: rgba(150, 150, 150, 1);
     display: inline-block;
