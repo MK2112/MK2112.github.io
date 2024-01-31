@@ -381,7 +381,11 @@ nav b {
 }
 
 #main-projects {
-    margin-top: 3.6rem;
+    margin-top: 2rem;
+}
+
+.project {
+    margin-top: 3rem;
 }
 
 .github-iframe {
