@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="content-security-policy" content="" />
+    <link href="./css/style.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
+      integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0"
+      crossorigin="anonymous"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
+      integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+      integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+      crossorigin="anonymous"
+    ></script>
+    <script defer src="./js/main.js" onload="setupKatex();"></script>
+    <title>Blog</title>
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" href="./index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" href="./projects.html">projects</a>
+        <a class="dynamic-anchor" href="./blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" href="./resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <main id="main-projects">
+        <div class="project">
+          <a class="static-anchor" href="./blog/dreamerv2-explained.html">
+          <h3 class="project-h3">DreamerV2, Explained.</h3>
+          <p class="thin project-p">February 2024 - Reading Time: 6 Minutes</p>
+          <div class="blog-description">
+            <div>
+              <p align="justify">
+                DreamerV2 is a reinforcement learning algorithm. It's main goal is to be applicable to sequential decision problems in various environments. To achieve this, DreamerV2 curiously introduces several key innovations aimed at improving both efficiency and effectiveness in solving complex control tasks through reinforcement learning. Here's how it works.
+              </p>
+            </div>
+          </div>
+          </a>
+        </div>
+      </main>
+      <embed type="text/html" src="footer.html" width="100%" />
+    </div>
+  </body>
+</html>
