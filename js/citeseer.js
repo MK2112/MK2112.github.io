@@ -29,16 +29,16 @@ function renderBibtex(target_class) {
 
     for (var i = 0; i < target_divs.length; i++) {
         var div = target_divs[i];
-        var text = div.innerText;
+        var text = div.innerHTML; // Use innerHTML to preserve HTML structure
         var matches = text.matchAll(citeRegex);
         cite_counter = 1;
         for (const match of matches) {
             if (cite_list.some(cite => cite.id === match[1])) {
                 var cite_key = match[1];
                 var cite_link = cite_list.find(cite => cite.id === cite_key).link;
-                text = text.replace(match[0], `<a href="${cite_link}" target="_blank">[${cite_counter}]</a>`);
+                text = text.replace(match[0], `<a class="highlight" href="${cite_link}" target="_blank">$[${cite_counter}]$</a>`);
                 cite_list.find(cite => cite.id === cite_key).cite_counter = cite_counter;
-                div.innerHTML = text;
+                div.innerHTML = text; // Set innerHTML to preserve HTML structure
                 cite_counter++;
             }
         }
@@ -50,12 +50,18 @@ function renderBibtex(target_class) {
     for (var i = 0; i < cite_list.length; i++) {
         var cite = cite_list[i];
         var referencesDiv = document.getElementById('references');
+        if (i === 0) {
+            var headerDiv = document.createElement('div');
+            headerDiv.className = 'header';
+            headerDiv.innerHTML = '<h3>References</h3>';
+            referencesDiv.appendChild(headerDiv);
+        }
+
         if (cite.cite_counter) {
             var referenceDiv = document.createElement('div');
             referenceDiv.className = 'reference ' + cite.id;
-            referenceDiv.innerHTML = `<a href='${cite.link}' target='_blank'><p>[${cite.cite_counter}]&nbsp;&nbsp;${cite.author}: ${cite.title}, ${cite.year}</p></a>`;
+            referenceDiv.innerHTML = `<a class="citation" href='${cite.link}' target='_blank'><p>[${cite.cite_counter}]&nbsp;&nbsp;${cite.author}: ${cite.title}, ${cite.year}</p></a>`;
             referencesDiv.appendChild(referenceDiv);
         }
     }
-
 }
