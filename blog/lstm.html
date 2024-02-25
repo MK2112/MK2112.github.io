@@ -51,7 +51,7 @@
             <p align="justify">
                 The 1990s were quite the decade for Artificial Intelligence. DeepBlue defeated Garry Kasparov in a chess match and the initial development of what later evolved into transformers with linearized self-attention was released \cite{schlag2021linear}.
                 In addition to these events, in 1997, a curious paper was published. Its title: "Long Short-Term Memory" \cite{hochreiter1997long}.<br/>
-                </br>
+                <br/>
                 Long Short-Term Memory (LSTM) was invented by
                 Sepp Hochreiter and Jürgen Schmidhuber to address the problem of vanishing gradients of preceding Recurrent Neural Networks (RNN).
                 But why did this problem occur, what made LSTMs work and why did they turn out foundational to the field? Let's find out.
@@ -76,7 +76,7 @@
                 If an input is extremely large, $\sigma(x)$ will saturate at $1$, the maximum of its range $[0;1]$. The larger $\sigma(x)$ the more $\sigma'(x)$ will then tend towards $0$.
                 And equally, if the weights $W_{hh_t}$ are small, or happen to become small during training, and remain small over multiple time steps, the gradient $\frac{\partial h_{t+1}}{\partial h_t}$ will scale small as well.
                 And if that happens, the gradient $\frac{\partial L}{\partial h_t}$ will necessarily become smaller than the gradient $\frac{\partial L}{\partial h_{t+1}}$ was.
-                We're actively squashing our valuable gradient information.</br>
+                We're actively squashing our valuable gradient information.<br/>
                 Small $W_{hh_t}$ can occur due to the random initialization of weights or due to prior weight updates.
                 RNNs can somewhat cope with this for short sequences, but for longer sequences, the squashing hinders the intended learning effect to fully propagate to distant,
                 older time step inputs.
@@ -85,8 +85,8 @@
             <p align="justify">
                 LSTMs can learn dependencies between data points over longer periods of time \cite{hochreiter1991untersuchungen} \cite{bengio1994learning}. 
                 For this purpose, much like RNNs, LSTMs consist of sequentially connected cells. However, these cells maintain a short-term and a long-term memory. 
-                Each cell consists of Forget Gate, Input Gate, Output Gate, Cell State and Hidden State.</br>
-                </br>
+                Each cell consists of Forget Gate, Input Gate, Output Gate, Cell State and Hidden State.<br/>
+                <br/>
                 The cell state $C$ can be understood as representing the long-term memory. It holds and mends information attained across prior inputs.
                 The hidden state $h$ contains the short-term memory, i.e. information from immediately preceding inputs. 
                 The forget gate $f_t$ controls the amount of information to be discarded from the previous cell state $C_{t-1}$ \cite{colah2015Understanding}.
@@ -97,8 +97,8 @@
                 $[h_{t-1}, x_t]$ is a vector of the last hidden state $h_{t-1}$ and the current input $x_t$. $W_f$ and $b_f$ are the weight matrix and the bias,
                 specific to the memory cell and the forget gate. The sigmoid function $\sigma(x)$ is used here, too, to compress the result of the calculation
                 $W_f[h_{t-1}, x_t] + b_f$ into a value within $[0;1]$. For each position in $C_{t-1}$, a value in $f_t$ determines 'how much' the specific 
-                information is to be forgotten or retained. The sigmoid function $\sigma(x)$ therefore scales the degree of temporal relevance per entry in $C_{t-1}$.</br>
-                </br>
+                information is to be forgotten or retained. The sigmoid function $\sigma(x)$ therefore scales the degree of temporal relevance per entry in $C_{t-1}$.<br/>
+                <br/>
                 The input gate decides with exactly which new information from $h_{t-1}$ and $x_t$ should inform the cell state $C_{t-1}$ \cite{colah2015Understanding}.
                 Three operations are necessary: The creation of the cell state update $\tilde{C_t}$, the calculation of the factor for the element-wise scaling of the
                 cell state update $i_t$, and the addition of the scaled update and the $C_{t-1}$ scaled by $f_t$. The hyperbolic tangent 
@@ -126,13 +126,13 @@
                 These filters can themselves learn to effectively retain or discard information, effectively focusing each cell's impact to really 
                 only be the most relevant contribution at each time step. Especially the selective update of $C$ managed by $f_t$ prevents
                 a rapid decay of relevant gradients over longer durations of time. Contributing to that is the use of specific activation
-                functions at specific positions.</br>
-                </br>
+                functions at specific positions.<br/>
+                <br/>
                 The sigmoid function $\sigma(x)$ is specifically used as a gatekeeper, because its range is $[0;1]$. So, multiplying with $\sigma$-activated
                 values at best is a pass-through and at worst is a blockage. The hyperbolic tangent $tanh(x)$ is used to compress values within $[-1;1]$. 
                 Only these activated and filtered input representations are then 'let through' to $C_t$, shielding through range uniformity from excessive
-                or insufficiently informative input.</br>
-                </br>
+                or insufficiently informative input.<br/>
+                <br/>
                 The careful structural combination of gating mechanisms allows gradients to backflow more effectively through time steps when training. 
                 The scaling and selective updating provided via $f_t, i_t, o_t$ circumvent causes for rapid decay of gradients
                 and enable the model to learn meaningful dependencies even across long sequences.
@@ -142,8 +142,8 @@
                 Given the sizeable performance improvements over RNNs, LSTMs quickly got widely adopted. Still, scenarios remain where LSTMs might 
                 not be the ideal choice. Since being introduced, several LSTM variants have been developed. Jozefowicz and colleagues compared over $10,000$ different
                 architectures, starting from RNNs. They found that modified LSTM architectures outperformed the original LSTM on certain tasks, but were never universally
-                better \cite{jozefowicz2015empirical}. In any way, the special Bidirectional LSTM (BiLSTM) should be mentioned here.</br>
-                </br>
+                better \cite{jozefowicz2015empirical}. In any way, the special Bidirectional LSTM (BiLSTM) should be mentioned here.<br/>
+                <br/>
                 The BiLSTM model consists of two LSTM layers, one of which processes a given input sequence in the forward direction and the other in the opposite direction.
                 For example, in the context of log data, the BiLSTM could incorporate information from previous but also subsequent log entries with and against the
                 the course of time \cite{wei2022lstm}. This in turn can enable more accurate modeling of temporal patterns and can improve the ability to detect
