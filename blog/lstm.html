@@ -33,13 +33,13 @@
   <body>
     <header>
       <h1>
-        <a class="static-anchor" href="../index.html">Marcus Koppelmann</a>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
         <p>Blog</p>
       </h1>
       <nav>
-        <a class="dynamic-anchor" href="../projects.html">projects</a>
-        <a class="dynamic-anchor" href="../blog.html"><b>blog</b></a>
-        <a class="dynamic-anchor" href="../resume.html">resume</a>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
       </nav>
     </header>
     <div class="fade-in">
@@ -102,7 +102,7 @@
                 The input gate decides with exactly which new information from $h_{t-1}$ and $x_t$ should inform the cell state $C_{t-1}$ \cite{colah2015Understanding}.
                 Three operations are necessary: The creation of the cell state update $\tilde{C_t}$, the calculation of the factor for the element-wise scaling of the
                 cell state update $i_t$, and the addition of the scaled update and the $C_{t-1}$ scaled by $f_t$. The hyperbolic tangent 
-                $tanh(x) = \frac{e^x-e^{-x}}{e^x + e^{-x}}$ compresses and shifts the values in $C_t$ into the range $[-1;1]$:
+                $tanh(x) = \frac{e^x-e^{-x}}{e^x + e^{-x}}$ compresses and shifts $C_t$ into the range $[-1;1]$:
 
                 $$\tilde C_t = tanh(W_c\cdot[h_{t-1},x_t]+b_c)$$
                 $$i_t = \sigma(W_i\cdot[h_{t-1},x_t]+b_i)$$
@@ -110,7 +110,7 @@
 
                 After the completed cell state update, the output gate $o_t$ finally provides the updated hidden state. $o_t$ is, similar to $f_t$, a sigmoid-activated
                 vector of $h_{t-1}$ and $x_t$, which is multiplied by learnable weights $W_o$ and affected by a bias $b_o$. $o_t$ decides which specific values from the new
-                cell state $C_t$ are to be used to update the hidden state $h_{t-1}$. The cell state itself is changed to the value range $[-1; 1]$ using $tanh$ 
+                cell state $C_t$ are to be used to update the hidden state $h_{t-1}$. The cell state is changed to the value range $[-1; 1]$ using $tanh$ 
                 and multiplied by $o_t$ element-wise:
 
                 $$o_t = \sigma(W_o \cdot [h_{t-1}, X_t] + b_o)$$

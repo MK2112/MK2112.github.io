@@ -36,8 +36,8 @@ function renderBibtex(target_class) {
             if (cite_list.some(cite => cite.id === match[1])) {
                 var cite_key = match[1];
                 if (!cite_list.find(cite => cite.id === cite_key).cite_counter) {
-                    var cite_link = cite_list.find(cite => cite.id === cite_key).link;
-                    text = text.replaceAll(match[0], `<a class="highlight" href="${cite_link}" target="_blank">$[${cite_counter}]$</a>`);
+                    var cite = cite_list.find(cite => cite.id === cite_key);
+                    text = text.replaceAll(match[0], `<a class="highlight" href="${cite.link}" title="${cite.author}: ${cite.title}, ${cite.year}" target="_blank">$[${cite_counter}]$</a>`);
                     cite_list.find(cite => cite.id === cite_key).cite_counter = cite_counter;
                     div.innerHTML = text;
                     cite_counter++;
@@ -69,6 +69,6 @@ function renderBibtex(target_class) {
         counterCell.textContent = `$[${cite.cite_counter}]$`;
         counterCell.style.verticalAlign = 'top';
         var detailsCell = newRow.insertCell(1);
-        detailsCell.innerHTML = `<a class="citation" href='${cite.link}' target='_blank'><p>${cite.author}: ${cite.title}, ${cite.year}</p></a>`;
+        detailsCell.innerHTML = `<a class="citation" href='${cite.link}' title="${cite.author}: ${cite.title}, ${cite.year}" target='_blank'><p>${cite.author}: ${cite.title}, ${cite.year}</p></a>`;
     }
 }
