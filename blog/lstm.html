@@ -106,7 +106,7 @@
                 The input gate decides with exactly which new information from $h_{t-1}$ and $x_t$ should inform the cell state $C_{t-1}$ \cite{colah2015Understanding}.
                 Three operations are necessary: The creation of the cell state update $\tilde{C_t}$, the calculation of the factor for the element-wise scaling of the
                 cell state update $i_t$, and the addition of the scaled update and the $C_{t-1}$ scaled by $f_t$. The hyperbolic tangent 
-                $tanh(x) = \frac{e^x-e^{-x}}{e^x + e^{-x}}$ compresses and shifts $C_t$ into the range $[-1;1]$:
+                $tanh(x) = \frac{e^x-e^{-x}}{e^x + e^{-x}}$ compresses $C_t$ into the range $[-1;1]$:
 
                 $$\tilde C_t = tanh(W_c\cdot[h_{t-1},x_t]+b_c)$$
                 $$i_t = \sigma(W_i\cdot[h_{t-1},x_t]+b_i)$$
@@ -122,7 +122,7 @@
 
                 The aim, which again can be equal to RNN setups, is to find the weighting and bias parameters in such a way that
                 the final output of the model corresponds to an expected value or matches one or more data points from the training dataset following the input.
-                During training, these weights are gradually and continuously updated for each input-output pair by loss minimization using gradient descent.
+                During training, these weights are gradually updated for each input-output pair by loss minimization using gradient descent.
             </p>
             <h4>Why are LSTMs better, after all?</h4>
             <p align="justify">

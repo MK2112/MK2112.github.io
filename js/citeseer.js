@@ -37,7 +37,7 @@ function renderBibtex(target_class) {
                 var cite_key = match[1];
                 if (!cite_list.find(cite => cite.id === cite_key).cite_counter) {
                     var cite = cite_list.find(cite => cite.id === cite_key);
-                    text = text.replaceAll(match[0], `<a class="highlight" href="${cite.link}" title="${cite.author}: ${cite.title}, ${cite.year}" target="_blank">$[${cite_counter}]$</a>`);
+                    text = text.replaceAll(match[0], `<a class="highlight" href="${cite.link}" title="${cite.author}, ${cite.title}, ${cite.year}" target="_blank">$[${cite_counter}]$</a>`);
                     cite_list.find(cite => cite.id === cite_key).cite_counter = cite_counter;
                     div.innerHTML = text;
                     cite_counter++;
