@@ -49,10 +49,10 @@
     <div class="fade-in">
       <main id="main-projects">
         <div class="project">
-          <h3 class="project-h3">Long Short-Term Memory</h3>
+          <h2>Long Short-Term Memory</h2>
           <p class="thin project-p">February 2024 - Reading Time: 5 Minutes</p>
           <div class="blog-entry">
-            <p align="justify">
+            <p class="blog-p">
                 The 1990s were quite the decade for Artificial Intelligence. DeepBlue defeated Garry Kasparov in a chess match and the initial development of what later evolved into transformers with linearized self-attention was released \cite{schlag2021linear}.
                 In addition to these events, in 1997, a curious paper was published. Its title: "Long Short-Term Memory" \cite{hochreiter1997long}.<br/>
                 <br/>
@@ -60,8 +60,8 @@
                 Sepp Hochreiter and Jürgen Schmidhuber to address the problem of vanishing gradients of preceding Recurrent Neural Networks (RNN).
                 But why did this problem occur, what made LSTMs work and why did they turn out foundational to the field? Let's find out.
             </p>
-            <h4>Vanishing Gradients in RNNs</h4>
-            <p align="justify">
+            <h3>Vanishing Gradients in RNNs</h3>
+            <p class="blog-p">
                 In RNNs, vanishing gradients occur due to an iterative multiplication of weight matrices during backpropagation.
                 Very fundamentally, gradients are used to adjust the weights of a neural network. They are calculated per weight using the chain rule of calculus. If done correctly, they
                 nudge each weight in a direction that either minimizes a loss or maximizes a goal. With RNNs, gradients need to be derived for each time step. Let's look at an example.
@@ -81,12 +81,12 @@
                 And equally, if the weights $W_{hh_t}$ are small, or happen to become small during training, and remain small over multiple time steps, the gradient $\frac{\partial h_{t+1}}{\partial h_t}$ will scale small as well.
                 And if that happens, the gradient $\frac{\partial L}{\partial h_t}$ will necessarily become smaller than the gradient $\frac{\partial L}{\partial h_{t+1}}$ was.
                 We're actively squashing our valuable gradient information.<br/>
-                Small $W_{hh_t}$ can occur due to the random initialization of weights or due to prior weight updates.
-                RNNs can somewhat cope with this for short sequences, but for longer sequences, the squashing hinders the intended learning effect to fully propagate to distant,
+                Small $W_{hh_t}$ can occur due to random initialization of weights or due to prior weight updates.
+                RNNs can somewhat cope with this for short sequences, but with longer sequences, the squashing hinders the learning effect to fully propagate to distant,
                 older time step inputs.
             </p>
-            <h4>LSTM Architecture</h4>
-            <p align="justify">
+            <h3>LSTM Architecture</h3>
+            <p class="blog-p">
                 LSTMs can learn dependencies between data points over longer periods of time \cite{hochreiter1991untersuchungen} \cite{bengio1994learning}. 
                 For this purpose, much like RNNs, LSTMs consist of sequentially connected cells. However, these cells maintain a short-term and a long-term memory. 
                 Each cell consists of Forget Gate, Input Gate, Output Gate, Cell State and Hidden State.<br/>
@@ -124,8 +124,8 @@
                 the final output of the model corresponds to an expected value or matches one or more data points from the training dataset following the input.
                 During training, these weights are gradually updated for each input-output pair by loss minimization using gradient descent.
             </p>
-            <h4>Why are LSTMs better, after all?</h4>
-            <p align="justify">
+            <h3>Why are LSTMs better, after all?</h3>
+            <p class="blog-p">
                 In essence, LSTM introduces trainable filters through the forget, input and output gates. 
                 These filters can themselves learn to effectively retain or discard information, effectively focusing each cell's impact to really 
                 only be the most relevant contribution at each time step. Especially the selective update of $C$ managed by $f_t$ prevents
@@ -141,8 +141,8 @@
                 The scaling and selective updating provided via $f_t, i_t, o_t$ circumvent causes for rapid decay of gradients
                 and enable the model to learn meaningful dependencies even across long sequences.
             </p>
-            <h4>Is there more?</h4>
-            <p align="justify">
+            <h3>Is there more?</h3>
+            <p class="blog-p">
                 Given the sizeable performance improvements over RNNs, LSTMs quickly got widely adopted. Still, scenarios remain where LSTMs might 
                 not be the ideal choice. Since being introduced, several LSTM variants have been developed. Jozefowicz and colleagues compared over $10,000$ different
                 architectures, starting from RNNs. They found that modified LSTM architectures outperformed the original LSTM on certain tasks, but were never universally
