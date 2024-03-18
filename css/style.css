@@ -441,3 +441,19 @@ nav b {
     text-align: justify;
     margin-bottom: 2rem;
 }
+
+.blog-img {
+    text-align: center;
+    margin: 0;
+    margin-top: -0.5rem;
+}
+
+.blog-img img {
+    border: 1px solid var(--mist-grey);
+}
+
+.blog-img p {
+    font-size: 0.9rem;
+    color: var(--mist-grey);
+    margin-top: 0.5rem;
+}
