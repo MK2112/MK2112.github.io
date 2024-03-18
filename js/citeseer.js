@@ -23,6 +23,9 @@ function renderBibtex(target_class) {
         cite_list.push(result);
     }
 
+    // sort by concatenation of author and title
+    cite_list.sort((a, b) => (a.author + a.title).localeCompare(b.author + b.title));
+
     // render in-text references
     var target_divs = document.getElementsByClassName(target_class);
     const citeRegex = /\\cite{(\w+)}/g;
@@ -31,16 +34,14 @@ function renderBibtex(target_class) {
         var div = target_divs[i];
         var text = div.innerHTML;
         var matches = text.matchAll(citeRegex);
-        cite_counter = 1;
         for (const match of matches) {
             if (cite_list.some(cite => cite.id === match[1])) {
                 var cite_key = match[1];
                 if (!cite_list.find(cite => cite.id === cite_key).cite_counter) {
                     var cite = cite_list.find(cite => cite.id === cite_key);
-                    text = text.replaceAll(match[0], `<a class="highlight" href="${cite.link}" title="${cite.author}, ${cite.title}, ${cite.year}" target="_blank">$[${cite_counter}]$</a>`);
-                    cite_list.find(cite => cite.id === cite_key).cite_counter = cite_counter;
+                    text = text.replaceAll(match[0], `<a class="highlight" href="${cite.link}" title="${cite.author}, ${cite.title}, ${cite.year}" target="_blank">$[${cite_list.indexOf(cite) + 1}]$</a>`);
+                    cite_list.find(cite => cite.id === cite_key).cite_counter = cite_list.indexOf(cite) + 1;
                     div.innerHTML = text;
-                    cite_counter++;
                 }
             }
         }
