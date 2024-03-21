@@ -62,7 +62,7 @@ body {
     margin-right: 0;
     font-size: large;
     background-color: whitesmoke;
-    font-family: ui-sans-serif, Helvetica Neue, Segoe UI, Roboto, Arial, sans-serif;
+    font-family: "PT Sans", -apple-system, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
 }
 
 header {
