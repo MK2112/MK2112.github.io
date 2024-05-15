@@ -85,8 +85,8 @@
               (RSSM) \cite{hafner2019learning}, and predictors for image, reward, and a next input's representation \cite{hafner2020mastering}.
               For high-dimensional inputs, the world model is trained to flexibly capture key observational information.
               The representation model consists of a Convolutional Neural Network (CNN) connected to a Multi-Layered 
-              Perceptron (MLP). The \gls{CNN} disconnects the impact of image contents from their spatial position, effectively facilitating
-              translation invariance and robustness in feature detection. The \gls{MLP} goes on to perform informed reshaping of feature information.
+              Perceptron (MLP). The CNN disconnects the impact of image contents from their spatial position, effectively facilitating
+              translation invariance and robustness in feature detection. The MLP goes on to perform informed reshaping of feature information.
               The representation model employs the current hidden state of the RSSM and current sensory input to derive a 
               latent representation. This categorical latent variable $z_t$ is a $32 \times 32$ binary matrix, meaning $32$
               vectors of $32$ classification variables each.
