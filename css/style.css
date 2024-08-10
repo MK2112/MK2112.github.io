@@ -65,6 +65,17 @@ body {
     font-family: "PT Sans", -apple-system, "Helvetica Neue", "Segoe UI", "Roboto", sans-serif;
 }
 
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #151515;
+        color: whitesmoke;
+    }
+
+    .brackets {
+        color: whitesmoke;
+    }
+}
+
 header {
     margin-top: 8rem;
     display: flex;
@@ -291,7 +302,6 @@ footer a {
 
 .emphasise .brackets {
     font-weight: 300;
-    color: black;
     margin-left: 3px;
     margin-right: 3px;
 }
