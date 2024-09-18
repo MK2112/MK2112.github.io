@@ -29,52 +29,59 @@
     <script defer src="./js/main.js" onload="setupKatex();"></script>
     <title>Blog</title>
   </head>
-  <body>
+<body class="page">
+    <nav class="navbar">
+        <a href="./index.html">Home</a>
+        <a href="./projects.html">Projects</a>
+        <a class="active" href="./blog.html">Blog</a>
+        <a href="./resume.html">Resume</a>
+    </nav>
     <header>
-      <h1>
-        <a class="static-anchor" href="./index.html">Marcus Koppelmann</a>
-        <p>Blog</p>
-      </h1>
-      <nav>
-        <a class="dynamic-anchor" title="Projects" href="./projects.html">projects</a>
-        <a class="dynamic-anchor" title="Blog" href="./blog.html"><b>blog</b></a>
-        <a class="dynamic-anchor" title="Resume" href="./resume.html">resume</a>
-      </nav>
+      <h1>Marcus Koppelmann.</h1>
     </header>
-    <div class="fade-in">
-      <main id="main-projects">
-        <div class="project">
-          <a class="static-anchor" href="./blog/dreamer-v2.html">
-          <h2>DreamerV2, explained.</h2>
-          <p class="thin project-p">April 2024 - Reading Time: 8 Minutes</p>
-          <div class="blog-description">
-            <div>
-              <p align="justify">
-                Developing intelligent systems for robustly perceiving, exploring, and attaining incrementally complex insights remains a persistent challenge in the field.
-                DreamerV2 addresses this by employing latent imagination and reinforcement learning, enabling the development of effective policies for various
-                tasks in different environments. Let's see how it works.
-              </p>
+    <main>
+      <div class="blog-grid">
+        <article class="blog-card">
+          <a class="static-anchor" title="DreamerV2, explained." href="./blog/dreamer-v2.html">
+          <div class="blog-card-content">
+            <span class="blog-date">April 2024</span>
+            <h2 class="blog-title">DreamerV2, explained.</h2>
+            <p class="blog-excerpt">Developing intelligent systems for robustly perceiving, exploring, and attaining incrementally complex insights remains a persistent challenge. DreamerV2 employs latent imagination and reinforcement learning, enabling the development of effective policies for various tasks in different environments.</p>
+            <div class="blog-meta">
+              <span class="reading-time">8 min read</span>
+              <div class="read-more">Read More</div>
             </div>
           </div>
           </a>
-        </div>
-        <div class="project">
-          <a class="static-anchor" href="./blog/lstm.html">
-          <h2>Long Short-Term Memory</h2>
-          <p class="thin project-p">February 2024 - Reading Time: 5 Minutes</p>
-          <div class="blog-description">
-            <div>
-              <p align="justify">
-                Long Short-Term Memory is a recurrent neural network type for learning long-term dependencies. This was hard to achieve, especially due to the vanishing
-                gradient problem experienced up until that point. LSTM was the first in overcoming this issue, and it proved foundational for many subsequent advances
-                in deep learning. Here's why it works.
-              </p>
+        </article>
+        <article class="blog-card">
+          <a class="static-anchor" title="Long Short-Term Memory." href="./blog/lstm.html">
+          <div class="blog-card-content">
+            <span class="blog-date">February 2024</span>
+            <h2 class="blog-title">Long Short-Term Memory.</h2>
+            <p class="blog-excerpt">Long Short-Term Memory is a recurrent neural network type for learning long-term dependencies. This type of learning was hard to achieve, especially due to the vanishing gradient problem. LSTM was the first to overcome this issue, and it proved foundational for many subsequent advances in deep learning.</p>
+            <div class="blog-meta">
+              <span class="reading-time">5 min read</span>
+              <div class="read-more">Read More</div>
             </div>
           </div>
-          </a>
-        </div>
-      </main>
-      <embed type="text/html" src="footer.html" width="100%" />
-    </div>
-  </body>
+        </a>
+        </article>
+      </div>
+    </main>
+    <footer>
+      <div class="footer">
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div class="emphasise">GitHub<span class="brackets">/MK2112</span></div>
+        </a>
+        <a class="highlight" target="_blank" title="HuggingFace" href="https://huggingface.co/Marcus2112">
+          <div class="emphasise">HuggingFace<span class="brackets">/Marcus2112</span></div>
+        </a>
+        <a class="highlight" target="_blank" title="X/Twitter" href="https://x.com/marcus_or_so">
+          <div class="emphasise">X.com<span class="brackets">/marcus_or_so</span></div>
+        </a>
+        <div class="emphasise">mkoppelmann<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>ch</div>
+      </div>
+  </footer>
+</body>
 </html>

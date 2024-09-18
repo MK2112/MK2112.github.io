@@ -39,7 +39,7 @@ function renderBibtex(target_class) {
                 var cite_key = match[1];
                 if (!cite_list.find(cite => cite.id === cite_key).cite_counter) {
                     var cite = cite_list.find(cite => cite.id === cite_key);
-                    text = text.replaceAll(match[0], `<a class="highlight" href="${cite.link}" title="${cite.author}, ${cite.title}, ${cite.year}" target="_blank">$[${cite_list.indexOf(cite) + 1}]$</a>`);
+                    text = text.replaceAll(match[0], `$[$<a class="highlight" href="${cite.link}" title="${cite.author}, ${cite.title}, ${cite.year}" target="_blank">$${cite_list.indexOf(cite) + 1}$</a>$]$`);
                     cite_list.find(cite => cite.id === cite_key).cite_counter = cite_list.indexOf(cite) + 1;
                     div.innerHTML = text;
                 }
@@ -51,12 +51,20 @@ function renderBibtex(target_class) {
     cite_list = cite_list.filter(cite => cite.cite_counter).sort((a, b) => a.cite_counter - b.cite_counter);
 
     var referencesDiv = document.getElementById('references');
+    var headerDiv = document.createElement('div');
+    headerDiv.setAttribute('class', 'light-heading-content');
     var heading = document.createElement('h3');
     heading.textContent = 'References';
-    referencesDiv.appendChild(heading);
+    headerDiv.appendChild(heading);
+    referencesDiv.appendChild(headerDiv);
+
+    var referencesContentDiv = document.createElement('div');
+    referencesContentDiv.setAttribute('class', 'summary');
+
     var referencesTable = document.createElement('table');
     referencesTable.setAttribute('id', 'referencesTable');
-    referencesDiv.appendChild(referencesTable);
+    referencesContentDiv.appendChild(referencesTable);
+    referencesDiv.appendChild(referencesContentDiv);
 
     for (var i = 0; i < cite_list.length; i++) {
         var cite = cite_list[i];
