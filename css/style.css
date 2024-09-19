@@ -130,6 +130,18 @@ h1 {
     text-align: center;
 }
 
+@media (max-width: 1024px) {
+    h1 {
+        font-size: 70px;
+    }
+}
+
+@media (max-width: 780px) {
+    h1 {
+        font-size: 40px;
+    }
+}
+
 h2 {
     font-size: 32px;
     font-weight: 600;
@@ -155,6 +167,20 @@ h3 {
 .summary {
     padding-left: 25%;
     padding-right: 25%;
+}
+
+@media (max-width: 1024px) {
+    .summary {
+        padding-left: 12%;
+        padding-right: 12%;
+    }
+}
+
+@media (max-width: 768px) {
+    .summary {
+        padding-left: 5%;
+        padding-right: 5%;
+    }
 }
 
 .highlight {
