@@ -46,6 +46,12 @@ footer {
     padding-bottom: 1rem;
 }
 
+@media (max-width: 768px) {
+    .footer {
+        flex-direction: column;
+    }
+}
+
 .work {
     display: inline-block;
     text-decoration: none;
