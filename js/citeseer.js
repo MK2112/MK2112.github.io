@@ -51,20 +51,14 @@ function renderBibtex(target_class) {
     cite_list = cite_list.filter(cite => cite.cite_counter).sort((a, b) => a.cite_counter - b.cite_counter);
 
     var referencesDiv = document.getElementById('references');
-    var headerDiv = document.createElement('div');
-    headerDiv.setAttribute('class', 'light-heading-content');
+    
     var heading = document.createElement('h3');
     heading.textContent = 'References';
-    headerDiv.appendChild(heading);
-    referencesDiv.appendChild(headerDiv);
-
-    var referencesContentDiv = document.createElement('div');
-    referencesContentDiv.setAttribute('class', 'summary');
-
+    referencesDiv.appendChild(heading);
+    
     var referencesTable = document.createElement('table');
     referencesTable.setAttribute('id', 'referencesTable');
-    referencesContentDiv.appendChild(referencesTable);
-    referencesDiv.appendChild(referencesContentDiv);
+    referencesDiv.appendChild(referencesTable);
 
     for (var i = 0; i < cite_list.length; i++) {
         var cite = cite_list[i];
@@ -77,6 +71,7 @@ function renderBibtex(target_class) {
         var counterCell = newRow.insertCell(0);
         counterCell.textContent = `$[${cite.cite_counter}]$`;
         counterCell.style.verticalAlign = 'top';
+        
         var detailsCell = newRow.insertCell(1);
         detailsCell.innerHTML = `<a class="citation" href='${cite.link}' title="${cite.author}: ${cite.title}, ${cite.year}" target='_blank'><p>${cite.author}: ${cite.title}, ${cite.year}</p></a>`;
     }

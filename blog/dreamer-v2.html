@@ -32,168 +32,170 @@
     <script>hljs.initHighlightingOnLoad();</script>
     <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
     <script defer src="../js/main.js" onload="setupKatex();"></script>
-    <title>DreamerV2, explained.</title>
+    <title>DreamerV2, explained</title>
   </head>
-  <body class="page">
-    <nav class="navbar">
-        <a href="../index.html">Home</a>
-        <a href="../projects.html">Projects</a>
-        <a class="active" href="../blog.html">Blog</a>
-        <a href="../resume.html">Resume</a>
-    </nav>
+  <body>
     <header>
-      <h1>Marcus Koppelmann.</h1>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
     </header>
-    <main>
-        <div class="light-heading-content">
-            <h2>DreamerV2, explained.</h2>
-            <p class="thin project-p">April 2024 - 8 min read</p>
-        </div>
-        <div class="blog-entry">
-            <div class="summary">
-                <p class="blog-p">
-                Creating systems capable of engaging in interaction to robustly perceive, explore and attain incrementally complex 
-                insights poses an ongoing challenge. The Dreamer algorithm family addresses this by employing latent imagination
-                for Reinforcement Learning (RL), enabling the development of effective policies for various tasks in different
-                environments. Dreamer underwent multiple iterations, with DreamerV2 standing out as a major improvement over its
-                predecessor and serving as the foundation for smaller changes in DreamerV3. Let's take a closer look at DreamerV2
-                and its inner workings.
-                </p>
-                <h3>The Reinforcement Learning Problem</h3>
-                <p class="blog-p">
-                In Reinforcement Learning, a so-called agent learns to optimize attaining rewards within an environment through 
-                trial-and-error. An agent's actions can alter environment states and affect which if any rewards get emitted from
-                the environment. Rewards can happen to be sparse or delayed \cite{sutton2018reinforcement}, making it hard
-                to directly associate them with the actions that caused them. This is why rather than learning direct actio-reactio
-                associations, RL agents optimize generalizable strategies for action selection. To attain an agent's ability of
-                exercising optimal strategies, the training has to balance a trade-off between exploiting known, rewarding actions
-                and exploring new, potentially informative trajectories \cite{jiang2023importance}.<br />
-                While RL already achieved great success in its application to video games \cite{justesen2019deep} and strategic board
-                games \cite{silver2017mastering}, real-world settings can prove challenging \cite{kober2013reinforcement}. 
-                Both trial-and-error and the sparse-delayed reward problem
-                can amount to a high number of interactions with the environment necessary to learn a good policy, i.e. a high
-                sample complexity \cite{kakade2003sample}. This is where Dreamer comes into play.<br />
-                With Dreamer, a world model is trained to efficiently develop abstractions capturing the dynamics of the environment.
-                The model is then used to fully simulate environment behavior, allowing for the agent to learn from imagined dynamic
-                trajectories. This in turn allows an agent to get exposed to a broader range of experiences, developing a more robust,
-                yet flexible policy.
-                </p>
-                <h3>The World Model</h3>
-                <p class="blog-p">
-                The world model within DreamerV2 consists of a representation model, a Recurrent State-Space Model 
-                (RSSM) \cite{hafner2019learning}, and predictors for image, reward, and a next input's representation \cite{hafner2020mastering}.
-                For high-dimensional inputs, the world model is trained to flexibly capture key observational information.
-                The representation model consists of a Convolutional Neural Network (CNN) connected to a Multi-Layered 
-                Perceptron (MLP). The CNN disconnects the impact of image contents from their spatial position, effectively facilitating
-                translation invariance and robustness in feature detection. The MLP goes on to perform informed reshaping of feature information.
-                The representation model employs the current hidden state of the RSSM and current sensory input to derive a 
-                latent representation. This categorical latent variable $z_t$ is a $32 \times 32$ binary matrix, meaning $32$
-                vectors of $32$ classification variables each.
-                </p>
-                <div class="blog-img">
-                <img src="../img/dv2_2.png" alt="DreamerV2 World Model" style="width: 72%" />
-                <p class="blog-img-caption">World Model of DreamerV2. Altered Image. Original Image Source: \cite{hafner2020mastering}</p>
-                </div>
-                <p class="blog-p">
-                The RSSM employs a recurrent neural network structure of Gated Recurrent Units (GRU) to capture
-                environmental dynamics caused by interaction \cite{cahuantzi2023comparison}. The RSSM's primary objective
-                is to over time learn a hidden state transition that effectively represents the dynamics of the environment.
-                The consideration of the time dimension allows for a more nuanced choice of action, as a current
-                input can now be put into context \cite{gao2022enhance}. Let's see what this means in detail.<br />
-                For each time step $t$, a sensory observation $x_t$ is obtained. The RSSM derives a hidden state $h_t$,
-                influenced by $h_{t-1}$, the previous action $a_{t-1}$, and the prior latent state $z_{t-1}$. To now let
-                information from $x_t$ affect the RSSM, $x_t$ undergoes informed dimensionality reduction through the
-                representation model, yielding $z_t$ after sampling. The immediate output of the representation model is an
-                information-carrying distribution utilized to sample a representing data point for each of the $32$ categories
-                in $z_t$. The image predictor, implemented as a deconvolutional CNN, utilizes both $h_t$ and $z_t$ to
-                produce the reconstructed image $\hat{x}_t$. The compression of $x_t$ by the representation model and
-                decompression to $\hat{x}_t$ by the Image predictor is called autoencoding \cite{bank2023autoencoders}.
-                Hidden state $h_t$ and latent representation $z_t$ also serve as input for a reward predicting MLP, 
-                forecasting $\hat{r}_t$. After obtaining $x_t$ and deriving $\hat{x}_t$ and $\hat{r}_t$, another action 
-                $a_t$ is induced, influencing $h_{t+1}$. Consequently, $\hat{r}_{t+1}$ can be interpreted as the predicted
-                reward for $a_t$. Notably, $a_t$ along with $r_t$ are sourced externally. Their occurence closes the learning
-                loop for the RSSM.<br />
-                In addition to being a part of the input for image and reward predictor, the hidden state $h_t$, is also
-                utilized to predict $z_t$ through $\hat{z}_t$. Understanding the reason for the existence of the transition
-                predictor and resulting $\hat{z}_t$ is crucial for the intuition for DreamerV2. Hidden state $h_t$ undergoes
-                gradient-based optimization caused by the reward predictor, the image predictor, and the disparity between
-                $z_t$ and $\hat{z}_t$, the synthetic latent representation. The latter is attained by minimizing the 
-                Kullack-Leibler divergence. Therefore, the closer the categorical vectors $\hat{z}_t$ to $z_t$, the more
-                realistic the environment information encoded within $h_t$ will be. Following real-world exposure and
-                accompanying optimization, the model-derived $\hat{z}$ can substitute actual observations $z$.
-                Essentially, DreamerV2 establishes a fully simulated environment for conducting RL, where
-                actor-critic learning is employed to determine action choices and trace long-term rewards.
-                </p>
-                <h3>Latent Representation</h3>
-                <p class="blog-p">
-                With DreamerV2, each sensory perception input into the world model is represented using $32 \times 32$
-                categorical variables \cite{hafner2020mastering}. DreamerV1 had modeled the latent space as one continuous distribution \cite{hafner2019dream}.
-                For the switch from V1 to V2, the authors argue that discrete representations enable a more distinguishable embedding
-                of multimodal distributions. This capability is deemed crucial for accurate representation of complex probability
-                systems \cite{hafner2021blog}. The encoder transforms each image into $32$ distributions over $32$ classes. The
-                interpretation of these classes is entirely up to the model itself during the learning process of it. To facilitate
-                backpropagation through these latent representations, straight-through gradients are employed, which allow for automatic
-                differentiation.<br />
-                The reason as to why employing categorical variables offers advantages can be expressed best when looking at the
-                latent representation $z_t$ from a perspective of $h_t$. The hidden state aims to predict $z_t$ through $\hat{z}_t$.
-                If $z_t$ were to model a Gaussian, then $\hat{z}_t$ would be expressed to a mean and a variance. The problem here is
-                that in a given setting and after a given $a_t$ is executed, $h_t$ should be able to express through $\hat{z}_t$ that
-                multiple sensory inputs are perceived to be possible as next input, each with a different associated likelihood.
-                However, to express this, $\hat{z}_t$ could only use mean and variance. The single Gaussian expressed by $\hat{z}_t$ is
-                thus deemed conceptually inadequate for concisely modeling potentially multimodal distributions.
-                As perceived by the authors, a lack of this concise modeling capability through an implementation of $\hat{z}_t$ as a
-                distribution also implies a more complicated learning process for attaining a well-representing $\hat{z}_t$, as it
-                conceptually imposes a lack of predictive resolution \cite{hafner2021blog}. Given a $z_t$ representation, $\hat{z}_t$
-                can be expressed as such a categorical distribution, aiming to mirror $z_t$. In total, a more informed prediction with
-                distributions representing multiple likelihoods can be used to predict $z_t$ now, implying a now more fine-grained training.
-                </p>
-                <h3>Behavior Learning</h3>
-                <p class="blog-p">
-                With the components in place, the world model is able to fill a replay buffer of $n$ representations, $z_{1:n}$.
-                Consequently, the world model assembles a maintainable, efficient, low-memory representation of environment dynamics, from which
-                individual $z_t$ can be sampled from as starting points for the RSSM.<br />
-                Behavior Learning now introduces the actual RL component for policy refinement. DreamerV2 utilizes six networks for Behavior Learning: 
-                The RSSM, the representation model, a critic network, and predictors for transition, reward and action, the latter being called the actor.
-                It is to be noted that the RSSM, the representation model, and the predictors for transition and reward are not trained during
-                behavior learning, as they were trained by the world model. The agent's behavior is optimized through actor-critic learning.
-                The actor determines the actions to execute with the aim of respectively maximizing the critic's prediction signal.
-                While doing so, the actor introduces stochasticity for action selection according to an exploration-exploitation trade-off.
-                The actor is implemented as an MLP activated by Exponential Linear Unit activation (ELU). The critic, which is also an 
-                ELU-activated MLP, predicts the sum of future rewards, called the value $v$ per each state of the RSSM.
-                </p>
-                <div class="blog-img">
-                <img src="../img/dv2_1.png" alt="DreamerV2 Behavior Learning" style="width: 65%" />
-                <p class="blog-img-caption">The Behavior Learning of DreamerV2. Altered Image. Original Image Source: \cite{hafner2020mastering}</p>
-                </div>
-                <p class="blog-p">
-                The critic is trained using temporal difference learning. Temporal difference learning by itself is a model-free optimization
-                within DreamerV2 \cite{anand2021preferential}. The critic learns to predict the expected future rewards $\hat{v}_t$ by making
-                predictions based on the current state and the subsequent states. The agent gradually updates its predictions by comparing the
-                rewards it receives from the reward predictor with the rewards it expected to receive. Behavior Learning trajectories are
-                respectively limited to a horizon $H=15$, meaning $15$ imaginary states are generated per learning iteration. The efficiency of
-                DreamerV2 and hence its applicability to real-world settings become evident when shifting the focus to the basis upon which
-                actor and critic optimize each other.<br />
-                The policy refinement is done from a sampled state onwards based on imagined state representations $\hat{z}_t$ only.
-                No actual engagement with an environment is necessary for policy refinement. This increases DreamerV2's performance during model
-                learning to such an extend that DreamerV2 does not require simulation in order to refine a policy. The actor network then can later
-                be used to provide a choice of action for the world model for further situational exploration and thus more focused data collection.
-                </p>
-                <h3>Conclusion</h3>
-                <p class="blog-p">
-                DreamerV2 is not only a powerful exercise in model-based RL, but model-based ML in general. While RL on its own can be really expensive,
-                as trial-and-error can take up time and resources and rewards may additionally be sparse or delayed, DreamerV2's world model mitigates these
-                issues by establishing a trained, fully simulated environment to sample and learn from reasonably imagined dynamic trajectories.<br />
-                Shifting the perspective a little bit, one could say that the world model is a self-engineered, flexible abstraction. The key to generalizability is that this
-                abstraction can be adapted. Now, for example, think of Large Language Models (LLM). They utilize the external abstraction that is language.
-                The abstraction is fixed and the model is trained to adapt to it. This intuitively restricts the generalizability of LLM capabilities to the subspace
-                of possible tasks expressable through language. In other words, LLMs are not Artifical General Intelligence (AGI), but Advanced Machine Intelligence (AMI).
-                For the exact reasons we just discussed, both world models and efficient RL policy refinement are really hot topics right now \cite{garrido2024learning} \cite{matsuo2022deep} \cite{hopkins2024llms}.
-                I assume we will hear a lot more about Dreamer and its conceptual successors in the near future.
-                </p>
+    <div class="fade-in">
+      <main id="main-projects">
+        <div class="project">
+          <h2>DreamerV2, explained</h2>
+          <p class="thin project-p">April 2024 - Reading Time: 8 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+              Creating systems capable of engaging in interaction to robustly perceive, explore and attain incrementally complex 
+              insights poses an ongoing challenge. The Dreamer algorithm family addresses this by employing latent imagination
+              for Reinforcement Learning (RL), enabling the development of effective policies for various tasks in different
+              environments. Dreamer underwent multiple iterations, with DreamerV2 standing out as a major improvement over its
+              predecessor and serving as the foundation for smaller changes in DreamerV3. Let's take a closer look at DreamerV2
+              and its inner workings.
+            </p>
+            <h3>The Reinforcement Learning Problem</h3>
+            <p class="blog-p">
+              In Reinforcement Learning, a so-called agent learns to optimize attaining rewards within an environment through 
+              trial-and-error. An agent's actions can alter environment states and affect which if any rewards get emitted from
+              the environment. Rewards can happen to be sparse or delayed \cite{sutton2018reinforcement}, making it hard
+              to directly associate them with the actions that caused them. This is why rather than learning direct actio-reactio
+              associations, RL agents optimize generalizable strategies for action selection. To attain an agent's ability of
+              exercising optimal strategies, the training has to balance a trade-off between exploiting known, rewarding actions
+              and exploring new, potentially informative trajectories \cite{jiang2023importance}.<br />
+              While RL already achieved great success in its application to video games \cite{justesen2019deep} and strategic board
+              games \cite{silver2017mastering}, real-world settings can prove challenging \cite{kober2013reinforcement}. 
+              Both trial-and-error and the sparse-delayed reward problem
+              can amount to a high number of interactions with the environment necessary to learn a good policy, i.e. a high
+              sample complexity \cite{kakade2003sample}. This is where Dreamer comes into play.<br />
+              With Dreamer, a world model is trained to efficiently develop abstractions capturing the dynamics of the environment.
+              The model is then used to fully simulate environment behavior, allowing for the agent to learn from imagined dynamic
+              trajectories. This in turn allows an agent to get exposed to a broader range of experiences, developing a more robust,
+              yet flexible policy.
+            </p>
+            <h3>The World Model</h3>
+            <p class="blog-p">
+              The world model within DreamerV2 consists of a representation model, a Recurrent State-Space Model 
+              (RSSM) \cite{hafner2019learning}, and predictors for image, reward, and a next input's representation \cite{hafner2020mastering}.
+              For high-dimensional inputs, the world model is trained to flexibly capture key observational information.
+              The representation model consists of a Convolutional Neural Network (CNN) connected to a Multi-Layered 
+              Perceptron (MLP). The CNN disconnects the impact of image contents from their spatial position, effectively facilitating
+              translation invariance and robustness in feature detection. The MLP goes on to perform informed reshaping of feature information.
+              The representation model employs the current hidden state of the RSSM and current sensory input to derive a 
+              latent representation. This categorical latent variable $z_t$ is a $32 \times 32$ binary matrix, meaning $32$
+              vectors of $32$ classification variables each.
+            </p>
+            <div class="blog-img">
+              <img src="../img/dv2_2.png" alt="DreamerV2 World Model" style="width: 72%" />
+              <p class="blog-img-caption">World Model of DreamerV2. Altered Image. Original Image Source: \cite{hafner2020mastering}</p>
             </div>
-            <div id="references"></div>
+            <p class="blog-p">
+              The RSSM employs a recurrent neural network structure of Gated Recurrent Units (GRU) to capture
+              environmental dynamics caused by interaction \cite{cahuantzi2023comparison}. The RSSM's primary objective
+              is to over time learn a hidden state transition that effectively represents the dynamics of the environment.
+              The consideration of the time dimension allows for a more nuanced choice of action, as a current
+              input can now be put into context \cite{gao2022enhance}. Let's see what this means in detail.<br />
+              For each time step $t$, a sensory observation $x_t$ is obtained. The RSSM derives a hidden state $h_t$,
+              influenced by $h_{t-1}$, the previous action $a_{t-1}$, and the prior latent state $z_{t-1}$. To now let
+              information from $x_t$ affect the RSSM, $x_t$ undergoes informed dimensionality reduction through the
+              representation model, yielding $z_t$ after sampling. The immediate output of the representation model is an
+              information-carrying distribution utilized to sample a representing data point for each of the $32$ categories
+              in $z_t$. The image predictor, implemented as a deconvolutional CNN, utilizes both $h_t$ and $z_t$ to
+              produce the reconstructed image $\hat{x}_t$. The compression of $x_t$ by the representation model and
+              decompression to $\hat{x}_t$ by the Image predictor is called autoencoding \cite{bank2023autoencoders}.
+              Hidden state $h_t$ and latent representation $z_t$ also serve as input for a reward predicting MLP, 
+              forecasting $\hat{r}_t$. After obtaining $x_t$ and deriving $\hat{x}_t$ and $\hat{r}_t$, another action 
+              $a_t$ is induced, influencing $h_{t+1}$. Consequently, $\hat{r}_{t+1}$ can be interpreted as the predicted
+              reward for $a_t$. Notably, $a_t$ along with $r_t$ are sourced externally. Their occurence closes the learning
+              loop for the RSSM.<br />
+              In addition to being a part of the input for image and reward predictor, the hidden state $h_t$, is also
+              utilized to predict $z_t$ through $\hat{z}_t$. Understanding the reason for the existence of the transition
+              predictor and resulting $\hat{z}_t$ is crucial for the intuition for DreamerV2. Hidden state $h_t$ undergoes
+              gradient-based optimization caused by the reward predictor, the image predictor, and the disparity between
+              $z_t$ and $\hat{z}_t$, the synthetic latent representation. The latter is attained by minimizing the 
+              Kullack-Leibler divergence. Therefore, the closer the categorical vectors $\hat{z}_t$ to $z_t$, the more
+              realistic the environment information encoded within $h_t$ will be. Following real-world exposure and
+              accompanying optimization, the model-derived $\hat{z}$ can substitute actual observations $z$.
+              Essentially, DreamerV2 establishes a fully simulated environment for conducting RL, where
+              actor-critic learning is employed to determine action choices and trace long-term rewards.
+            </p>
+            <h3>Latent Representation</h3>
+            <p class="blog-p">
+              With DreamerV2, each sensory perception input into the world model is represented using $32 \times 32$
+              categorical variables \cite{hafner2020mastering}. DreamerV1 had modeled the latent space as one continuous distribution \cite{hafner2019dream}.
+              For the switch from V1 to V2, the authors argue that discrete representations enable a more distinguishable embedding
+              of multimodal distributions. This capability is deemed crucial for accurate representation of complex probability
+              systems \cite{hafner2021blog}. The encoder transforms each image into $32$ distributions over $32$ classes. The
+              interpretation of these classes is entirely up to the model itself during the learning process of it. To facilitate
+              backpropagation through these latent representations, straight-through gradients are employed, which allow for automatic
+              differentiation.<br />
+              The reason as to why employing categorical variables offers advantages can be expressed best when looking at the
+              latent representation $z_t$ from a perspective of $h_t$. The hidden state aims to predict $z_t$ through $\hat{z}_t$.
+              If $z_t$ were to model a Gaussian, then $\hat{z}_t$ would be expressed to a mean and a variance. The problem here is
+              that in a given setting and after a given $a_t$ is executed, $h_t$ should be able to express through $\hat{z}_t$ that
+              multiple sensory inputs are perceived to be possible as next input, each with a different associated likelihood.
+              However, to express this, $\hat{z}_t$ could only use mean and variance. The single Gaussian expressed by $\hat{z}_t$ is
+              thus deemed conceptually inadequate for concisely modeling potentially multimodal distributions.
+              As perceived by the authors, a lack of this concise modeling capability through an implementation of $\hat{z}_t$ as a
+              distribution also implies a more complicated learning process for attaining a well-representing $\hat{z}_t$, as it
+              conceptually imposes a lack of predictive resolution \cite{hafner2021blog}. Given a $z_t$ representation, $\hat{z}_t$
+              can be expressed as such a categorical distribution, aiming to mirror $z_t$. In total, a more informed prediction with
+              distributions representing multiple likelihoods can be used to predict $z_t$ now, implying a now more fine-grained training.
+            </p>
+            <h3>Behavior Learning</h3>
+            <p class="blog-p">
+              With the components in place, the world model is able to fill a replay buffer of $n$ representations, $z_{1:n}$.
+              Consequently, the world model assembles a maintainable, efficient, low-memory representation of environment dynamics, from which
+              individual $z_t$ can be sampled from as starting points for the RSSM.<br />
+              Behavior Learning now introduces the actual RL component for policy refinement. DreamerV2 utilizes six networks for Behavior Learning: 
+              The RSSM, the representation model, a critic network, and predictors for transition, reward and action, the latter being called the actor.
+              It is to be noted that the RSSM, the representation model, and the predictors for transition and reward are not trained during
+              behavior learning, as they were trained by the world model. The agent's behavior is optimized through actor-critic learning.
+              The actor determines the actions to execute with the aim of respectively maximizing the critic's prediction signal.
+              While doing so, the actor introduces stochasticity for action selection according to an exploration-exploitation trade-off.
+              The actor is implemented as an MLP activated by Exponential Linear Unit activation (ELU). The critic, which is also an 
+              ELU-activated MLP, predicts the sum of future rewards, called the value $v$ per each state of the RSSM.
+            </p>
+            <div class="blog-img">
+              <img src="../img/dv2_1.png" alt="DreamerV2 Behavior Learning" style="width: 65%" />
+              <p class="blog-img-caption">The Behavior Learning of DreamerV2. Altered Image. Original Image Source: \cite{hafner2020mastering}</p>
+            </div>
+            <p class="blog-p">
+              The critic is trained using temporal difference learning. Temporal difference learning by itself is a model-free optimization
+              within DreamerV2 \cite{anand2021preferential}. The critic learns to predict the expected future rewards $\hat{v}_t$ by making
+              predictions based on the current state and the subsequent states. The agent gradually updates its predictions by comparing the
+              rewards it receives from the reward predictor with the rewards it expected to receive. Behavior Learning trajectories are
+              respectively limited to a horizon $H=15$, meaning $15$ imaginary states are generated per learning iteration. The efficiency of
+              DreamerV2 and hence its applicability to real-world settings become evident when shifting the focus to the basis upon which
+              actor and critic optimize each other.<br />
+              The policy refinement is done from a sampled state onwards based on imagined state representations $\hat{z}_t$ only.
+              No actual engagement with an environment is necessary for policy refinement. This increases DreamerV2's performance during model
+              learning to such an extend that DreamerV2 does not require simulation in order to refine a policy. The actor network then can later
+              be used to provide a choice of action for the world model for further situational exploration and thus more focused data collection.
+            </p>
+            <h3>Conclusion</h3>
+            <p class="blog-p">
+              DreamerV2 is not only a powerful exercise in model-based RL, but model-based ML in general. While RL on its own can be really expensive,
+              as trial-and-error can take up time and resources and rewards may additionally be sparse or delayed, DreamerV2's world model mitigates these
+              issues by establishing a trained, fully simulated environment to sample and learn from reasonably imagined dynamic trajectories.<br />
+              Shifting the perspective a little bit, one could say that the world model is a self-engineered, flexible abstraction. The key to generalizability is that this
+              abstraction can be adapted. Now, for example, think of Large Language Models (LLM). They utilize the external abstraction that is language.
+              The abstraction is fixed and the model is trained to adapt to it. This intuitively restricts the generalizability of LLM capabilities to the subspace
+              of possible tasks expressable through language. In other words, LLMs are not Artifical General Intelligence (AGI), but Advanced Machine Intelligence (AMI).
+              For the exact reasons we just discussed, both world models and efficient RL policy refinement are really hot topics right now \cite{garrido2024learning} \cite{matsuo2022deep} \cite{hopkins2024llms}.
+              I assume we will hear a lot more about Dreamer and its conceptual successors in the near future.
+            </p>
+          </div>
+          <div id="references"></div>
         </div>
       </main>
+      <embed type="text/html" src="../footer.html" width="100%" />
     </div>
     <div id="bibtex" style="display: none">
         <div id="sutton2018reinforcement">
@@ -381,19 +383,5 @@
           <a>https://www.sciencedirect.com/science/article/pii/S0893608022001150</a>
         </div>
     </div>
-    <footer>
-      <div class="footer">
-        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
-          <div class="emphasise">GitHub<span class="brackets">/MK2112</span></div>
-        </a>
-        <a class="highlight" target="_blank" title="HuggingFace" href="https://huggingface.co/Marcus2112">
-          <div class="emphasise">HuggingFace<span class="brackets">/Marcus2112</span></div>
-        </a>
-        <a class="highlight" target="_blank" title="X/Twitter" href="https://x.com/marcus_or_so">
-          <div class="emphasise">X.com<span class="brackets">/marcus_or_so</span></div>
-        </a>
-        <div class="emphasise">mkoppelmann<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>ch</div>
-      </div>
-  </footer>
   </body>
 </html>

@@ -8,69 +8,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="content-security-policy" content="" />
     <link href="./css/style.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
+      integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0"
+      crossorigin="anonymous"
+    />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"
+      integrity="sha384-PwRUT/YqbnEjkZO0zZxNqcxACrXe+j766U2amXcgMg5457rve2Y7I6ZJSm2A0mS4"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/contrib/auto-render.min.js"
+      integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+      crossorigin="anonymous"
+    ></script>
+    <script defer src="./js/main.js" onload="setupKatex();"></script>
     <title>Projects</title>
   </head>
-<body class="page">
-    <nav class="navbar">
-        <a href="./index.html">Home</a>
-        <a class="active" href="./projects.html">Projects</a>
-        <a href="./blog.html">Blog</a>
-        <a href="./resume.html">Resume</a>
-    </nav>
+  <body>
     <header>
-        <h1>Marcus Koppelmann.</h1>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="./index.html">Marcus Koppelmann</a>
+        <p>Projects</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="./projects.html"><b>projects</b></a>
+        <a class="dynamic-anchor" title="Blog" href="./blog.html">blog</a>
+        <a class="dynamic-anchor" title="Resume" href="./resume.html">resume</a>
+      </nav>
     </header>
-    <main>
-        <div class="summary">
-        <div class="blog-grid">
-            <article class="project-card" id="gptemplate">
-                <a class="static-anchor" title="GPTemplate" href="https://github.com/mk2112/GPTemplate" target="_blank">
-                <div class="project-card-content">
-                    <div class="blog-date">
-                        <span>January 2024 • NLP</span>
-                    </div>
-                    <h2 class="blog-title" id="gptemplate">GPTemplate</h2>
-                    <p class="blog-excerpt">
-                        GPTemplate is a fully trainable and usable Generative Pre-Trained Transformer (GPT) within a Jupyter Notebook. 
-                        I built this as a progression beyond Andrej Karpathy's Neural Networks Series to showcase GPT's implementation 
-                        efficiency and basic inner workings. Users only need to provide a text file. GPT internalizes the textual patterns 
-                        therein and generates contextually aligned text, given a prompt.
-                    </p>
-                </div>
-                </a>
-            </article>
-            <article class="project-card" id="any_to_any">
-                <a class="static-anchor" title="Any_To_Any.py" href="https://github.com/mk2112/any_to_any.py" target="_blank">
-                <div class="project-card-content">
-                    <div class="blog-date">
-                        <span>November 2023 • Preprocessing Utils</span>
-                    </div>
-                    <h2 class="blog-title" id="any_to_any">Any_To_Any.py</h2>
-                    <p class="blog-excerpt">
-                        The ability to swiftly convert media files between different file formats poses a critical necessity in data processing. 
-                        Any_To_Any.py is a Python-based, lightweight tool that allows conversion between an array of media formats, such as audio, image, 
-                        and video files. This tool aims to solve the headache of file conversion with a straightforward interface.
-                    </p>
-                </div>
-                </a>
-            </article>
+    <div class="fade-in">
+      <main id="main-projects">
+        <div class="project">
+          <div class="project-description">
+            <div>
+              <h2>
+                <a class="static-anchor" title="GPTemplate" href="https://github.com/mk2112/GPTemplate" target="_blank">GPTemplate</a>
+                <iframe
+                  src="https://ghbtns.com/github-btn.html?user=mk2112&repo=GPTemplate&type=star&size=small"
+                  frameborder="0"
+                  scrolling="0"
+                  width="170"
+                  height="30"
+                  title="GitHub"
+                  class="github-iframe"
+                >
+                </iframe>
+              </h2>
+              <p class="thin project-p">January 2024 • Language</p>
+              <p align="justify">
+                GPTemplate is a fully trainable and usable Generative Pre-Trained Transformer (GPT) within a Jupyter Notebook. 
+                I built this as a progression beyond Andrej Karpathy's Neural Networks Series 
+                to showcase GPT's implementation efficiency and basic inner workings. Users only need to provide a text file. 
+                GPT internalizes the textual patterns therein and generates contextually aligned text, given a prompt.
+                The hugely popular GPT approach to NLP is thus made a bit more accessible.
+              </p>
+            </div>
+            <div>
+              <img
+                class="project-img"
+                src="https://images.pexels.com/photos/6045366/pexels-photo-6045366.jpeg"
+                alt="GPTemplate"
+              />
+            </div>
+          </div>
         </div>
+        <div class="project">
+          <div class="project-description">
+            <div>
+              <h2>
+                <a
+                  class="static-anchor"
+                  title="Any_To_Any.py"
+                  href="https://github.com/mk2112/any_to_any.py"
+                  target="_blank"
+                  >Any_To_Any.py</a
+                >
+                <iframe
+                  src="https://ghbtns.com/github-btn.html?user=mk2112&repo=any_to_any.py&type=star&size=small"
+                  frameborder="0"
+                  scrolling="0"
+                  width="170"
+                  height="30"
+                  title="GitHub"
+                  class="github-iframe"
+                >
+                </iframe>
+              </h2>
+              <p class="thin project-p">November 2023 • Preprocessing Utils</p>
+              <p align="justify">
+                The ability to swiftly convert media files between different
+                file formats poses a critical necessity in data processing. With
+                Any_To_Any.py, I wanted to address this need through providing a
+                Python-based, lightweight tool that allows conversion between an
+                array of media formats. From audio files like MP3 and FLAC, to
+                image-based formats like PNG, GIF, BMP, and video files like
+                MP4, WebM, and AVI.<br /><br />
+                In short, this tool aims to just solve the headache that can be
+                file conversion, all with a straightforward interface.
+              </p>
+            </div>
+            <div>
+              <img
+                class="project-img"
+                src="https://images.pexels.com/photos/114820/pexels-photo-114820.jpeg"
+                alt="Any_To_Any.py"
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+      <embed type="text/html" src="footer.html" width="100%" />
     </div>
-    </main>
-    <footer>
-        <div class="footer">
-          <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
-            <div class="emphasise">GitHub<span class="brackets">/MK2112</span></div>
-          </a>
-          <a class="highlight" target="_blank" title="HuggingFace" href="https://huggingface.co/Marcus2112">
-            <div class="emphasise">HuggingFace<span class="brackets">/Marcus2112</span></div>
-          </a>
-          <a class="highlight" target="_blank" title="X/Twitter" href="https://x.com/marcus_or_so">
-            <div class="emphasise">X.com<span class="brackets">/marcus_or_so</span></div>
-          </a>
-          <div class="emphasise">mkoppelmann<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>ch</div>
-        </div>
-    </footer>
-</body>
-<!-- #9f54ff #00e340 #ff43bf #97fc00 #faff00 #13fff1 #ff5c00 #3db9ff -->
+  </body>
 </html>

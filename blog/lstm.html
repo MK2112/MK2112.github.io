@@ -32,26 +32,27 @@
     <script>hljs.initHighlightingOnLoad();</script>
     <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
     <script defer src="../js/main.js" onload="setupKatex();"></script>
-    <title>Long Short Term Memory.</title>
+    <title>Long Short-Term Memory</title>
   </head>
-  <body class="page">
-    <nav class="navbar">
-        <a href="../index.html">Home</a>
-        <a href="../projects.html">Projects</a>
-        <a class="active" href="../blog.html">Blog</a>
-        <a href="../resume.html">Resume</a>
-    </nav>
+  <body>
     <header>
-      <h1>Marcus Koppelmann.</h1>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
     </header>
-    <main>
-        <div class="light-heading-content">
-            <h2>Long Short Term Memory.</h2>
-            <p class="thin project-p">February 2024 - 5 min read</p>
-        </div>
-        <div class="blog-entry">
-            <div class="summary">
-              <p class="blog-p">
+    <div class="fade-in">
+      <main id="main-projects">
+        <div class="project">
+          <h2>Long Short-Term Memory</h2>
+          <p class="thin project-p">February 2024 - Reading Time: 5 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
                 The 1990s were quite the decade for Artificial Intelligence. DeepBlue defeated Garry Kasparov in a chess match and the initial development of what later evolved into transformers with linearized self-attention was released \cite{schlag2021linear}.
                 In addition to these events, in 1997, a curious paper was published. Its title: "Long Short-Term Memory" \cite{hochreiter1997long}.<br/>
                 <br/>
@@ -153,115 +154,102 @@
                 contextual anomalies \cite{li2020swisslog}. Also, by now, Transformer-based models have been shown to outperform LSTMs on a variety 
                 of Natural Language Processing (NLP) tasks. LSTMs are foundational to the field, but they are, by far, not the end of the story.
             </p>
-            </div>
-            <div id="references"></div>
+          </div>
+          <div id="references"></div>
         </div>
       </main>
+      <embed type="text/html" src="../footer.html" width="100%" />
     </div>
     <div id="bibtex" style="display: none">
-      <div id="schlag2021linear">
-          <p>@inproceedings{schlag2021linear,
-              title={Linear transformers are secretly fast weight programmers},
-              author={Schlag, Imanol and Irie, Kazuki and Schmidhuber, Jürgen},
-              booktitle={International Conference on Machine Learning},
-              pages={9355--9366},
-              year={2021},
-              organization={PMLR}
-            }</p>
-          <a>https://arxiv.org/abs/2102.11174</a>
-      </div>
-      <div id="hochreiter1997long">
-          <p>@article{hochreiter1997long,
-              title={Long short-term memory},
-              author={Hochreiter, Sepp and Schmidhuber, Jürgen},
-              journal={Neural computation},
-              volume={9},
-              number={8},
-              pages={1735--1780},
-              year={1997},
-              publisher={MIT press}
-            }</p>
-          <a>https://blog.xpgreat.com/file/lstm.pdf</a>
-      </div>
-      <div id="hochreiter1991untersuchungen">
-          <p>@article{hochreiter1991untersuchungen,
-              title={Untersuchungen zu dynamischen neuronalen Netzen},
-              author={Hochreiter, Sepp},
-              journal={Diploma, Technische Universit{\"a}t M{\"u}nchen},
-              volume={91},
-              number={1},
-              pages={31},
-              year={1991},
-            }</p>
-          <a>https://www.bioinf.jku.at/publications/older/3804.pdf</a>
-      </div>
-      <div id="bengio1994learning">
-          <p>@article{bengio1994learning,
-              title={Learning long-term dependencies with gradient descent is difficult},
-              author={Bengio, Yoshua and Simard, Patrice and Frasconi, Paolo},
-              journal={IEEE transactions on neural networks},
-              volume={5},
-              number={2},
-              pages={157--166},
-              year={1994},
-              publisher={IEEE}
-            }</p>
-          <a>http://www.comp.hkbu.edu.hk/~markus/teaching/comp7650/tnn-94-gradient.pdf</a>
-      </div>
-      <div id="colah2015Understanding">
-          <p>@online{colah2015Understanding,
-              title={Understanding LSTM Networks},
-              year={2015},
-              author={Olah, Christopher},
-              urldate={2023-06-15},
-            }</p>
-          <a>https://colah.github.io/posts/2015-08-Understanding-LSTMs/</a>
-      </div>
-      <div id="jozefowicz2015empirical">
-          <p>@inproceedings{jozefowicz2015empirical,
-              title={An empirical exploration of recurrent network architectures},
-              author={Jozefowicz, Rafal and Zaremba, Wojciech and Sutskever, Ilya},
-              booktitle={International conference on machine learning},
-              pages={2342--2350},
-              year={2015},
-              organization={PMLR}
-            }</p>
-          <a>https://proceedings.mlr.press/v37/jozefowicz15.pdf</a>
-      </div>
-      <div id="wei2022lstm">
-          <p>@article{wei2022lstm,
-              title={LSTM-Autoencoder based anomaly detection for indoor air quality time series data}, 
-              author={Wei, Yuanyuan and Jang-Jaccard, Julian and Xu, Wen and Sabrina, Fariza and Camtepe, Seyit and Boulic, Mikael},
-              journal={arXiv preprint arXiv:2204.06701},
-              year={2022},
-            }</p>
-          <a>https://arxiv.org/abs/2204.06701</a>
-      </div>
-      <div id="li2020swisslog">
-          <p>@inproceedings{li2020swisslog,
-              title={Swisslog: Robust and unified deep learning based log anomaly detection for diverse faults},
-              author={Li, Xiaoyun and Chen, Pengfei and Jing, Linxiao and He, Zilong and Yu, Guangba},
-              booktitle={2020 IEEE 31st International Symposium on Software Reliability Engineering (ISSRE)},
-              pages={92--103},
-              year={2020},
-              organization={IEEE}
-            }</p>
-          <a>https://yuxiaoba.github.io/publication/swisslog20/swisslog20.pdf</a>
-      </div>
-  </div>
-  <footer>
-    <div class="footer">
-      <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
-        <div class="emphasise">GitHub<span class="brackets">/MK2112</span></div>
-      </a>
-      <a class="highlight" target="_blank" title="HuggingFace" href="https://huggingface.co/Marcus2112">
-        <div class="emphasise">HuggingFace<span class="brackets">/Marcus2112</span></div>
-      </a>
-      <a class="highlight" target="_blank" title="X/Twitter" href="https://x.com/marcus_or_so">
-        <div class="emphasise">X.com<span class="brackets">/marcus_or_so</span></div>
-      </a>
-      <div class="emphasise">mkoppelmann<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>ch</div>
+        <div id="schlag2021linear">
+            <p>@inproceedings{schlag2021linear,
+                title={Linear transformers are secretly fast weight programmers},
+                author={Schlag, Imanol and Irie, Kazuki and Schmidhuber, Jürgen},
+                booktitle={International Conference on Machine Learning},
+                pages={9355--9366},
+                year={2021},
+                organization={PMLR}
+              }</p>
+            <a>https://arxiv.org/abs/2102.11174</a>
+        </div>
+        <div id="hochreiter1997long">
+            <p>@article{hochreiter1997long,
+                title={Long short-term memory},
+                author={Hochreiter, Sepp and Schmidhuber, Jürgen},
+                journal={Neural computation},
+                volume={9},
+                number={8},
+                pages={1735--1780},
+                year={1997},
+                publisher={MIT press}
+              }</p>
+            <a>https://blog.xpgreat.com/file/lstm.pdf</a>
+        </div>
+        <div id="hochreiter1991untersuchungen">
+            <p>@article{hochreiter1991untersuchungen,
+                title={Untersuchungen zu dynamischen neuronalen Netzen},
+                author={Hochreiter, Sepp},
+                journal={Diploma, Technische Universit{\"a}t M{\"u}nchen},
+                volume={91},
+                number={1},
+                pages={31},
+                year={1991},
+              }</p>
+            <a>https://www.bioinf.jku.at/publications/older/3804.pdf</a>
+        </div>
+        <div id="bengio1994learning">
+            <p>@article{bengio1994learning,
+                title={Learning long-term dependencies with gradient descent is difficult},
+                author={Bengio, Yoshua and Simard, Patrice and Frasconi, Paolo},
+                journal={IEEE transactions on neural networks},
+                volume={5},
+                number={2},
+                pages={157--166},
+                year={1994},
+                publisher={IEEE}
+              }</p>
+            <a>http://www.comp.hkbu.edu.hk/~markus/teaching/comp7650/tnn-94-gradient.pdf</a>
+        </div>
+        <div id="colah2015Understanding">
+            <p>@online{colah2015Understanding,
+                title={Understanding LSTM Networks},
+                year={2015},
+                author={Olah, Christopher},
+                urldate={2023-06-15},
+              }</p>
+            <a>https://colah.github.io/posts/2015-08-Understanding-LSTMs/</a>
+        </div>
+        <div id="jozefowicz2015empirical">
+            <p>@inproceedings{jozefowicz2015empirical,
+                title={An empirical exploration of recurrent network architectures},
+                author={Jozefowicz, Rafal and Zaremba, Wojciech and Sutskever, Ilya},
+                booktitle={International conference on machine learning},
+                pages={2342--2350},
+                year={2015},
+                organization={PMLR}
+              }</p>
+            <a>https://proceedings.mlr.press/v37/jozefowicz15.pdf</a>
+        </div>
+        <div id="wei2022lstm">
+            <p>@article{wei2022lstm,
+                title={LSTM-Autoencoder based anomaly detection for indoor air quality time series data}, 
+                author={Wei, Yuanyuan and Jang-Jaccard, Julian and Xu, Wen and Sabrina, Fariza and Camtepe, Seyit and Boulic, Mikael},
+                journal={arXiv preprint arXiv:2204.06701},
+                year={2022},
+              }</p>
+            <a>https://arxiv.org/abs/2204.06701</a>
+        </div>
+        <div id="li2020swisslog">
+            <p>@inproceedings{li2020swisslog,
+                title={Swisslog: Robust and unified deep learning based log anomaly detection for diverse faults},
+                author={Li, Xiaoyun and Chen, Pengfei and Jing, Linxiao and He, Zilong and Yu, Guangba},
+                booktitle={2020 IEEE 31st International Symposium on Software Reliability Engineering (ISSRE)},
+                pages={92--103},
+                year={2020},
+                organization={IEEE}
+              }</p>
+            <a>https://yuxiaoba.github.io/publication/swisslog20/swisslog20.pdf</a>
+        </div>
     </div>
-</footer>
   </body>
 </html>
