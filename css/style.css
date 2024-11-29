@@ -125,6 +125,16 @@ nav {
     font-size: 1.1rem;
 }
 
+pre {
+    margin-top: -1rem;
+}
+
+code:not(pre code) {
+    background-color: #ccc;
+    padding: 1px 3px;
+    border-radius: 3px;
+}
+
 .static-anchor {
     color: inherit;
     text-decoration: none;
