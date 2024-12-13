@@ -53,23 +53,17 @@
           <p class="thin project-p">November 2024 - Reading Time: 6 Minutes</p>
           <div class="blog-entry">
             <p class="blog-p">
-              Modern computing can often present calculated constraints. The ASUS X205TA, a machine architecturally capable 
-              of 64-bit computing, is restricted to 32-bit operation by its EFI. This is a story of circumvention—understanding
-              system boundaries and methodically dismantling them.
-            </p>
-            <h3>Technical Anatomy</h3>
-            <p class="blog-p">
               It seems that a restrictive systems design approach is gaining more traction in the end-user compute market, intentionally
               locking users into a preset operating system configuration. This enables manufacturers to exercise more control over the system, 
               which on the one hand can increase security, but on the other hand may also allow for software-induced
-              planned obsolescence. For instance, the Windows 11 requirements for TPM 2.0 and Secure Boot effectively exclude older
+              planned obsolescence. For instance, the Windows 11 requirements for TPM 2.0 and Secure Boot effectively excluded older
               hardware from running the latest Windows version. Support for Windows 10 is scheduled to seize by 2025. However, some cases are more
               subtle, requiring a closer look.<br />
               <br />
               The ASUS X205TA exemplifies such a case. While it features 64-bit-capable hardware, its chipset defaults to 32-bit EFI firmware.
               The system ships with safe-boot-protected 32-bit Windows 8.1 pre-installed—a design choice that imposes artificial software
-              restrictions, limiting the system's potential despite its 64-bit architecture.<br />
-              One key restriction from this choice is the inability to run modern operating systems, which are increasingly exclusive for 64-bit environments.
+              restrictions, limiting the system's potential despite its 64-bit hardware architecture.<br />
+              One key restriction from this choice is the inability to run modern operating systems, which are increasingly exclusive to 64-bit environments.
               This trend is intriguing and motivates my goal: Find a way to install Ubuntu by circumventing the imposed 32-bit
               constraints to provide a fully functional 64-bit Linux environment.
             </p>
@@ -86,9 +80,8 @@
               $\rightarrow$ Support for larger storage devices. <br />
               <br />
               The ASUS X205TA comes with 32-bit EFI. It uses 32-bit addressing, limiting compatibility with 64-bit bootloaders.
-              Systems with 64-bit CPUs but 32-bit EFI firmware—like the ASUS X205TA—cannot natively boot 64-bit operating systems
-              because most 64-bit Linux distributions and bootloaders assume a 64-bit EFI environment. This requires workarounds to
-              bridge the compatibility gap.
+              Systems with 64-bit CPUs but 32-bit EFI firmware — like the ASUS X205TA — cannot natively boot 64-bit operating systems, 
+              as they expect a compatible 64-bit EFI or BIOS environment. In other words, we need a workaround.
             </p>
             <h4>What is GRUB?</h4>
             <p class="blog-p">
@@ -130,12 +123,11 @@
             <p class="blog-p">
               From here on out, embrace complexity:<br />
               <br />
-              $\textbf{6)}$ Boot the X205TA while hitting <code>F2</code> repeatedly to show the EFI menu. Within EFI, set the Safe Boot
-              option to <code>disabled</code>. Save this change without exiting and select the USB drive as your Boot override option.
+              $\textbf{6)}$ Boot the X205TA while hitting <code>F2</code> repeatedly to show the EFI menu. Within EFI, <code>disable</code> the Safe Boot option.
+              Save this change without exiting and select the USB drive as your Boot override option.
               The Ubuntu installer should start up.<br />
               <br />
-              $\textbf{7)}$ When prompted, do not choose a direct installation, but go into the live system. From within there, start and
-              run the full installation process.<br />
+              $\textbf{7)}$ When prompted, do not go for a direct installation, but start the live system. From within there, run the full installation process.<br />
               <br />
               $\textbf{8)}$ Anticipate GRUB installation errors popping up. They will occur right at the end of the installation, because
               the GRUB packages contained within the installation medium address only 64-bit-EFI, 64-bit-BIOS or 32-bit-BIOS systems.
@@ -204,7 +196,7 @@ configfile /boot/grub/grub.cfg
 <pre><code>sudo apt update
 
 sudo apt-get purge --allow-remove-essential shim-signed grub-efi-amd64-signed
-sudo apt-get install -allow-remove-essential grub-efi-ia32 grub-efi-ia32-bin
+sudo apt-get install --allow-remove-essential grub-efi-ia32 grub-efi-ia32-bin
 
 sudo mount /dev/mmcblk2p2 /mnt
 sudo mount /dev/mmcblk2p1 /mnt/boot/efi
