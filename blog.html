@@ -28,6 +28,7 @@
       onload="renderMathInElement(document.body);"
     ></script>
     <script defer src="./js/main.js" onload="setupKatex();"></script>
+    <script defer src="./js/search.js"></script>
     <title>Blog</title>
   </head>
   <body>
@@ -43,10 +44,16 @@
       </nav>
     </header>
     <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
       <main id="main-projects">
         <div class="project">
           <a class="static-anchor" href="./blog/subsets-from-scratch.html">
-          <h2>Finding data subsets, from scratch</h2>
+          <h2 id="subsets-from-scratch">Finding data subsets, from scratch</h2>
           <p class="thin project-p">February 2025 • Reading Time: 7 Minutes</p>
           <div class="blog-description">
             <div>
@@ -63,7 +70,7 @@
         </div>
         <div class="project">
           <a class="static-anchor" href="./blog/64-bit-linux-on-32-bit-efi.html">
-          <h2>Installing 64-Bit Linux on a 32-Bit EFI Device</h2>
+          <h2 id="64-bit-linux-on-32-bit-efi">Installing 64-Bit Linux on a 32-Bit EFI Device</h2>
           <p class="thin project-p">November 2024 • Reading Time: 6 Minutes</p>
           <div class="blog-description">
             <div>
@@ -78,7 +85,7 @@
         </div>
         <div class="project">
           <a class="static-anchor" href="./blog/dreamer-v2.html">
-          <h2>DreamerV2, explained</h2>
+          <h2 id="dreamer-v2">DreamerV2, explained</h2>
           <p class="thin project-p">April 2024 • Reading Time: 8 Minutes</p>
           <div class="blog-description">
             <div>
@@ -93,7 +100,7 @@
         </div>
         <div class="project">
           <a class="static-anchor" href="./blog/lstm.html">
-          <h2>Long Short-Term Memory</h2>
+          <h2 id="lstm">Long Short-Term Memory</h2>
           <p class="thin project-p">February 2024 • Reading Time: 5 Minutes</p>
           <div class="blog-description">
             <div>
