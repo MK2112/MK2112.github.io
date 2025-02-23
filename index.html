@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="content-security-policy" content="" />
     <link href="./css/style.css" rel="stylesheet" />
+    <script defer src="./js/search.js"></script>
     <title>Marcus Koppelmann</title>
   </head>
   <body>
@@ -23,6 +24,12 @@
       </nav>
     </header>
     <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
       <main>
         <div>
           <div class="summary spacer">

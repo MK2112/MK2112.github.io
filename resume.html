@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="content-security-policy" content="" />
     <link href="./css/style.css" rel="stylesheet" as="style" onload="this.rel='stylesheet'" />
+    <script defer src="./js/search.js"></script>
     <title>Resume</title>
   </head>
   <body>
@@ -23,6 +24,12 @@
       </nav>
     </header>
     <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
       <main>
         <div class="summary spacer">
           <h2>Education</h2>
