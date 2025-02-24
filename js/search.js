@@ -118,11 +118,15 @@ function displayResults(results) {
     groupedResults[type].forEach(result => {
       const resultElement = document.createElement('div');
       resultElement.className = 'search-result';
-      resultElement.innerHTML = `
-        <p><a class="search-arrow">↪</a> 
-        <a class="highlight" href="${type.toLowerCase()}/${result.id}.html">${result.title}</a></p>
-      `;
-      section.appendChild(resultElement);
+      if (type === 'Projects') {
+        resultElement.innerHTML = `<p><a class="search-arrow">↪</a>
+                                   <a class="highlight" target="_blank" href="https://github.com/mk2112/${result.id}">${result.title}</a></p>`;
+        section.appendChild(resultElement);
+      } else {
+        resultElement.innerHTML = `<p><a class="search-arrow">↪</a>
+                                 <a class="highlight" href="${type.toLowerCase()}/${result.id}.html">${result.title}</a></p>`;
+        section.appendChild(resultElement);
+      }
     });
 
     resultsContainer.appendChild(section);
