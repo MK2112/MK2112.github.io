@@ -12,7 +12,8 @@
       '--highlight-free': 'rgba(100, 100, 100, 0.1)',
       '--highlight-hover': 'rgba(100, 100, 100, 0.3)',
       '--paper-grey': '#ecede8',
-      '--paper-grey-focused': '#f0f1ee'
+      '--paper-grey-focused': '#f0f1ee',
+      '--code-bg': '#ccc'
     },
     [THEMES.DARK]: {
       '--mist-grey': 'rgba(180, 180, 180, 1)',
@@ -20,7 +21,8 @@
       '--highlight-free': 'rgba(200, 200, 200, 0.15)',
       '--highlight-hover': 'rgba(200, 200, 200, 0.35)',
       '--paper-grey': '#1e1e1e',
-      '--paper-grey-focused': '#252525'
+      '--paper-grey-focused': '#252525',
+      '--code-bg': '#ccc'
     }
   };
   
