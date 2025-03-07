@@ -81,7 +81,7 @@
               First, we need to reproduce the pipeline that builds MiniPile.<br />
               MiniPile draws meaning from text data by means of embeddings. These embeddings serve as proxies for each text's syntactic
               and semantic content. Each text is embedded into a $768$-dimensional numeric vector. Jean Kaddour's work used the embedding model
-              E5-Large for this. We deviate and use E5-Base-4k with a context size of $1024$ (instead of $512$) for more speed.<br/>
+              E5-Large for this. We deviate and use E5-Base-4k with a context size of $1024$ instead of $512$ for more speed.<br/>
               The core idea behind Kaddour's MiniPile is the utilization of the proxy embeddings by means of their geometric expressiveness.
               In other words, it is the geometric similarities between the vectors that we interpret as indicators for each represented text's
               properties. And, sticking with that notion, a text's uniqueness can be measured by the distance of its embedding to other embeddings
@@ -145,18 +145,15 @@
               The original MiniPile, aswell as the size-density-sampled and the pico-size-density-sampled MiniPile
               were trained on with a Pythia 160M and a Pythia 1.4B model.
             </p>
-            
-            <!-- TODO: Hier die Benchmark-Tabellen einfügen -->
             <div class="blog-img">
               <img src="../img/minicorpus_160M.png" alt="Pythia 160M Benchmark Results" style="width: 100%" /><br />
               <br />
-              <img src="../img/minicorpus_160M_Ablations.png" alt="Pythia 160M Ablation Benchmark Results" style="width: 100%" /><br />
+              <img src="../img/minicorpus_160M_Ablations.png" alt="Pythia 160M ablation benchmark results" style="width: 100%" /><br />
               <br />
-              <img src="../img/minicorpus_1.4B.png" alt="Pythia 1.4B Benchmark Results" style="width: 100%" /><br />
+              <img src="../img/minicorpus_1.4B.png" alt="Pythia 1.4B benchmark results" style="width: 100%" /><br />
               <br />
               <br />
             </div>
-            
             <h3>Surprising Discoveries</h3>
             <p class="blog-p">
               Unintuitive findings emerged from training across the two Pythia model sizes, revealing unexpectedly
@@ -175,6 +172,11 @@
               MiniPile beat all other distillates on a majority of the benchmarks. Indeed, the small dataset 
               beat not only the original MiniPile, but also the standard-sized density-proportionate MiniPile.
             </p>
+            <div class="blog-img">
+              <img src="../img/minicorpus_radar_charts.png" alt="Pythia 160M and 1.4B benchmark results across different datasets" style="width: 100%" /><br />
+              <br />
+              <br />
+            </div>
             <h4>Density-Performance Paradox</h4>
             <p class="blog-p">
               The relationship between cluster density and performance revealed interesting patterns.
