@@ -1,5 +1,5 @@
 (function() {
-  // Specifically for footer.html, because I *embedded* it in all pages.
+  // Specifically for footer.html, because I *embedded* it in all pages
   // Ensures footer's theme matches parent page's theme.
   const THEMES = {LIGHT: 'light', DARK: 'dark'};
   const STORAGE_KEY = 'site-theme-preference';

@@ -1,11 +1,12 @@
 (function() {
-  // Core Theme Management Component
-  // Handles theme pref storage, toggling and persistive application
-  // Initial page theme application is done through no-flash.js
-  // This file concerns the toggline and storage of theme preference
-  // Theme preference is stored in local storage
+  /* 
+  * Core Theme Management Component.
+  * Handles theme pref storage, toggling and persistive application,
+  * initial page theme application is done through no-flash.js.
+  * This script concerns the toggling and local storage of theme preference
+  */
 
-  // Page will default to using the browser/OS preferred theme
+  // Default to using browser-imposed theme
   const THEMES = {LIGHT: 'light', DARK: 'dark'};
   const STORAGE_KEY = 'site-theme-preference';
   
@@ -31,25 +32,24 @@
     }
   };
 
-  // 'Injecting' the theme toggle button
-  // Makes new pages easy to hook into theme system
+  // Injecting theme toggle button
+  // Makes new pages way easier to hook into the theme system
   let themeToggleBtn;
   let footerEmbed;
   
   function initThemeSystem() {
     createThemeToggleButton();
     setupEventListeners();
-    // Applying of theme is actually handled by no-flash.js
-    // Caring mainly about the toggle button here
+    // Theme application is mainly handled by no-flash.js
+    // Caring mainly about the toggle function here
     updateButtonIcon();
-    // Grab the footer embed element
     footerEmbed = document.querySelector('embed[src="footer.html"]');
   }
   
   function createThemeToggleButton() {
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'theme-toggle-container';
-    // Button 'flies' to be within reach even in the search overlay
+    // Button hovers to also be within reach in search overlay
     buttonContainer.style.cssText = `
       position: fixed;
       bottom: 20px;
@@ -57,9 +57,11 @@
       z-index: 999;
     `;
     
+    // Theme toggle button definition
     themeToggleBtn = document.createElement('button');
     themeToggleBtn.className = 'theme-toggle-btn';
     themeToggleBtn.setAttribute('aria-label', 'Toggle dark/light mode');
+    // Style it in (default) light mode
     themeToggleBtn.style.cssText = `
       width: 40px;
       height: 40px;
@@ -82,18 +84,21 @@
   
   function setupEventListeners() {
     themeToggleBtn.addEventListener('click', () => {
+      // Default to system preference if no theme stored (I like this behavior)
       const currentTheme = getStoredTheme() || getSystemPreference();
+      // Determine theme to switch to from current theme
       const newTheme = currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
       
+      // This is the switch action
       applyTheme(newTheme);
       storeTheme(newTheme);
       updateButtonIcon();
       
-      // Footer needs extra invitation, reloads to apply theme
+      // Footer needs plenty of extra invitation, reload it
       reloadFooter();
     });
     
-    // Looking out for system preference changes, apply only if no user preference
+    // Looking out for system-side theme preference changes, apply only if no user preference
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
       if (!getStoredTheme()) {
         const newTheme = e.matches ? THEMES.DARK : THEMES.LIGHT;
@@ -120,13 +125,13 @@
     document.documentElement.setAttribute('data-theme', theme);
     
     const variables = THEME_VARIABLES[theme];
-    // Prime CSS variables for theme
+    // "Prime" CSS variables for theme
     for (const [key, value] of Object.entries(variables)) {
       document.documentElement.style.setProperty(key, value);
     }
     
     if (theme === THEMES.DARK) {
-      // Dark mode styling gets applied
+      // Applying dark mode styling
       document.documentElement.style.setProperty('color-scheme', 'dark');
       
       // Clean any existing theme style elements
@@ -193,7 +198,7 @@
     
     // Update button hover effect
     themeToggleBtn.onmouseover = () => {
-      themeToggleBtn.style.transform = 'scale(1.1)';
+      themeToggleBtn.style.transform = 'scale(1.025)';
     };
     
     themeToggleBtn.onmouseout = () => {
@@ -210,7 +215,7 @@
     }
   }
   
-  // Initialize the theme system
+  // Initialize theme system
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initThemeSystem);
   } else {

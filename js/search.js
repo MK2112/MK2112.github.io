@@ -1,5 +1,5 @@
 document.addEventListener('keydown', function(event) {
-  // Command+K || Ctrl+K
+  // CTRL + K || ⌘ + K
   if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
     event.preventDefault();
     toggleSearchOverlay();
@@ -9,16 +9,15 @@ document.addEventListener('keydown', function(event) {
 document.addEventListener('click', function(event) {
   const searchOverlay = document.getElementById('search-overlay');
   const searchContainer = document.querySelector('.search-container');
-  
-  if (!searchOverlay.classList.contains('hidden') && 
-      !searchContainer.contains(event.target)) {
+  // Close search overlay if user clicked outside of it
+  if (!searchOverlay.classList.contains('hidden') &&  !searchContainer.contains(event.target)) {
     closeSearchOverlay();
   }
 });
 
 function toggleSearchOverlay() {
   const searchOverlay = document.getElementById('search-overlay');
-  
+  // Open search overlay if it's hidden, close it if it's visible
   if (searchOverlay.classList.contains('hidden')) {
     openSearchOverlay();
   } else {
@@ -43,6 +42,7 @@ function closeSearchOverlay() {
   document.getElementById('search-results').innerHTML = '';
 }
 
+// Search functionality
 const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', function() {
   const query = this.value.toLowerCase();
