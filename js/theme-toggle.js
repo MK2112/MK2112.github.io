@@ -19,7 +19,8 @@
       '--highlight-hover': 'rgba(100, 100, 100, 0.3)',
       '--paper-grey': '#ecede8',
       '--paper-grey-focused': '#f0f1ee',
-      '--code-bg': '#ccc'
+      '--code-bg': '#ccc',
+      '--text-color': '#000'  // Add text color variable
     },
     [THEMES.DARK]: {
       '--mist-grey': 'rgba(180, 180, 180, 1)',
@@ -28,9 +29,42 @@
       '--highlight-hover': 'rgba(200, 200, 200, 0.35)',
       '--paper-grey': '#1e1e1e',
       '--paper-grey-focused': '#252525',
-      '--code-bg': '#444'
+      '--code-bg': '#444',
+      '--text-color': '#e6e6e6'  // Add text color variable
     }
   };
+
+  // Add a style tag early in document loading
+  function injectBaseThemeStyles() {
+    // Check if styles already exist
+    if (document.getElementById('base-theme-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'base-theme-styles';
+    style.textContent = `
+      body { color: var(--text-color); }
+      h1, h2, h3, p, a, .static-anchor, .work, .ed { color: var(--text-color); }
+      
+      /* Ensure list items inherit the text color properly and transition smoothly */
+      ul, ol, li, ul li, ol li { 
+        color: var(--text-color); 
+        transition: color 0.3s ease;
+      }
+      
+      /* Force list bullet markers to use mist-grey with proper transition */
+      ul li::before { 
+        color: var(--mist-grey); 
+        transition: color 0.3s ease;
+      }
+      
+      /* Preserve mist-grey color for elements that should use it */
+      h4, .dynamic-anchor, aside, .ed-details, 
+      .work-details aside, .project-p, .blog-img p { 
+        color: var(--mist-grey); 
+      }
+    `;
+    document.head.appendChild(style);
+  }
 
   // Injecting theme toggle button
   // Makes new pages way easier to hook into the theme system
@@ -38,6 +72,7 @@
   let footerEmbed;
   
   function initThemeSystem() {
+    injectBaseThemeStyles(); // Add base styles immediately
     createThemeToggleButton();
     setupEventListeners();
     // Theme application is mainly handled by no-flash.js
@@ -83,28 +118,53 @@
   }
   
   function setupEventListeners() {
-    themeToggleBtn.addEventListener('click', () => {
-      // Default to system preference if no theme stored (I like this behavior)
+    themeToggleBtn.addEventListener('click', async () => {
+      // Default to system preference if no theme stored
       const currentTheme = getStoredTheme() || getSystemPreference();
       // Determine theme to switch to from current theme
       const newTheme = currentTheme === THEMES.DARK ? THEMES.LIGHT : THEMES.DARK;
       
-      // This is the switch action
-      applyTheme(newTheme);
+      // Send message to footer BEFORE applying theme to main page
+      if (footerEmbed && footerEmbed.contentWindow) {
+        footerEmbed.contentWindow.postMessage({
+          type: 'theme-change',
+          theme: newTheme,
+          themeVariables: THEME_VARIABLES[newTheme]
+        }, '*');
+      }
+      
+      // Now apply theme to main page
+      await applyTheme(newTheme);
       storeTheme(newTheme);
       updateButtonIcon();
-      
-      // Footer needs plenty of extra invitation, reload it
-      reloadFooter();
     });
-    
-    // Looking out for system-side theme preference changes, apply only if no user preference
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', async (e) => {
       if (!getStoredTheme()) {
         const newTheme = e.matches ? THEMES.DARK : THEMES.LIGHT;
-        applyTheme(newTheme);
+        
+        // Send message to footer BEFORE applying theme to main page
+        if (footerEmbed && footerEmbed.contentWindow) {
+          footerEmbed.contentWindow.postMessage({
+            type: 'theme-change',
+            theme: newTheme,
+            themeVariables: THEME_VARIABLES[newTheme]
+          }, '*');
+        }
+        
+        await applyTheme(newTheme);
         updateButtonIcon();
-        reloadFooter();
+      }
+    });
+
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'request-theme') {
+        const currentTheme = getStoredTheme() || getSystemPreference();
+        event.source.postMessage({
+          type: 'theme-change',
+          theme: currentTheme,
+          themeVariables: THEME_VARIABLES[currentTheme]
+        }, '*');
       }
     });
   }
@@ -122,68 +182,89 @@
   }
   
   function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    
-    const variables = THEME_VARIABLES[theme];
-    // "Prime" CSS variables for theme
-    for (const [key, value] of Object.entries(variables)) {
-      document.documentElement.style.setProperty(key, value);
-    }
-    
-    if (theme === THEMES.DARK) {
-      // Applying dark mode styling
-      document.documentElement.style.setProperty('color-scheme', 'dark');
+    // Create a promise for theme application
+    return new Promise(resolve => {
+      document.documentElement.setAttribute('data-theme', theme);
       
-      // Clean any existing theme style elements
-      const existingStyle = document.getElementById('theme-toggle-style');
-      if (existingStyle) {
-        existingStyle.remove();
+      const variables = THEME_VARIABLES[theme];
+      // "Prime" CSS variables for theme
+      for (const [key, value] of Object.entries(variables)) {
+        document.documentElement.style.setProperty(key, value);
       }
       
-      const style = document.createElement('style');
-      style.id = 'theme-toggle-style';
-      // Set dark mode styles
-      style.textContent = `
-        body { color: #e6e6e6; }
-        h1, h2, h3, p, a, .static-anchor, .work, .ed { color: #e6e6e6; }
-        .highlight, .citation { color: #e6e6e6; }
-        .dynamic-anchor:hover { color: #e6e6e6; }
-        code:not(pre code) { background-color: #444; }
+      if (theme === THEMES.DARK) {
+        // Applying dark mode styling
+        document.documentElement.style.setProperty('color-scheme', 'dark');
         
-        /* Preserve mist-grey color for elements that should use it */
-        h4, .dynamic-anchor, aside, .ed-details, 
-        .work-details aside, .project-p, .blog-img p { 
-          color: var(--mist-grey); 
-        }
-      `;
-      document.head.appendChild(style);
-    } else {
-      // Light mode styling gets applied
-      document.documentElement.style.setProperty('color-scheme', 'light');
-
-      // Clean any existing theme style elements
-      const existingStyle = document.getElementById('theme-toggle-style');
-      if (existingStyle) {
-        existingStyle.remove();
+        // Set additional theme-specific styles
+        updateThemeStyles('.highlight, .citation', 'color', '#e6e6e6');
+        updateThemeStyles('code:not(pre code)', 'background-color', '#444');
+        
+        // Explicitly handle list items for dark theme
+        updateThemeStyles('ul li, ol li, .resume-entry ul li', 'color', '#e6e6e6');
+      } else {
+        // Light mode styling gets applied
+        document.documentElement.style.setProperty('color-scheme', 'light');
+        
+        // Set additional theme-specific styles
+        updateThemeStyles('.highlight, .citation', 'color', 'inherit');
+        updateThemeStyles('code:not(pre code)', 'background-color', '#ccc');
+        
+        // Explicitly handle list items for light theme
+        updateThemeStyles('ul li, ol li, .resume-entry ul li', 'color', '#000');
       }
       
-      const style = document.createElement('style');
-      style.id = 'theme-toggle-style';
-      // Set light mode styles
-      style.textContent = `
-        body { color: #000; }
-        h1, h2, h3, p, a, .static-anchor, .work, .ed { color: #000; }
-        .highlight, .citation { color: inherit; }
-        code:not(pre code) { background-color: #ccc; }
-        
-        /* Preserve mist-grey color for elements that should use it */
-        h4, .dynamic-anchor, aside, .ed-details, 
-        .work-details aside, .project-p, .blog-img p { 
-          color: var(--mist-grey); 
-        }
-      `;
-      document.head.appendChild(style);
+      // Force browser to repaint list items
+      forceRepaintLists();
+      
+      // Use requestAnimationFrame to ensure everything is rendered before resolving
+      requestAnimationFrame(() => {
+        resolve();
+      });
+    });
+  }
+  
+  // Helper function to update styles without recreating the style element
+  function updateThemeStyles(selector, property, value) {
+    // Get or create the style element for dynamic styles
+    let styleEl = document.getElementById('dynamic-theme-styles');
+    if (!styleEl) {
+      styleEl = document.createElement('style');
+      styleEl.id = 'dynamic-theme-styles';
+      document.head.appendChild(styleEl);
     }
+    
+    // Use computed styles if needed
+    let sheet = styleEl.sheet;
+    
+    // Try to find existing rule
+    let existingRuleIndex = -1;
+    for (let i = 0; i < sheet.cssRules.length; i++) {
+      if (sheet.cssRules[i].selectorText === selector) {
+        existingRuleIndex = i;
+        break;
+      }
+    }
+    
+    // Create or update the style rule
+    const rule = `${selector} { ${property}: ${value}; }`;
+    
+    if (existingRuleIndex >= 0) {
+      sheet.deleteRule(existingRuleIndex);
+    }
+    sheet.insertRule(rule, sheet.cssRules.length);
+  }
+  
+  // Force browser to repaint list items
+  function forceRepaintLists() {
+    const lists = document.querySelectorAll('ul, ol');
+    lists.forEach(list => {
+      // This small change forces a repaint
+      list.style.display = 'none';
+      // We need to get the computed style to ensure the browser processes the change
+      window.getComputedStyle(list).display;
+      list.style.display = '';
+    });
   }
   
   function updateButtonIcon() {
@@ -206,19 +287,13 @@
     };
   }
   
-  function reloadFooter() {
-    if (footerEmbed) {
-      // Reload the footer to apply the new theme, given a footer embed exists
-      const timestamp = new Date().getTime();
-      const currentSrc = footerEmbed.getAttribute('src').split('?')[0];
-      footerEmbed.setAttribute('src', `${currentSrc}?t=${timestamp}`);
-    }
-  }
-  
-  // Initialize theme system
+  // Initialize theme system when document is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initThemeSystem);
   } else {
     initThemeSystem();
   }
+  
+  // Also inject base styles immediately to ensure they're present even before DOM is fully loaded
+  injectBaseThemeStyles();
 })();

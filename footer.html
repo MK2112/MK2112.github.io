@@ -6,6 +6,39 @@
     <meta name="robots" content="noindex, nofollow" />
     <link rel="icon" type="image/svg+xml" sizes="any" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      // Add this at the end of your footer.html
+      (function() {
+        // Listen for theme change messages from parent window
+        window.addEventListener('message', function(event) {
+          if (event.data && event.data.type === 'theme-change') {
+            // Use requestAnimationFrame to ensure changes occur on next paint frame
+            requestAnimationFrame(() => {
+              // Apply the received theme
+              document.documentElement.setAttribute('data-theme', event.data.theme);
+              
+              // Apply theme variables
+              const variables = event.data.themeVariables;
+              for (const [key, value] of Object.entries(variables)) {
+                document.documentElement.style.setProperty(key, value);
+              }
+              
+              // Apply additional theme-specific styles as needed
+              if (event.data.theme === 'dark') {
+                document.documentElement.style.setProperty('color-scheme', 'dark');
+              } else {
+                document.documentElement.style.setProperty('color-scheme', 'light');
+              }
+            });
+          }
+        });
+        
+        // Request current theme from parent on load
+        if (window.parent !== window) {
+          window.parent.postMessage({ type: 'request-theme' }, '*');
+        }
+      })();
+    </script>
     <script src="./js/no-flash.js"></script>
     <meta http-equiv="content-security-policy" content="" />
     <link href="./css/style.css" rel="stylesheet" as="style" onload="this.rel='stylesheet'" />

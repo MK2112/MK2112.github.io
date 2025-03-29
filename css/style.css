@@ -388,6 +388,7 @@ nav b {
     list-style: none;
     font-size: 1rem;
     padding-left: 1.5rem;
+    transition: color 0.3s ease;
 }
 
 .resume-entry ul li::before {
@@ -396,6 +397,7 @@ nav b {
     display: inline-block;
     width: 1em;
     margin-left: -1em;
+    transition: color 0.3s ease;
 }
 
 .resume-entry ul li {
