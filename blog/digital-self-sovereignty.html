@@ -189,17 +189,28 @@
             </p>
             <h4>Mobile Platform Hardening (Android)</h4>
             <p class="blog-p">
-                Android's architecture permits users to actually apply privacy enhancements themselves. One should carefully configure the Android Privacy Settings.
-                Removing the <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.safetycore&hl=en-US">Android System SafetyCore app</a>
+                Android's architecture permits users to actually apply privacy enhancements themselves. I'll split this into three parts:
+                First, we'll look at how to make the best out of your current Android. Then, we'll takt this up a notch and see what advanced users
+                may want to do to further tweak their existing Android systems. Finally, we'll look at the best hollistic solution to Android privacy, hardware- and software-wise.<br />
+                For immediate application, one should carefully configure the Android privacy settings. Removing the <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.safetycore&hl=en-US">Android System SafetyCore app</a>
                 and replacing the default GBoard keyboard with privacy-respecting alternatives like the
                 <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=org.futo.inputmethod.latin.playstore&hl=en-US">FUTO Keyboard</a>
-                reduces additional data collection.<br />
+                reduces additional data collection and tracking vectors. More generally, Android users should consider open-source app alternatives from sources like <a class="highlight" target="_blank" href="https://f-droid.org/">F-Droid</a>.
+                Need a QR code scanner? Go look on F-Droid first, you will most likely find a good alternative there that isn't data hungry by design.
+                For browsing, privacy-preserving options like the Firefox-based <a class="highlight" target="_blank" href="https://f-droid.org/en/packages/org.mozilla.fennec_fdroid/">Fennec</a>
+                or the Chromium-based <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=com.brave.browser&hl=en-US">Brave Browser</a> should be considered.<br />
                 <br />
                 Advanced users can implement <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api&hl=en-US">Shizuku</a>
-                and <a class="highlight" target="_blank" href="https://f-droid.org/de/packages/org.samo_lego.canta/">Canta</a> for deeper system modification,
+                and <a class="highlight" target="_blank" href="https://f-droid.org/en/packages/org.samo_lego.canta/">Canta</a> for deeper system modification,
                 enabling removal of proprietary system applications. This approach requires careful research to prevent system instability.<br />
-                For browsing on Android, privacy-preserving options like the Firefox-based <a class="highlight" target="_blank" href="https://f-droid.org/de/packages/org.mozilla.fennec_fdroid/">Fennec</a>
-                should be considered.
+                <br />
+                Note that if you have a choice, Google Pixel phones are uniquely suited for installing
+                <a class="highlight" target="_blank" href="https://grapheneos.org/">GrapheneOS</a>, a privacy-focused Android fork.
+                <a class="highlight" target="_blank" href="https://grapheneos.org/">GrapheneOS</a> achieves enhanced privacy by stripping
+                away Google service integrations while providing extensive control over individual apps, their permissions, network access,
+                and background activities overall. Additionally, a hardened memory management is intended to protect against potential app
+                vulnerabilities. GrapheneOS, while not that trivial to install, provides a significantly more secure experience than
+                stock Android or iOS.
             </p>
             <h4>Artificial Intelligence & Large Language Models</h4>
             <p class="blog-p">
