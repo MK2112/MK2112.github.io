@@ -35,7 +35,7 @@
     <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
     <script defer src="../js/main.js" onload="setupKatex();"></script>
     <script defer src="../js/theme-toggle.js"></script>
-    <title>DreamerV2, explained</title>
+    <title>DreamerV2 and DreamerV3, explained</title>
   </head>
   <body>
     <header>
@@ -52,15 +52,16 @@
     <div class="fade-in">
       <main id="main-projects">
         <div class="project">
-          <h2>DreamerV2, explained</h2>
-          <p class="thin project-p">April 2024 • Reading Time: 8 Minutes</p>
+          <h2>DreamerV2 and DreamerV3, explained</h2>
+          <p class="thin project-p">April 2024 • Reading Time: 10 Minutes</p>
           <div class="blog-entry">
             <p class="blog-p">
               Creating systems capable of engaging in interaction to robustly perceive, explore and attain incrementally complex 
               insights poses an ongoing challenge. The Dreamer algorithm family addresses this by employing latent imagination
               for Reinforcement Learning (RL), enabling the development of effective policies for various tasks in different
               environments. Dreamer underwent multiple iterations, with DreamerV2 standing out as a major improvement over its
-              predecessor and serving as the foundation for smaller changes in DreamerV3. Let's take a closer look at DreamerV2.
+              predecessor and serving as the foundation for additional changes in DreamerV3. Let's take a closer look at Dreamer by
+              laying out the key components of DreamerV2 and how they were further improved with DreamerV3.
             </p>
             <h3>The Reinforcement Learning Problem</h3>
             <p class="blog-p">
@@ -181,12 +182,87 @@
               learning to such an extend that DreamerV2 does not require simulation in order to refine a policy. The actor network then can later
               be used to provide a choice of action for the world model for further situational exploration and thus more focused data collection.
             </p>
+            <h3>Updates for DreamerV3</h3>
+            <p class="blog-p">
+              The aptly named successor to DreamerV2, DreamerV3, evolved to address further remaining challenges for generalized reinforcement learning.
+              Specifically, while DreamerV2 had made significant advances with its categorical representations and experience- and imagination-based learning,
+              DreamerV3 introduces additional improvements in robustness techniques, network architecture, optimization methods, and replay buffer management \cite{hafner2023master}.<br />
+              <br />
+              Unlike V2, DreamerV3 applies what is called a symmetric logarithmic (symlog) transformation to the raw observation vectors.
+              Symlog compresses large positive and negative values while behaving very similar to the identity function near zero.
+              This added measure prevents large inputs and thus extreme reconstruction gradients from destabilizing training.
+              Symlog particularly hardens Dreamer against outlier observations, i.e. unpredictable occurrences in real-world data.<br />
+              <br />
+              In the case that encountered environment dynamics turn out to be too easy/mild, having the KL divergence get very small, 
+              DreamerV2 could learn to produce a very deterministic or uninformative prior distribution that articulates little
+              about the actual diversity of possible states. In other words, the model would inadvertedly and accidentally train itself into an
+              overly simplistic world view. DreamerV3 implements what the authors call KL balancing and "Free Bits" to counteract this.<br />
+              For each time step, the respective dynamics loss ($L_{dyn}$) and the representation loss ($L_{rep}$) are truncated below a threshold of
+              $1 \text{nat}$ ($\approx 1.44 \text{bits}$). In other words, as long as the KL divergence between the prior and the posterior is
+              already very low (i.e., the dynamics are already well modeled/predictable), the contribution to of dynamics and representation loss to the
+              total loss is outright 'squashed' to zero. Moreover, this change not only reduces the loss jitter, but also allows the model to focus more explicitly on
+              prediction errors ($L_{pred}$). And this rebalancing of the loss terms to focus on what matters ($L_{pred}$) is what the authors refer to as
+              KL balancing through "Free Bits" (thresholding).<br />
+              <br />
+              We just saw that to maintain effective exploration and thus effective reinforcement learning, we have to avoid deterministic behavior, as
+              e.g. a deterministic actor would always choose the same action in a given state, which would in turn cut short any exploration of new
+              and potentially better action strategies and have KL divergence go to zero in an ill-fashioned way.<br />
+              We saw that DreamerV2 had used $32 \times 32$ categorical variables to represent the sensory input into the world model. DreamerV3 does
+              this too, but to help prevent the categorical distributions from becoming deterministic, DreamerV3 additionally implements a mixture of
+              $99\%$ of the predicted softmax output with $1\%$ of a uniform distribution. Yes, we assign an always same
+              probability to all categories with an 'intensity' of $1\%$ with regards to the predicted softmax output.
+              This is done to meaningfully yet subtly and non-distoringly assign some relevance to all categories, even if
+              the model is confident about a certain category to avoid falling into full on determinism. This is refered to as "$1\%$ Unimix".<br />
+              <br />
+              Let's take a look at the actor. Remember that the actor is trained to predict the next action based on the current state and the predicted next state.
+              Where DreamerV2 wasn't too clear about the normalization for the actor, i.e. the normalizing the prediction across the action space   
+              by the standard deviation of the predicted action distribution, DreamerV3 proposes a concrete and robust approach.
+              DreamerV3 normalizes actor returns based on the $5^{\text{th}}$ and $95^{\text{th}}$ percentiles of all returns observed until that point.
+              This bolsters the actor's choice of action against influence of outliers in the step-wise return distributions and thus helps enable more stable
+              exploration. This change is particularly beneficial for sparse reward environments where occasional high rewards, just by their sudden appearance, could
+              distort the learning process in this 'reward-encountering' step.<br />
+              <br />
+              Going back again, with DreamerV2, the reward predictor MLP directly served as output the current time step's predicted reward $r$.
+              Equally, the critic network was an ELU-activated MLP that saw its output directly getting interpreted as the value $v$ of the
+              current time step. This is the case with DreamerV3 still, but the way in which predictions are made and trained has changed through what is called
+              Symexp-Twohot Loss. The output layer and the associated loss function of the MLPs are adjusted accordingly. The output layer
+              generates logits for a probability distribution over exponentially distributed bins (respective value ranges from that distrubution).
+              Symexp-Twohot Loss takes this discretized probability distribution and compares it to the two-hot encoded target value.
+              The loss function forces the network to increase the probability in the bins that correspond to the actual value.<br />
+              <br />
+              Several changes concern structural aspects. For example, DreamerV3 exchanges activations of the actor and critic networks from ELU to Swish and
+              adds RMSNorm for normalization. While they found that layer norm wasn't providing improvements for DreamerV2, RMSNorm was found to be beneficial,
+              especially as the RSSM was updated to use the paper's own Block GRU architecture, which is still a GRU, but extended with block-diagonal recurrent
+              weights, meaning the recurrent weights are divided into blocks, in this case it is $8$ blocks specifically. Each block is connected to a different
+              part of the input.
+              <br />
+              Interestingly, DreamerV3 dropped the use of the Adam optimizer. This is interesting, as Adam in particular is highly regarded for its
+              versatility and performance in a wide range of tasks. However, the authors argue that especially the different scales of loss functions
+              and gradients that DreamerV3 may encounter in various environments can make training with Adam unstable. Their solution consists of using
+              Adaptive Gradient Clipping (AGC) and the LaProp optimizer instead. AGC is a gradient clipping technique that adapts the clipping threshold
+              based on the magnitude of the model weights. If a weight is large, the gradient is clipped less aggressively, and if the weight is small,
+              the gradient is clipped more aggressively. The aggression has its imposed ceiling, though. For DreamerV3, the clipping threshold is set as
+              a percentage of the L2-norm of the respective weight matrix ($30\%$ for DreamerV3). Notably, gradient clipping happens independently of the
+              scale of the loss function. If we were to tweak DreamerV3 for a different environment, making a change in loss function necessary, we would
+              not have to significantly worry about the gradients exploding, as they are clipped just as before.<br />
+              The LaProp optimizer, on the other hand, is a variant of the Adam optimizer that aims to improve the stability and performance of training.
+              It is used to generate the ultimately clipped gradients in the first place and it is used instead of Adam because the authors found that the
+              $\epsilon$ could be set way lower than with Adam. I won't go too deep into why that is, but a lower $\epsilon$ means that the optimizer can
+              afford to be more sensitive to small gradients, which can be beneficial for stability of training in environments with sparse rewards.
+              So, LaProp provides a stable and more sensible calculation of even tinier gradients while AGC 'secures the upper end', preventing exploding
+              gradients without regard of the loss scale.<br />
+              <br />
+              Finally, DreamerV3 introduces a new replay buffer management system, more tightly integrating this 'storage container' for iterable experiences
+              with the training process. DreamerV2 had used this to 'record experience into' and then 'sample from' for training. DreamerV3 does this more
+              fluently by ensuring that even recently collected experiences are available for training immediately. Moreover, latent representations that 
+              are iterated over receive a refresh through the additional replay. DreamerV3 has this refresh happen directly within the replay buffer itself.
+            </p>
             <h3>Conclusion</h3>
             <p class="blog-p">
-              DreamerV2 is not only a powerful exercise in model-based RL, but model-based ML in general. While RL on its own can be really expensive,
-              as trial-and-error can take up time and resources and rewards may additionally be sparse or delayed, DreamerV2's world model mitigates these
-              issues by establishing a trained, fully simulated environment to sample and learn from reasonably imagined dynamic trajectories.<br />
-              Shifting the perspective a little bit, one could say that the world model is a self-engineered, flexible abstraction. The key to generalizability is that this
+              Dreamer is not only a powerful exercise in RL, but model-based ML in general. While the field of RL suffered for quite some time form being overly expensive,
+              as trial-and-error can take up time and resources and rewards may additionally be sparse or delayed, Dreamer's world model-centered approach mitigates these
+              issues by establishing a back-to-back trainable, fully simulated environment to sample and learn from reasonably imagined dynamic trajectories.<br />
+              Shifting the perspective a little bit, one could say that the world model is a self-emerging, flexible abstraction. The key to generalizability is that this
               abstraction can be adapted. Now, for example, think of Large Language Models (LLM). They utilize the external abstraction that is language.
               The abstraction is fixed and the model is trained to adapt to it. This intuitively restricts the generalizability of LLM capabilities to the subspace
               of possible tasks expressable through language. In other words, LLMs are not Artifical General Intelligence (AGI), but Advanced Machine Intelligence (AMI).
@@ -383,6 +459,15 @@
             publisher={Elsevier}
           }</p>
           <a>https://www.sciencedirect.com/science/article/pii/S0893608022001150</a>
+        </div>
+        <div id="hafner2023master">
+          <p>@article{hafner2023mastering,
+            title={Mastering diverse domains through world models},
+            author={Hafner, Danijar and Pasukonis, Jurgis and Ba, Jimmy and Lillicrap, Timothy},
+            year={2023},
+            journal={arXiv preprint arXiv:2301.04104}
+          }</p>
+          <a>https://arxiv.org/abs/2301.04104</a>
         </div>
     </div>
   </body>
