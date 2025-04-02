@@ -34,6 +34,7 @@
     <script>hljs.initHighlightingOnLoad();</script>
     <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
     <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="./js/search.js"></script>
     <script defer src="../js/theme-toggle.js"></script>
     <title>DreamerV2 and DreamerV3, explained</title>
   </head>
@@ -50,6 +51,12 @@
       </nav>
     </header>
     <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
       <main id="main-projects">
         <div class="project">
           <h2>DreamerV2 and DreamerV3, explained</h2>
