@@ -54,7 +54,9 @@ let searchKeywords = [];
 
 async function fetchSearchItems() {
   try {
-    const pages = [{src: 'blog.html', id: 'Blog'}, {src: 'projects.html', id: 'Projects'}];
+    const basePath = getBasePath(); // differs based on the current path, kinda hacky but works well
+    const pages = [{src: `${basePath}blog.html`, id: 'Blog'}, {src: `${basePath}projects.html`, id: 'Projects'}];
+    
     let searchKeywords = [];
 
     for (const page of pages) {
@@ -69,7 +71,8 @@ async function fetchSearchItems() {
         return {
           type: page.id,
           title: cleanTitle,
-          id: h2.id || cleanTitle.toLowerCase().replace(/\s+/g, '-')
+          id: h2.id || cleanTitle.toLowerCase().replace(/\s+/g, '-'),
+          basePath: basePath
         };
       });
 
@@ -83,7 +86,10 @@ async function fetchSearchItems() {
   }
 }
 
-fetchSearchItems();
+function getBasePath() {
+  // We can afford being this explicit, only the blog posts are in a subdirectory really
+  return window.location.pathname.includes('/blog/') ? '../' : './';
+}
 
 function performSearch(query) {
   query = query.toLowerCase();
@@ -118,17 +124,18 @@ function displayResults(results) {
     groupedResults[type].forEach(result => {
       const resultElement = document.createElement('div');
       resultElement.className = 'search-result';
+      const basePath = result.basePath || getBasePath();
+      
       if (type === 'Projects') {
-        resultElement.innerHTML = `<p><a class="search-arrow">↪</a>
-                                   <a class="highlight" target="_blank" href="https://github.com/mk2112/${result.id}">${result.title}</a></p>`;
-        section.appendChild(resultElement);
+        resultElement.innerHTML = `<p><a class="search-arrow">↪</a> <a class="highlight" target="_blank" href="https://github.com/mk2112/${result.id}">${result.title}</a></p>`;
       } else {
-        resultElement.innerHTML = `<p><a class="search-arrow">↪</a>
-                                 <a class="highlight" href="${type.toLowerCase()}/${result.id}.html">${result.title}</a></p>`;
-        section.appendChild(resultElement);
+        resultElement.innerHTML = `<p><a class="search-arrow">↪</a> <a class="highlight" href="${basePath}${type.toLowerCase()}/${result.id}.html">${result.title}</a></p>`;
       }
+      section.appendChild(resultElement);
     });
 
     resultsContainer.appendChild(section);
   });
 }
+
+document.addEventListener('DOMContentLoaded', fetchSearchItems);
