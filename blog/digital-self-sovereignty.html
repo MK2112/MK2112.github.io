@@ -63,43 +63,47 @@
           <div class="blog-entry">
             <p class="blog-p">
                 Digital privacy is a perpetual tension between security and usability. Moreover, responding to the question of
-                data ownership has evolved into a practical necessity. To answer this question, digital privacy should not be
+                data ownership has practically evolved into a necessity. To address this need, digital privacy should not be
                 viewed as a binary state but rather as a continuum of choices and probabilistic safeguards. Implemented measures
-                should incrementally reduce certain attack vectors while necessarily getting aligned with one's usability requirements.<br />
-                We will go ahead and deconstruct privacy into its components and offer implementable solutions to users seeking
+                should incrementally reduce a multitude of attack vectors while necessarily getting aligned with one's usability requirements.<br />
+                I will deconstruct privacy into its components and offer implementable solutions to users seeking
                 to establish meaningful data sovereignty in an increasingly activity-tracking and surveillance-oriented digital ecosystem.
                 If you haven't read <a class="highlight" href="https://karpathy.bearblog.dev/digital-hygiene/" target="_blank">Andrej Karpathy's blog post on digital hygiene</a>,
                 I recommend you do so. This post evolved around my two cents on the topic.
             </p>
             <h3>Practical Measures</h3>
             <p class="blog-p">
-                We should adopt a multifaceted approach that addresses both security concerns and usability requirements.<br />
+                We should adopt a multifaceted approach that addresses both security concerns and usability requirements.
                 Below, we will go into actionable details on data minimization, encryption, anonymization, and consent management.
             </p>
-            <h4>The Password Architecture</h4>
+            <h4>Password Architecture</h4>
             <p class="blog-p">
                 Authentication mechanisms are the primary boundary between public and protected data. Contemporary authentication systems
-                continue to rely predominantly on password verification as an initial factor despite well-documented conceptual
-                vulnerabilities. Knowing a password means gaining access. This persistence necessitates strategic and unique password
-                formulation, which in turn requires management.<br />
+                continue to rely predominantly on password verification as the initial authentication factor despite well-documented conceptual
+                vulnerabilities. Knowing a password means gaining access. The wide-spread application of passwords necessitates strategic and unique password
+                formulation, which in turn requires strict and confidential management.<br />
                 <br />
-                <a class="highlight" target="_blank" href="https://keepassxc.org/">KeePassXC</a> offers an interesting solution through
-                offline password storage in an encrypted database file. This approach circumvents a fundamental architectural vulnerability
-                inherent in cloud-based password managers: centralized storage necessarily creates centralizable attack vectors, regardless
-                of encryption strength or security promises. Regarding the latter case, the probabilistic guarantees provided by encryption
-                algorithms become irrelevant when system design permits backdoor implementation.<br />
+                <a class="highlight" target="_blank" href="https://keepassxc.org/">KeePassXC</a> offers
+                an interesting solution through offline password storage in an encrypted database file.
+                This approach avoids a fundamental vulnerability inherent in cloud-based password
+                managers: centralized third-party storage inevitably creates distinct, focused
+                attack vectors, regardless of encryption strength or security promises. 
+                For instance, users may become more vulnerable to targeted phishing attempts.
+                The logical protections provided by encryption lose their value
+                when trust is excessively placed in a single third party to manage your credentials.<br />
                 <br />
-                This sounds compelling, but it has usability come into play. What if a user needs to sync passwords across devices after all?
-                A layered approach provides a good security-convenience equilibrium. Creating a password database with
+                Avoiding cloud-based password managers sounds compelling, but it has usability come into play. What if a user needs to sync passwords across devices after all?
+                In that case, a layered approach can provide a good security-convenience equilibrium. Creating a password database with
                 <a class="highlight" target="_blank" href="https://keepassxc.org/">KeePassXC</a> that is then selectively synchronized via
-                privacy-respecting, general-purpose, peer-to-peer services such as <a class="highlight" target="_blank" href="https://syncthing.net/">SyncThing</a>
+                privacy-respecting, general-purpose, peer-to-peer services like <a class="highlight" target="_blank" href="https://syncthing.net/">SyncThing</a>
                 establishes user ownership while accommodating practical requirements.<br />
                 <br />
-                Increasingly, passwords are used only for an initial authentication factor. If available, multi-factor authentication (2FA)
-                should be enabled universally where available. Note that the security benefit of 2FA further increases from physical separation
-                between factors. Therefore, TOTP (Time-based One-Time Password) codes for 2FA should be managed through dedicated applications
-                like the Android app <a class="highlight" target="_blank" href="https://f-droid.org/packages/com.beemdevelopment.aegis/">Aegis</a>
-                rather than integrated within password managers.<br />
+                Increasingly, passwords are used only as an initial authentication factor. If available, multi-factor authentication (2FA)
+                should universally be enabled. Note that the security benefit of 2FA further increases with physical separation
+                between factors. Therefore, TOTP (Time-based One-Time Password) codes for 2FA
+                should be managed through dedicated, seperate applications, such as the Android app
+                <a class="highlight" target="_blank" href="https://f-droid.org/packages/com.beemdevelopment.aegis/">Aegis</a>,
+                rather than being integrated within password managers and right next to the first factor.<br />
                 <br />
                 Different from TOTP as such, hardware-based authentication devices such as
                 <a class="highlight" target="_blank" href="https://www.yubico.com/">YubiKeys</a> provide superior security through physical factor
@@ -109,7 +113,7 @@
                 <br />
                 Biometric authentication should be approached with caution. While it feels secure, unlike passwords, biometric identifiers cannot be
                 revoked or changed following copy or compromise, creating a persistent vulnerability. For your phone, use at least facial recognition
-                and an often switched out alphanumeric code.
+                and a frequently changed alphanumeric code.
             </p>
             <h4>Operating System Architecture & Storage Encryption</h4>
             <p class="blog-p">
@@ -117,8 +121,8 @@
                 transparency through a rigorously open-source architecture and distinctly user-controlled system maintenance. Proprietary systems such
                 as Windows 11 and macOS incorporate increasingly aggressive telemetry and data collection mechanisms. Microsoft's Recall and Copilot
                 functionalities exemplify this trend, requiring manual deactivation and privilege restriction to maintain data sovereignty. You can
-                achieve this with tools like <a class="highlight" target="_blank" href="https://www.oo-software.com/en/shutup10">O&O ShutUp10++</a>.
-                With MacOS, while some data collection can be disabled through the Privacy & Security menu, it is challenging to completely block
+                somewhat achieve this with tools like <a class="highlight" target="_blank" href="https://www.oo-software.com/en/shutup10">O&O ShutUp10++</a>.
+                With MacOS, while some data collection can be disabled through the Privacy & Security menu, it is much more challenging to completely block
                 all data sent to Apple's servers.<br />
                 <br />
                 Full disk encryption is a fundamental privacy requirement across all devices. For optimal security, encryption implementation should
@@ -133,24 +137,26 @@
                 Browser selection presents a critical privacy decision point. Chromium-based browsers face substantial privacy degradation with the 
                 <a class="highlight" target="_blank" href="https://blog.chromium.org/2024/05/manifest-v2-phase-out-begins.html">deprecation of the Manifest V2
                     protocol scheduled for 2024 and 2025</a>.
-                <a class="highlight" target="_blank" href="https://librewolf.net/">LibreWolf</a> offers a Firefox derivative intended for privacy-focused
+                <a class="highlight" target="_blank" href="https://librewolf.net/">LibreWolf</a> is a Firefox derivative intended for privacy-focused
                 configurations while not being affected by
-                <a class="highlight" target="_blank" href="https://ghostbrowser.com/blog/firefoxs-terms-of-use-privacy-controversy/">Mozilla's problematic wording in their terms of use</a>.
+                <a class="highlight" target="_blank" href="https://ghostbrowser.com/blog/firefoxs-terms-of-use-privacy-controversy/">Mozilla's problematic terms of use</a>.
                 Search engine alternatives include <a class="highlight" target="_blank" href="https://www.startpage.com/">Startpage</a> and
                 <a class="highlight" target="_blank" href="https://metasearx.com/">Searx</a>, which do no track you.
                 If you prefer to stay in the realm of Chromium-based browsers, <a class="highlight" target="_blank" href="https://ungoogled-software.github.io/ungoogled-chromium-binaries/">Ungoogled Chromium</a> with the <a class="highlight" target="_blank" href="https://sourceforge.net/projects/chromium-web-store.mirror/"></a>Chromium Webstore</a> plugin and the <a class="highlight" target="_blank" href="https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm">uBlock Origin</a> extension is a solid choice.
-                Another open-source Chromium-based alternative would be the <a class="highlight" target="_blank" href="https://brave.com/">Brave Browser</a><br />
+                Another open-source Chromium-based alternative is the <a class="highlight" target="_blank" href="https://brave.com/">Brave Browser</a>,
+                which when set to <code>aggressive</code> thoroughly blocks trackers and spoofs the browser's fingerprint.<br />
                 <br />
                 Network-level content blocking provides superior protection compared to browser-based solutions. DNS-over-HTTPS (DoH) services such as
                 <a class="highlight" target="_blank" href="https://rethinkdns.com/">RethinkDNS</a> or <a class="highlight" target="_blank" href="https://nextdns.io/">NextDNS</a>
                 encrypt DNS queries to prevent ISP snooping while providing customizable content filtering across all devices connected to it.<br />
                 <br />
-                Browser-level protections should be implemented as a secondary layer. Extensions such as <a class="highlight" target="_blank" href="https://privacybadger.org/">Privacy Badger</a>
-                from the Electronic Frontier Foundation provide tracker blocking capabilities. For more protection, script execution control through
+                Browser-level protections should be implemented as a secondary layer. For <a class="highlight" target="_blank" href="https://librewolf.net/">LibreWolf</a>,
+                extensions such as <a class="highlight" target="_blank" href="https://privacybadger.org/">Privacy Badger</a>
+                from the Electronic Frontier Foundation provide solid tracker blocking capabilities. For more protection, script execution control through
                 <a class="highlight" target="_blank" href="https://noscript.net/">NoScript</a> (Firefox-based browsers) or
                 <a class="highlight" target="_blank" href="https://chromewebstore.google.com/detail/umatrix/ogfcmafjalglgifnmanfmnieipoejdcf?pli=1">uMatrix</a>
-                (Chromium-based browsers) enables granular connection management, albeit with initial configuration complexity,
-                that yields substantial security benefits over time. If you don't opt for network-level content blocking, use 
+                (Chromium-based browsers) enables granular connection management that yields substantial security benefits over time, albeit with initial configuration complexity.
+                If you don't opt for network-level content blocking, use at least either of the two script execution control extensions and 
                 <a class="highlight" target="_blank" href="https://ublockorigin.com/">uBlock Origin</a>.
             </p>
             <h4>Communication & Productivity</h4>
@@ -173,7 +179,7 @@
                 <a class="highlight" target="_blank" href="https://getsession.org/">Session</a> implement end-to-end encryption
                 with minimized metadata collection. <a class="highlight" target="_blank" href="https://signal.org/#signal">Signal</a> goes
                 as far as to implement post-quantum secure encryption. Activate self-destructing messages. Services such as Telegram,
-                WhatsApp, Discord, and Meta's platforms should be avoided or used minimally with carefully configured privacy settings.<br />
+                WhatsApp, Discord, and Meta's platforms should be avoided or used at most with carefully configured privacy settings.<br />
                 <br />
                 Social media engagement and exposure should be minimized aswell. When necessary, consumption without authentication prevents
                 cross-platform tracking. Authentication via social media credentials for third-party services creates extensive tracking vectors
