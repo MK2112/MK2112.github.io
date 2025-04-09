@@ -256,8 +256,8 @@
               It is used to generate the ultimately clipped gradients in the first place and it is used instead of Adam because the authors found that the
               $\epsilon$ could be set way lower than with Adam. I won't go too deep into why that is, but a lower $\epsilon$ means that the optimizer can
               afford to be more sensitive to small gradients, which can be beneficial for stability of training in environments with sparse rewards.
-              So, LaProp provides a stable and more sensible calculation of even tinier gradients while AGC 'secures the upper end', preventing exploding
-              gradients without regard of the loss scale.<br />
+              LaProp provides a stable and more sensible calculation of even tinier gradients while AGC 'secures the upper end', preventing exploding
+              gradients without regarding the loss scale.<br />
               <br />
               Finally, DreamerV3 introduces a new replay buffer management system, more tightly integrating this 'storage container' for iterable experiences
               with the training process. DreamerV2 had used this to 'record experience into' and then 'sample from' for training. DreamerV3 does this more
