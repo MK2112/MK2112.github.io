@@ -71,7 +71,7 @@
         h1, h2, h3, p, a, .static-anchor, .work, .ed { color: #e6e6e6; }
         .highlight, .citation { color: #e6e6e6; }
         .dynamic-anchor:hover { color: #e6e6e6; }
-        footer a, footer div { color: #e6e6e6; }
+        footer a, footer div { color: #c0c0c0; }
         
         /* Preserve mist-grey color for elements that should use it */
         h4, .dynamic-anchor, aside, .ed-details, 
@@ -96,7 +96,7 @@
         body { color: #000; }
         h1, h2, h3, p, a, .static-anchor, .work, .ed { color: #000; }
         .highlight, .citation { color: inherit; }
-        footer a, footer div { color: #000; }
+        footer a, footer div { color: #696969; }
         
         /* Preserve mist-grey color for elements that should use it */
         h4, .dynamic-anchor, aside, .ed-details, 
