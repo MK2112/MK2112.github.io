@@ -7,7 +7,7 @@
   // Variables for light + dark themes
   const THEME_VARIABLES = {
     [THEMES.LIGHT]: {
-      '--mist-grey': 'rgba(125, 125, 125, 1)',
+      '--mist-grey': 'rgba(110, 110, 110, 1)',
       '--highlight-light': 'rgba(100, 100, 100, 0.05)',
       '--highlight-free': 'rgba(100, 100, 100, 0.1)',
       '--highlight-hover': 'rgba(100, 100, 100, 0.3)',
