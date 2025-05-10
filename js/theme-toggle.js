@@ -17,8 +17,8 @@
       '--highlight-light': 'rgba(100, 100, 100, 0.05)',
       '--highlight-free': 'rgba(100, 100, 100, 0.1)',
       '--highlight-hover': 'rgba(100, 100, 100, 0.3)',
-      '--paper-grey': '#ecede8',
-      '--paper-grey-focused': '#f0f1ee',
+      '--paper-grey': '#f0f1ee',
+      '--paper-grey-focused': '#f1f1f1',
       '--code-bg': '#ccc',
       '--text-color': '#000'  // Add text color variable
     },
