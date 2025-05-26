@@ -7,7 +7,7 @@
     <generator>rfeed v1.1.1</generator>
     <docs>https://github.com/svpino/rfeed/blob/master/README.md</docs>
     <item>
-      <title>A systematic approach to digital self-sovereignty</title>
+      <title>A Systematic Approach to Digital Self-Sovereignty</title>
       <link>https://mk2112.github.io/blog/digital-self-sovereignty.html</link>
       <description>Privacy means negotiation between security and usability. Owning your data increasingly becomes a focus again and techniques
                 that layer protections can actively help in reducing your exposure without complicating life. To achieve this, we break
@@ -16,7 +16,7 @@
       <guid isPermaLink="true">https://mk2112.github.io/blog/digital-self-sovereignty.html</guid>
     </item>
     <item>
-      <title>Finding data subsets, from scratch</title>
+      <title>Finding Data Subsets, from Scratch</title>
       <link>https://mk2112.github.io/blog/subsets-from-scratch.html</link>
       <description>Increasingly, research and academia find themselves hindered by the breathtaking demands for resources required to keep up with
                 industrial, closed AI research.
@@ -27,7 +27,7 @@
       <guid isPermaLink="true">https://mk2112.github.io/blog/subsets-from-scratch.html</guid>
     </item>
     <item>
-      <title>Installing 64-Bit Linux on a 32-Bit EFI device</title>
+      <title>Installing 64-Bit Linux on a 32-Bit EFI Device</title>
       <link>https://mk2112.github.io/blog/64-bit-linux-on-32-bit-efi.html</link>
       <description>Modern computing can often present calculated constraints. The ASUS X205TA, a machine architecturally capable 
                 of 64-bit computing, is restricted to 32-bit operation by its EFI. This is a story of circumvention—understanding
@@ -36,7 +36,7 @@
       <guid isPermaLink="true">https://mk2112.github.io/blog/64-bit-linux-on-32-bit-efi.html</guid>
     </item>
     <item>
-      <title>DreamerV2 and DreamerV3, explained</title>
+      <title>DreamerV2 and DreamerV3, Explained</title>
       <link>https://mk2112.github.io/blog/dreamer.html</link>
       <description>Developing intelligent systems for robustly perceiving, exploring, and attaining incrementally complex insights remains a persistent challenge in the field.
                 The Dreamer algorithm addresses this by employing latent imagination and reinforcement learning, enabling the development of effective policies for various
