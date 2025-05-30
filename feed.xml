@@ -7,6 +7,15 @@
     <generator>rfeed v1.1.1</generator>
     <docs>https://github.com/svpino/rfeed/blob/master/README.md</docs>
     <item>
+      <title>Diffusion Language Models</title>
+      <link>https://mk2112.github.io/blog/diffusion-language-models.html</link>
+      <description>Diffusion models drive the field of generative modeling, but their application to language tasks has been limited until recently.
+                Diffusion language models emerge as a promising alternative to standard language models, generating text as a whole rather than autoregressively,
+                saving time and resources. This article explores how diffusion language models work, their potential to revolutionize text generation, and their shortcomings.</description>
+      <pubDate>Tue, 10 Jun 2025 22:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/diffusion-language-models.html</guid>
+    </item>
+    <item>
       <title>A Systematic Approach to Digital Self-Sovereignty</title>
       <link>https://mk2112.github.io/blog/digital-self-sovereignty.html</link>
       <description>Privacy means negotiation between security and usability. Owning your data increasingly becomes a focus again and techniques
