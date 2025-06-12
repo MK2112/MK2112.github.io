@@ -238,42 +238,43 @@
               Symexp-Twohot Loss takes this discretized probability distribution and compares it to the two-hot encoded target value.
               The loss function forces the network to increase the probability in the bins that correspond to the actual value.<br />
               <br />
-              Several changes concern structural aspects. For example, DreamerV3 exchanges activations of the actor and critic networks from ELU to Swish and
+              Several changes are structural in nature. For example, DreamerV3 exchanges activation functions of the actor and critic networks from ELU to Swish and
               adds RMSNorm for normalization. While they found that layer norm wasn't providing improvements for DreamerV2, RMSNorm was found to be beneficial,
               especially as the RSSM was updated to use the paper's own Block GRU architecture, which is still a GRU, but extended with block-diagonal recurrent
               weights, meaning the recurrent weights are divided into blocks, in this case it is $8$ blocks specifically. Each block is connected to a different
               part of the input.
               <br />
-              Interestingly, DreamerV3 dropped the use of the Adam optimizer. This is interesting, as Adam in particular is highly regarded for its
-              versatility and performance in a wide range of tasks. However, the authors argue that especially the different scales of loss functions
-              and gradients that DreamerV3 may encounter in various environments can make training with Adam unstable. Their solution consists of using
-              Adaptive Gradient Clipping (AGC) and the LaProp optimizer instead. AGC is a gradient clipping technique that adapts the clipping threshold
-              based on the magnitude of the model weights. If a weight is large, the gradient is clipped less aggressively, and if the weight is small,
-              the gradient is clipped more aggressively. The aggression has its imposed ceiling, though. For DreamerV3, the clipping threshold is set as
+              DreamerV3 dropped the use of Adam as its optimizer. This is interesting as Adam in particular is highly regarded for its
+              versatility and performance in a wide range of tasks. The authors argue that especially the different scales of loss functions
+              and gradients that DreamerV3 may encounter in various environments can make training with Adam unstable. Dropping Adam, their solution consists of using
+              Adaptive Gradient Clipping (AGC) and the LaProp optimizer instead. AGC is a gradient clipping technique adapting the clipping threshold
+              based on the magnitude of the model weights. If a model weight is small, its gradient is clipped more aggressively.
+              If the weight becomes large, the gradient gets clipped less. For DreamerV3, the clipping threshold is set as
               a percentage of the L2-norm of the respective weight matrix ($30\%$ for DreamerV3). Notably, gradient clipping happens independently of the
-              scale of the loss function. If we were to tweak DreamerV3 for a different environment, making a change in loss function necessary, we would
-              not have to significantly worry about the gradients exploding, as they are clipped just as before.<br />
-              The LaProp optimizer, on the other hand, is a variant of the Adam optimizer that aims to improve the stability and performance of training.
-              It is used to generate the ultimately clipped gradients in the first place and it is used instead of Adam because the authors found that the
-              $\epsilon$ could be set way lower than with Adam. I won't go too deep into why that is, but a lower $\epsilon$ means that the optimizer can
-              afford to be more sensitive to small gradients, which can be beneficial for stability of training in environments with sparse rewards.
-              LaProp provides a stable and more sensible calculation of even tinier gradients while AGC 'secures the upper end', preventing exploding
-              gradients without regarding the loss scale.<br />
+              scale of the loss function. When adjusting DreamerV3 for a different environment, it may be necessary to change the loss function. We would
+              not have to worry much about the gradients exploding though, as AGC clips them out-of-the-box, independently.<br />
+              The LaProp optimizer is a variant of the Adam optimizer aiming to improve training stability and performance.
+              The optimizer takes the (by then possibly clipped) gradients and uses them to update the model parameters by some update rule, which may
+              concern factors like a learning rate and normalization techniques.
+              LaProp replaces Adam as the authors found that the $\epsilon$ could be set way lower with LaProp. Not going deep into why that is,
+              but a lower $\epsilon$ effectively means that the optimizer can afford to be more sensitive and apply small gradients, which can be
+              beneficial for stability of training in environments with sparse rewards. LaProp provides a more sensible calculation of even tinier
+              gradients while AGC treats the gradient extremes without itself regarding the loss scale.<br />
               <br />
-              Finally, DreamerV3 introduces a new replay buffer management system, more tightly integrating this 'storage container' for iterable experiences
-              with the training process. DreamerV2 had used this to 'record experience into' and then 'sample from' for training. DreamerV3 does this more
-              fluently by ensuring that even recently collected experiences are available for training immediately. Moreover, latent representations that 
+              Finally, DreamerV3 introduces a new replay buffer management system, more tightly integrating the 'storage' for iterable experiences
+              with the training process. DreamerV2 had used this to 'record experience into' and then 'sample from' for training. DreamerV3 employs the replay buffer
+              more fluently by ensuring that even recently collected experiences are available for training immediately. Moreover, latent representations that 
               are iterated over receive a refresh through the additional replay. DreamerV3 has this refresh happen directly within the replay buffer itself.
             </p>
             <h3>Conclusion</h3>
             <p class="blog-p">
-              Dreamer is not only a powerful exercise in RL, but model-based ML in general. While the field of RL suffered for quite some time form being overly expensive,
+              Dreamer is not only a powerful exercise in RL, but in model-based ML in general. While the field of RL suffered for quite some time form being called expensive,
               as trial-and-error can take up time and resources and rewards may additionally be sparse or delayed, Dreamer's world model-centered approach mitigates these
-              issues by establishing a back-to-back trainable, fully simulated environment to sample and learn from reasonably imagined dynamic trajectories.<br />
-              Shifting the perspective a little bit, one could say that the world model is a self-emerging, flexible abstraction. The key to generalizability is that this
-              abstraction can be adapted. Now, for example, think of Large Language Models (LLM). They utilize the external abstraction that is language.
-              The abstraction is fixed and the model is trained to adapt to it. This intuitively restricts the generalizability of LLM capabilities to the subspace
-              of possible tasks expressable through language. In other words, LLMs are not Artifical General Intelligence (AGI), but Advanced Machine Intelligence (AMI).
+              issues by establishing a back-to-back trainable, fully simulated environment to sample and learn from increasingly reasonably imagined dynamic trajectories.<br />
+              One could say that the world model is a self-emerging, flexible abstraction. The key to generalizability is that this
+              abstraction can be adapted. Now, for example, think of vanilla Large Language Models (LLM). They utilize the external abstraction that is language.
+              The abstraction is fixed and the model is trained to adapt to it. This intuitively restricts the generalizability of LLM capabilities.
+              In other words, LLMs are not Artifical General Intelligence (AGI), but they should be cut some slack still, they are Advanced Machine Intelligence (AMI).
               For the exact reasons we just discussed, both world models and efficient RL policy refinement are really hot topics right now \cite{garrido2024learning} \cite{matsuo2022deep} \cite{hopkins2024llms}.
               I assume we will hear a lot more about Dreamer and its conceptual successors in the near future.
             </p>
