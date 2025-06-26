@@ -12,7 +12,7 @@
       <description>Diffusion models drive the field of generative modeling, but their application to language tasks was limited. That is, until recently.
                 Diffusion language models emerge as a promising alternative to pre-existing language modeling paradigms, generating text as a whole rather than autoregressively,
                 thus saving time. We explore how diffusion language models work, their potential to advance text generation, and their shortcomings.</description>
-      <pubDate>Tue, 26 Jun 2025 08:00:00 GMT</pubDate>
+      <pubDate>Thu, 26 Jun 2025 08:00:00 GMT</pubDate>
       <guid isPermaLink="true">https://mk2112.github.io/blog/diffusion-lm.html</guid>
     </item>
     <item>
