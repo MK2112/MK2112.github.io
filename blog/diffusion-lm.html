@@ -184,7 +184,7 @@
               At this point one might ask, <b>"Didn't BERT do something similar, like masking and predicting masked tokens? And if so, why is this diffusion modeling so
               new then?".</b> Masked language models and DLMs conceptually have one thing in common: The word "mask" and that's about it. BERT fills a fixed number of
               "gaps" one at a time, whereas a DLM like LLaDA treats the entire sequence as a single corpus where parallel inferences happen all simultaneously.
-              Moreover, LLaDA uses a continuously and randomly varying mask ratio, while traditional masked language models use a fixed one.<br />
+              LLaDA also uses a continuously and randomly varying mask ratio, while traditional masked language models use a fixed one.<br />
               <br />
               Hyperparameters for such a LLaDA DLM include the <i>generation length</i>, i.e. the length of what we are supposed to "unmask" during inference.
               This is an upper ceiling, not restricting where information ends within that generation length. But doesn't that mean LLaDA's inference
