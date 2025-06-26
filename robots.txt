@@ -1,7 +1,6 @@
 User-agent: *
 Disallow: /
 
-# Redundant, but also explicit
 User-agent: ia_archiver
 Disallow: /
 
