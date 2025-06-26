@@ -561,3 +561,12 @@ nav b {
     margin-bottom: 2rem;
     margin-left: 1rem;
 }
+
+.img-p {
+    object-position: 0% 55% !important;
+    font-size: 0.6rem;
+    color: var(--mist-grey);
+    margin-top: 0.25rem;
+    margin-bottom: 0;
+    margin-left: 30px;
+}
