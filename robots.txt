@@ -43,4 +43,79 @@ Disallow: /
 User-agent: DuckDuckBot
 Disallow: /
 
+User-agent: Bingbot
+Disallow: /
+
+User-agent: Slurp
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: ZoominfoBot
+Disallow: /
+
+User-agent: SeznamBot
+Disallow: /
+
+User-agent: Exabot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+User-agent: Twitterbot
+Disallow: /
+
+User-agent: LinkedInBot
+Disallow: /
+
+User-agent: Sogou
+Disallow: /
+
+User-agent: SputnikBot
+Disallow: /
+
+User-agent: Cliqzbot
+Disallow: /
+
+User-agent: Uptimebot
+Disallow: /
+
+User-agent: Neevabot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Qwantify
+Disallow: /
+
+User-agent: AspiegelBot
+Disallow: /
+
+User-agent: Riddler
+Disallow: /
+
+User-agent: SerendeputyBot
+Disallow: /
+
+User-agent: KomodiaBot
+Disallow: /
+
+User-agent: ToutiaoSpider
+Disallow: /
+
 Crawl-delay: 3600
