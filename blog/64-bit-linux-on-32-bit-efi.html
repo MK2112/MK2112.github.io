@@ -74,7 +74,7 @@
               subtle, requiring a closer look.<br />
               <br />
               The ASUS X205TA exemplifies such a case. While it features 64-bit-capable hardware, its chipset defaults to 32-bit EFI firmware.
-              The system ships with safe-boot-protected 32-bit Windows 8.1 pre-installed—a design choice that imposes artificial software
+              The system ships with safe-boot-protected 32-bit Windows 8.1 pre-installed - a design choice that imposes artificial software
               restrictions, limiting the system's potential despite its 64-bit hardware architecture.<br />
               One key restriction from this choice is the inability to run modern operating systems, which are increasingly exclusive to 64-bit environments.
               This trend is intriguing and motivates my goal: Find a way to install Ubuntu by circumventing the imposed 32-bit
@@ -93,7 +93,7 @@
               $\rightarrow$ Support for larger storage devices. <br />
               <br />
               The ASUS X205TA comes with 32-bit EFI. It uses 32-bit addressing, limiting compatibility with 64-bit bootloaders.
-              Systems with 64-bit CPUs but 32-bit EFI firmware — like the ASUS X205TA — cannot natively boot 64-bit operating systems, 
+              Systems with 64-bit CPUs but 32-bit EFI firmware, like the ASUS X205TA, cannot natively boot 64-bit operating systems, 
               as they expect a compatible 64-bit EFI or BIOS environment. In other words, we need a workaround.
             </p>
             <h4>What is GRUB?</h4>
@@ -245,7 +245,7 @@ sudo reboot
             <p class="blog-p">
               The ASUS X205TA now runs 64-bit Ubuntu 22.04.5 LTS behind a 32-bit EFI. Note that procedures for updates and even distribution upgrades can be applied just as usual. I managed to upgrade to 24.04.1 LTS which brought further noticable improvements in system performance.<br /> 
               What began as a constrained hardware environment became a playground for systemic understanding.
-              Ubuntu now runs—not by design, but through our intervention. This grants an older,
+              Ubuntu now runs, not by design, but through our intervention. This grants an older,
               but capable system like the X205TA a new and extended life.
             </p>
             <h3>References & Acknowledgements</h3>
@@ -259,7 +259,24 @@ sudo reboot
           </div>
         </div>
       </main>
-      <embed type="text/html" src="../footer.html" width="100%" />
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
     </div>
   </body>
 </html>
