@@ -1,10 +1,4 @@
 (function() {
-  /* 
-  * Core Theme Management Component.
-  * Handles theme pref storage, toggling and persistive application,
-  * initial page theme application is done through no-flash.js.
-  * This script concerns the toggling and local storage of theme preference
-  */
 
   // Default to using browser-imposed theme
   const THEMES = {LIGHT: 'light', DARK: 'dark'};
@@ -20,7 +14,7 @@
       '--paper-grey': '#f0f1ee',
       '--paper-grey-focused': '#f1f1f1',
       '--code-bg': '#ccc',
-      '--text-color': '#000'  // Add text color variable
+      '--text-color': '#000'
     },
     [THEMES.DARK]: {
       '--mist-grey': 'rgba(180, 180, 180, 1)',
@@ -30,11 +24,10 @@
       '--paper-grey': '#1e1e1e',
       '--paper-grey-focused': '#252525',
       '--code-bg': '#444',
-      '--text-color': '#e6e6e6'  // Add text color variable
+      '--text-color': '#e6e6e6'
     }
   };
 
-  // Add a style tag early in document loading
   function injectBaseThemeStyles() {
     // Check if styles already exist
     if (document.getElementById('base-theme-styles')) return;
@@ -42,24 +35,26 @@
     const style = document.createElement('style');
     style.id = 'base-theme-styles';
     style.textContent = `
-      body { color: var(--text-color); }
-      h1, h2, h3, p, a, .static-anchor, .work, .ed { color: var(--text-color); }
+      body {
+        color: var(--text-color);
+      }
       
-      /* Ensure list items inherit the text color properly and transition smoothly */
+      h1, h2, h3, p, a, .static-anchor, .work, .ed { 
+        color: var(--text-color);
+      }
+      
       ul, ol, li, ul li, ol li { 
         color: var(--text-color); 
         transition: color 0.3s ease;
       }
-      
-      /* Force list bullet markers to use mist-grey with proper transition */
+
       ul li::before { 
         color: var(--mist-grey); 
         transition: color 0.3s ease;
       }
       
-      /* Preserve mist-grey color for elements that should use it */
       h4, .dynamic-anchor, aside, .ed-details, 
-      .work-details aside, .project-p, .blog-img p { 
+      .work-details aside, .project-p, .blog-img p, footer { 
         color: var(--mist-grey); 
       }
     `;
@@ -96,7 +91,7 @@
     themeToggleBtn = document.createElement('button');
     themeToggleBtn.className = 'theme-toggle-btn';
     themeToggleBtn.setAttribute('aria-label', 'Toggle dark/light mode');
-    // Style it in (default) light mode
+    // (default) light mode
     themeToggleBtn.style.cssText = `
       width: 40px;
       height: 40px;
@@ -133,7 +128,7 @@
         }, '*');
       }
       
-      // Now apply theme to main page
+      // Apply theme to main page
       await applyTheme(newTheme);
       storeTheme(newTheme);
       updateButtonIcon();
