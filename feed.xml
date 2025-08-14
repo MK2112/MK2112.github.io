@@ -7,6 +7,16 @@
     <generator>rfeed v1.1.1</generator>
     <docs>https://github.com/svpino/rfeed/blob/master/README.md</docs>
     <item>
+      <title>An Evolution of Wireless Channel Equalization</title>
+      <link>https://mk2112.github.io/blog/equalizers.html</link>
+      <description>Wireless signals drive modern tech, but they are error-prone and easily distorted.
+                This post explores how wireless signal correction has evolved, from classic methods like Zero-Forcing and MMSE to
+                adaptive algorithms like LMS and RLS, and finally to upcoming AI-powered equalization techniques for
+                large-scale, accurate signal restoration.</description>
+      <pubDate>Thu, 14 Aug 2025 13:38:01 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/equalizers.html</guid>
+    </item>
+    <item>
       <title>Diffusion Language Models</title>
       <link>https://mk2112.github.io/blog/diffusion-lm.html</link>
       <description>Diffusion drives the field of generative modeling, but its application to language tasks was limited. That is, until recently.
