@@ -591,3 +591,9 @@ nav b {
     font-family: monospace;
     z-index: 1001;
 }
+
+.blog-ul {
+    margin-top: -26px;
+    margin-bottom: 1em;
+    padding-left: 1.5rem;
+}
