@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../js/no-flash.js"></script>
+    <meta http-equiv="content-security-policy" content="" />
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
+    <link href="../css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/languages/python.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="../js/search.js"></script>
+    <script defer src="../js/theme-toggle.js"></script>
+    <title>A Systematic Approach to Digital Self-Sovereignty</title>
+    <meta name="description" content="Reclaim your digital privacy with practical, systematic steps. Dive into actionable
+    strategies for password architecture, OS hardening, web protection, and more to achieve more data sovereignty in an
+    increasingly surveillance-heavy, asymmetrically threatened digital world." />
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <div class="project">
+          <h2>A Systematic Approach to Digital Self-Sovereignty</h2>
+          <p class="thin project-p">March 2025 • Reading Time: 10 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+              Digital privacy is a perpetual tension between security and usability. Moreover, responding to the question of
+              data ownership has practically evolved into a necessity. To address this need, digital privacy should not be
+              viewed as a binary state but rather as a continuum of choices and probabilistic safeguards. Implemented measures
+              should incrementally reduce several attack vectors while necessarily remaining aligned with one's usability requirements.<br />
+              I will deconstruct online privacy into its components and offer implementable solutions to users seeking
+              to establish meaningful data sovereignty in an increasingly activity-tracking and surveillance-oriented digital ecosystem.
+              If you haven't read <a class="highlight" href="https://karpathy.bearblog.dev/digital-hygiene/" target="_blank">Andrej Karpathy's blog post on digital hygiene</a>,
+              I recommend you do so. This post evolved around my two cents on the topic.
+            </p>
+            <h3>Practical Measures</h3>
+            <p class="blog-p">
+              We should adopt a multifaceted approach for addressing both security concerns and usability requirements.
+              Below, we will go into actionable details on data minimization, encryption, anonymization, and consent management.
+            </p>
+            <h4>Password Architecture</h4>
+            <p class="blog-p">
+              Meaningful authentication mechanisms make for the primary boundary between public and protected data. Contemporary authentication systems
+              predominantly rely on password verification as the initial authentication factor despite well-documented conceptual
+              vulnerabilities. Knowing a password means gaining access. Therefore, a password than can easily be guessed doesn't provide any security.
+              The wide-spread application of password-based authentication necessitates strategic and unique password formulation and strictly
+              confidential management.<br />
+              <br />
+              <a class="highlight" target="_blank" href="https://keepassxc.org/">KeePassXC</a> offers
+              a compelling solution by storing passwords entirely offline in an encrypted database file.
+              By you retaining ownership of the password storage, this approach avoids a fundamental
+              vulnerability of cloud-based password managers: centralized third-party storage inevitably
+              creates distinct, focused attack vectors, regardless of encryption strength or security promises.
+              For instance, users may become more vulnerable to targeted phishing attempts.
+              Encryption loses its value when you over-rely on third parties to manage your credentials while
+              not really knowing what they are on about.<br />
+              <br />
+              Avoiding cloud-based password managers sounds compelling, but it requires weighing in usability.
+              What if a user needs to sync passwords across several devices?
+              In that case, a layered approach may provide a good security-convenience equilibrium: creating a password database with
+              <a class="highlight" target="_blank" href="https://keepassxc.org/">KeePassXC</a> that is then selectively synchronized via
+              privacy-respecting peer-to-peer services like <a class="highlight" target="_blank" href="https://syncthing.net/">SyncThing</a>
+              retains user ownership while accommodating practical requirements.<br />
+              <br />
+              Increasingly, passwords are only used as an initial authentication factor. If available, multi-factor authentication (2FA)
+              should universally be enabled. With 2FA, a user becomes required to provide two distinct pieces of authenticating information to get authorized.
+              Note that the security benefit of 2FA increases with further physical separation
+              between the two factors. A good choice would be a strong password and TOTP (Time-based One-Time Password) codes for 2FA.
+              The latter should be managed through dedicated, seperate applications, such as the Android app
+              <a class="highlight" target="_blank" href="https://f-droid.org/packages/com.beemdevelopment.aegis/">Aegis</a>,
+              rather than being integrated within password managers along with the passwords.<br />
+              <br />
+              Different from TOTP as such, hardware-based authentication devices such as
+              <a class="highlight" target="_blank" href="https://www.yubico.com/">YubiKeys</a> provide superior security through physical factor
+              isolation. TOTP may even be loaded onto a <a class="highlight" target="_blank" href="https://www.yubico.com/">YubiKey</a>, making
+              it the single physical source for your 2FA TOTP codes. Note however that multiple <a class="highlight" target="_blank" href="https://www.yubico.com/">YubiKeys</a>
+              should be purchased for distributed backup and their price may preclude adoption.<br />
+              <br />
+              Biometric authentication sounds like a good idea, but it should be approached with caution.
+              While it feels secure, unlike passwords, biometric identifiers cannot be revoked or updated following a compromise,
+              allowing for a persistent vulnerability. Secure your phone ideally with multiple factors, e.g., with biometric facial recognition
+              and a regularly updated alphanumeric passcode. Use KeePassXC to generate strong passcodes, or check password strength with
+              <a class="highlight" target="_blank" href="https://bitwarden.com/password-strength/">Bitwarden's testing tool</a>.
+            </p>
+            <h4>Operating System Architecture & Storage Encryption</h4>
+            <p class="blog-p">
+              Operating system selection significantly impacts privacy posture. Linux distributions (Arch, Debian, CentOS, Linux Mint, etc.) provide
+              transparency through a rigorously open-source architecture and distinctly user-controlled system maintenance. Proprietary systems such
+              as Windows and macOS incorporate increasingly aggressive data collection mechanisms. Microsoft's Recall and Copilot
+              functionalities exemplify this trend, requiring manual deactivation and privilege restriction to maintain data sovereignty. You can
+              somewhat fight back with tools like <a class="highlight" target="_blank" href="https://www.oo-software.com/en/shutup10">O&O ShutUp10++</a>.
+              With MacOS, while some data collection can be disabled through the Privacy & Security menu, it is much more challenging to completely block
+              all data sent to Apple's servers.<br />
+              <br />
+              Full disk encryption is a fundamental privacy requirement to be implemented across all your devices. For optimal security, encryption
+              implementation should be independent from operating system manufacturers when using closed-source systems. 
+              <a class="highlight" target="_blank" href="https://veracrypt.eu/en/">VeraCrypt</a> provides an independent solution for Windows
+              environments, while the
+              <a class="highlight" target="_blank" href="https://linuxconfig.org/basic-guide-to-encrypting-linux-partitions-with-luks">Linux Unified Key Setup (LUKS)</a>
+              offers native encryption for Linux distributions. Unfortunately there is no widely available alternative to Apple's FileVault for encrypting the boot partition in MacOS.
+            </p>
+            <h4>Web & Network Protection</h4>
+            <p class="blog-p">
+              Browser selection is critical. Chromium-based browsers face substantial privacy degradation with the 
+              <a class="highlight" target="_blank" href="https://blog.chromium.org/2024/05/manifest-v2-phase-out-begins.html">deprecation of the Manifest V2
+                  protocol</a> scheduled for 2024/2025.
+              <a class="highlight" target="_blank" href="https://librewolf.net/">LibreWolf</a> is a Firefox derivative intended for privacy-focused
+              configurations while not being affected by
+              <a class="highlight" target="_blank" href="https://ghostbrowser.com/blog/firefoxs-terms-of-use-privacy-controversy/">Mozilla's problematic terms of use</a>.
+              Search engine alternatives include <a class="highlight" target="_blank" href="https://www.startpage.com/">Startpage</a> and
+              <a class="highlight" target="_blank" href="https://metasearx.com/">Searx</a>, which do no track you.
+              If you prefer to stay within the realm of Chromium-based browsers, <a class="highlight" target="_blank" href="https://ungoogled-software.github.io/ungoogled-chromium-binaries/">Ungoogled Chromium</a> with the <a class="highlight" target="_blank" href="https://sourceforge.net/projects/chromium-web-store.mirror/"></a>Chromium Webstore</a> plugin is a good choice.
+              Another open-source Chromium-based alternative is the <a class="highlight" target="_blank" href="https://brave.com/">Brave Browser</a>,
+              which, when set to <code>aggressive</code>, thoroughly blocks trackers and spoofs the browser's fingerprint. Truth be told though, best privacy is achieved by ditching Chromium-based browsers.<br />
+              <br />
+              Network-level content blocking provides superior protection compared to browser-based solutions. DNS-over-HTTPS (DoH) services such as
+              <a class="highlight" target="_blank" href="https://rethinkdns.com/">RethinkDNS</a> or <a class="highlight" target="_blank" href="https://nextdns.io/">NextDNS</a>
+              encrypt DNS queries to prevent ISP snooping while providing customizable content filtering across all devices connected to it.<br />
+              <br />
+              Browser-level protections should be thought of as a necessary but secondary layer. For <a class="highlight" target="_blank" href="https://librewolf.net/">LibreWolf</a>,
+              extensions such as <a class="highlight" target="_blank" href="https://privacybadger.org/">Privacy Badger</a>
+              from the Electronic Frontier Foundation provide solid tracker blocking capabilities. For more protection, script execution control through
+              <a class="highlight" target="_blank" href="https://noscript.net/">NoScript</a> (Firefox-based browsers) or
+              <a class="highlight" target="_blank" href="https://chromewebstore.google.com/detail/umatrix/ogfcmafjalglgifnmanfmnieipoejdcf?pli=1">uMatrix</a>
+              (Chromium-based browsers) enables granular connection management that yields substantial security benefits over time, albeit with some configuration overhead.
+              If you don't opt for network-level content blocking, use at least either of the two script execution control extensions and 
+              <a class="highlight" target="_blank" href="https://ublockorigin.com/">uBlock Origin</a>.
+            </p>
+            <h4>Communication & Productivity</h4>
+            <p class="blog-p">
+              Email is an outdated but established concept. It is inherently insecure by default. Email communication benefits from client-side
+              encryption through applications like <a class="highlight" target="_blank" href="https://www.thunderbird.net/en-US/">Thunderbird</a>,
+              which incorporates PGP support. I recommend Thunderbird because, generally, everything you can do outside of a web browser should
+              be done outside of a web browser, as web browsers are the most attacked software.<br />
+              Email service selection should consider jurisdictional specifics, with preference for providers operating under GDPR, Swiss or
+              Icelandic privacy frameworks (for now).<br />
+              Use your email only for communication. When registering for services, use email aliases instead of your actual email.
+              This way, you can easily revoke access to a specific email alias if a service gets compromised at any point.
+              A popular choice for email aliases is <a class="highlight" target="_blank" href="https://addy.io/">Addy</a>, which offers a free tier.
+              Some email providers like <a class="highlight" target="_blank" href="https://proton.me/mail">Proton</a> offer email aliases as well.
+              If you don't want to use aliases, you can still use services like <a class="highlight" target="_blank" href="https://10minutemail.com/">10minutemail</a>.<br />
+              <br />
+              Document processing should utilize open-source solutions like <a class="highlight" target="_blank" href="https://www.onlyoffice.com/">OnlyOffice</a> 
+              or <a class="highlight" target="_blank" href="https://www.libreoffice.org/">LibreOffice</a>, which avoid data collection and provide
+              increasing compatibility with proprietary document formats.<br />
+              <br />
+              For messaging, <a class="highlight" target="_blank" href="https://signal.org/#signal">Signal</a>, 
+              <a class="highlight" target="_blank" href="https://element.io/">Element</a>, or
+              <a class="highlight" target="_blank" href="https://getsession.org/">Session</a> implement end-to-end encryption
+              with minimized metadata collection. <a class="highlight" target="_blank" href="https://signal.org/#signal">Signal</a> goes
+              as far as to implement post-quantum secure encryption. Activate self-destructing messages. Services such as Telegram,
+              WhatsApp, Discord, and Meta's platforms should be avoided.<br />
+              <br />
+              Social media engagement and exposure should be minimized and depersonalized. When necessary, content consumption without authenticating prevents
+              increased cross-platform tracking. Authentication via social media credentials for third-party services creates extensive tracking vectors
+              and should be categorically avoided.
+            </p>
+            <h4>Cloud Services & Network Routing</h4>
+            <p class="blog-p">
+              General purpose cloud storage selection should prioritize services with robust privacy frameworks (GDPR, Swiss/Icelandic laws, for now) and
+              additional <a class="highlight" target="_blank" href="https://pcg.io/insights/understanding-iso-27001/">ISO 27001 certification</a>.
+              <a class="highlight" target="_blank" href="https://proton.me/drive">Proton</a> and
+              <a class="highlight" target="_blank" href="https://u.pcloud.com/">pCloud</a> offer services meeting these criteria.
+              If possible, one should resort to peer-to-peer solutions like <a class="highlight" target="_blank" href="https://syncthing.net/">SyncThing</a>
+              to exclusively transfer data directly between your devices.<br />
+              <br />
+              Do not think of Virtual Private Networks (VPNs) as safety or security measures.
+              VPNs are privacy tools with their own drawbacks. They require careful evaluation, as the route all network traffic
+              through their own infrastructure for the purpose of masking the user's IP address. A VPN is a man-in-the-middle that you put your trust in,
+              yet several large VPN providers are quite intransparent about their data handling, security audits and logging practices.<br />
+              <a class="highlight" target="_blank" href="https://mullvad.net/en">Mullvad</a> has
+              <a class="highlight" target="_blank" href="https://lowendbox.com/blog/the-mullvad-vpn-raid/">demonstrated</a> consistent and
+              <a class="highlight" target="_blank" href="https://mullvad.net/en/blog/2024/12/11/the-report-for-the-2024-security-audit-of-the-app-is-now-available">thorough</a>
+              privacy practices.
+            </p>
+            <h4>Mobile Platform Hardening (Android)</h4>
+            <p class="blog-p">
+              Android's architecture requires and permits users to actually apply privacy enhancements themselves. I will split this into three parts:
+              First, we will look at how to make the best out of your current Android. Then, we will turn this up a notch and see what advanced users
+              may want to do to further tweak their existing Android systems. Finally, we'll look at the best hollistic solution to Android system privacy,
+              hardware- and software-wise.<br />
+              For immediate application, one should carefully configure the Android privacy settings. Removing the
+              <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=com.google.android.safetycore&hl=en-US">Android System SafetyCore app</a>
+              and replacing the default GBoard keyboard with privacy-respecting alternatives like the
+              <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=org.futo.inputmethod.latin.playstore&hl=en-US">FUTO Keyboard</a>
+              reduces some easily avoidable data collection and tracking vectors. More generally, Android users should consider open-source app alternatives from
+              sources like <a class="highlight" target="_blank" href="https://f-droid.org/">F-Droid</a>.
+              Need a QR code scanner? Search on F-Droid first, you will most likely find a good alternative there that isn't data hungry by design.
+              For browsing, privacy-preserving options like the Firefox-based <a class="highlight" target="_blank" href="https://f-droid.org/en/packages/org.mozilla.fennec_fdroid/">Fennec</a>
+              or the Chromium-based <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=com.brave.browser&hl=en-US">Brave Browser</a> should be considered.<br />
+              <br />
+              Advanced users may want to setup <a class="highlight" target="_blank" href="https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api&hl=en-US">Shizuku</a>
+              and <a class="highlight" target="_blank" href="https://f-droid.org/en/packages/org.samo_lego.canta/">Canta</a> for deeper system modification,
+              enabling removal of proprietary system applications even on non-rooted devices. This approach requires careful research to prevent system instability.<br />
+              <br />
+              Note that if you have the choice, Google Pixel phones are well suited for installing
+              <a class="highlight" target="_blank" href="https://grapheneos.org/">GrapheneOS</a>, a privacy-focused Android fork.
+              <a class="highlight" target="_blank" href="https://grapheneos.org/">GrapheneOS</a> achieves enhanced privacy by stripping
+              away Google service integrations while providing extensive control over individual apps, their permissions, network access,
+              and background activities overall. Additionally, a hardened memory management offers protection against potential app
+              vulnerabilities. GrapheneOS, while not that trivial to install, provides a significantly more secure experience than
+              stock Android or iOS.
+            </p>
+            <h4>Artificial Intelligence & Large Language Models</h4>
+            <p class="blog-p">
+              AI interaction brings entirely new privacy challenges. Locality and data ownership represent optimal paradigms for interaction
+              with Large Language Models (LLMs), with tools like <a class="highlight" target="_blank" href="https://ollama.com/">Ollama</a>
+              enabling local LLM operation.<br />
+              <br />
+              When utilizing web-based or cloud-based LLMs, all providers should be treated with caution.
+              I would go so far as to say that all non-local LLM interfaces should be treated as potential keystroke loggers.
+              Directly or indirectly personally identifiable information, confidential data, and sensitive or just related content should
+              never <i>ever</i> be shared with non-local LLMs.
+            </p>
+            <h3>The Connected Identity</h3>
+            <p class="blog-p">
+              Privacy discourse often focuses on data access prevention. This neglects the increasing identity contextualization.
+              Modern tracking extends beyond traditional cookies and usage statistics to behavioral fingerprinting that creates
+              persistent cross-platform identifiers.
+              As shown in a <a class="highlight" target="_blank" href="https://x.com/ProtonPrivacy/status/1902784700155936887">post from Proton</a>,
+              these techniques are viewed as a USP for data brokers, enabling comprehensive profile construction for even more targeted ads regardless
+              of classic privacy measures.<br />
+              <br />
+              While certain tools claim to help by finding and deleting your data from data brokers, they are not solving the problem at all.
+              <a class="highlight" target="_blank" href="https://fingerprint.com/blog/browser-anti-fingerprinting-techniques/">Research</a> suggests that
+              many anti-fingerprinting techniques may not be as effective as claimed and can sometimes make users even more identifiable due to
+              the inconsistencies said measures may introduce. You stand out by trying to hide. Still, some measures can be applied.<br />
+              For Firefox-based browsers, you can follow the concept of uniformity: Make your browser look distinctly like everybody else's.
+              This is achieved by enabling the <code>privacy.resistFingerprinting</code> flag in <code>about:config</code>, which <a class="highlight" target="_blank" href="https://librewolf.net/">LibreWolf</a>
+              has enabled by default.<br />
+              Given the concept of uniformity, you can add to that the idea of randomness within bounds that suggest normality. You may want to install
+              the <a class="highlight" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/user-agent-string-switcher/">User-Agent Switcher and Manager</a>
+              and have your browser pretend to be Google Chrome on a Windows PC, the most commonly used setup. You should also setup
+              <a class="highlight" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/canvasblocker/">CanvasBlocker</a> to
+              actively prevent websites from using certain Javascript APIs for fingerprinting.
+            </p>
+            <h3>GDPR: Tech Bro's Nightmare</h3>
+            <p class="blog-p">
+              The General Data Protection Regulation (GDPR) is the most comprehensive privacy legislation framework implemented globally.
+              Despite criticism from technology executives, particularly those with business models dependent on aspects of what is refered to as
+              'surveillance capitalism', GDPR fundamentally shifts power dynamics between users and technology providers by establishing expensive-to-break
+              data ownership principles.<br />
+              <br />
+              GDPR's core provisions contain explicit consent requirements, data minimization, purpose limitation, accountability mechanisms, and the
+              right to complete and total erasure. These requirements are legally binding with substantial penalties reaching 4% of global annual revenue or
+              €20 million, exemplified by <a class="highlight" target="_blank" href="https://www.euronews.com/2023/01/04/meta-fined-390m-for-privacy-law-breaches-in-the-eu">Meta's €390 million fine issued in January 2023</a>.<br />
+              A company operating in the EU from anywhere in the world has to adhere to the GDPR when it comes to processing the data of EU citizens.<br />
+              <br />
+              When users can demand transparency regarding data collection and algorithmic decision-making, business models predicated on opaque data
+              extraction become unsustainable.
+              Opposition to GDPR reveals the uncomfortable reality that many "innovative" business models fundamentally depend on privacy asymmetries rather
+              than foremost genuine user-centered value creation. Companies claiming that innovation requires unrestricted data access are acknowledging
+              their inability to obtain informed consent for their practices.<br />
+              Claims that GDPR inhibits innovation are creating popularity for said opposition. This inverts reality. European companies effectively enjoy 
+              competitive advantages in global markets. Companies including Mullvad and Proton have developed successful business models with GDPR
+              compliance as a differentiating feature of quality and an indicator for trustworthiness when it comes to privacy.
+            </p>
+            <h3>Conclusion: Probabilistic Protection</h3>
+            <p class="blog-p">
+              Comprehensive privacy requires a hollistic and systematic approach, spanning not just encryption, geographic distribution, and regular updates.
+              Privacy fundamentally represents a probabilistic challenge rather than a binary state - each implemented protection layer compounds security
+              benefits while reducing the probability for compromise.<br />
+              <br />
+              The privacy framework presented here balances theoretical ideals with practical implementation constraints. While some usability friction is
+              unavoidable, security benefits can substantially outweigh convenience costs.<br />
+              The objective is not a paranoid isolation but awareness and data sovereignty. Users should maintain awareness of data flows and developments in law
+              and act accordingly, implementing reasonable protective measures, and exercising conscious decision-making regarding digital engagement.
+              Privacy represents not merely a technical challenge but a fundamental component of digital agency.
+            </p>
+          </div>
+        </div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>

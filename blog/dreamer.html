@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../js/no-flash.js"></script>
+    <meta http-equiv="content-security-policy" content="" />
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
+    <link href="../css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/languages/python.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
+    <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="../js/search.js"></script>
+    <script defer src="../js/theme-toggle.js"></script>
+    <title>DreamerV2 and DreamerV3, Explained</title>
+    <meta name="description" content="Dive into DreamerV2 and DreamerV3: cutting-edge reinforcement learning algorithms
+    that master environments through 'latent imagination.' Discover how world models can overcome sparse rewards
+    and sample complexity." />
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <div class="project">
+          <h2>DreamerV2 and DreamerV3, Explained</h2>
+          <p class="thin project-p">April 2024 • Reading Time: 10 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+              Creating systems capable of engaging in interaction to robustly perceive, explore and attain incrementally complex 
+              insights poses an ongoing challenge. The Dreamer algorithm family addresses this by employing latent imagination
+              for Reinforcement Learning (RL), enabling the development of effective policies for various tasks in different
+              environments. Dreamer underwent multiple iterations, with DreamerV2 standing out as a major improvement over its
+              predecessor and serving as the foundation for additional changes in DreamerV3. Let's take a closer look at Dreamer by
+              laying out the key components of DreamerV2 and how they were further improved with DreamerV3.
+            </p>
+            <h3>The Reinforcement Learning Problem</h3>
+            <p class="blog-p">
+              In Reinforcement Learning, a so-called agent learns to optimize attaining rewards within an environment through 
+              trial-and-error. An agent's actions can alter environment states and affect which if any rewards get emitted from
+              the environment. Rewards can happen to be sparse or delayed \cite{sutton2018reinforcement}, making it hard
+              to directly associate them with the actions that caused them. This is why rather than learning direct actio-reactio
+              associations, RL agents optimize generalizable strategies for action selection. To attain an agent's ability of
+              exercising optimal strategies, the training has to balance a trade-off between exploiting known, rewarding actions
+              and exploring new, potentially informative trajectories \cite{jiang2023importance}.<br />
+              While RL already achieved great success in its application to video games \cite{justesen2019deep} and strategic board
+              games \cite{silver2017mastering}, real-world settings can prove challenging \cite{kober2013reinforcement}. 
+              Both trial-and-error and the sparse-delayed reward problem
+              can amount to a high number of interactions with the environment necessary to learn a good policy, i.e. a high
+              sample complexity \cite{kakade2003sample}. This is where Dreamer comes into play.<br />
+              With Dreamer, a world model is trained to efficiently develop abstractions capturing the dynamics of the environment.
+              The model is then used to fully simulate environment behavior, allowing for the agent to learn from imagined dynamic
+              trajectories. This in turn allows an agent to get exposed to a broader range of experiences, developing a more robust,
+              yet flexible policy.
+            </p>
+            <h3>The World Model</h3>
+            <p class="blog-p">
+              The world model within DreamerV2 consists of a representation model, a Recurrent State-Space Model 
+              (RSSM) \cite{hafner2019learning}, and predictors for image, reward, and a next input's representation \cite{hafner2020mastering}.
+              For high-dimensional inputs, the world model is trained to flexibly capture key observational information.
+              The representation model consists of a Convolutional Neural Network (CNN) connected to a Multi-Layered 
+              Perceptron (MLP). The CNN disconnects the impact of image contents from their spatial position, effectively facilitating
+              translation invariance and robustness in feature detection. The MLP goes on to perform informed reshaping of feature information.
+              The representation model employs the current hidden state of the RSSM and current sensory input to derive a 
+              latent representation. This categorical latent variable $z_t$ is a $32 \times 32$ binary matrix, meaning $32$
+              vectors of $32$ classification variables each.
+            </p>
+            <div class="blog-img">
+              <img src="../img/dv2_2.png" alt="DreamerV2 World Model" style="width: 72%" />
+              <p class="blog-img-caption">World Model of DreamerV2. Altered Image. Original Image Source: \cite{hafner2020mastering}</p>
+            </div>
+            <p class="blog-p">
+              The RSSM employs a recurrent neural network structure of Gated Recurrent Units (GRU) to capture
+              environmental dynamics caused by interaction \cite{cahuantzi2023comparison}. The RSSM's primary objective
+              is to over time learn a hidden state transition that effectively represents the dynamics of the environment.
+              The consideration of the time dimension allows for a more nuanced choice of action, as a current
+              input can now be put into context \cite{gao2022enhance}. Let's see what this means in detail.<br />
+              For each time step $t$, a sensory observation $x_t$ is obtained. The RSSM derives a hidden state $h_t$,
+              influenced by $h_{t-1}$, the previous action $a_{t-1}$, and the prior latent state $z_{t-1}$. To now let
+              information from $x_t$ affect the RSSM, $x_t$ undergoes informed dimensionality reduction through the
+              representation model, yielding $z_t$ after sampling. The immediate output of the representation model is an
+              information-carrying distribution utilized to sample a representing data point for each of the $32$ categories
+              in $z_t$. The image predictor, implemented as a deconvolutional CNN, utilizes both $h_t$ and $z_t$ to
+              produce the reconstructed image $\hat{x}_t$. The compression of $x_t$ by the representation model and
+              decompression to $\hat{x}_t$ by the Image predictor is called autoencoding \cite{bank2023autoencoders}.
+              Hidden state $h_t$ and latent representation $z_t$ also serve as input for a reward predicting MLP, 
+              forecasting $\hat{r}_t$. After obtaining $x_t$ and deriving $\hat{x}_t$ and $\hat{r}_t$, another action 
+              $a_t$ is induced, influencing $h_{t+1}$. Consequently, $\hat{r}_{t+1}$ can be interpreted as the predicted
+              reward for $a_t$. Notably, $a_t$ along with $r_t$ are sourced externally. Their occurence closes the learning
+              loop for the RSSM.<br />
+              In addition to being a part of the input for image and reward predictor, the hidden state $h_t$, is also
+              utilized to predict $z_t$ through $\hat{z}_t$. Understanding the reason for the existence of the transition
+              predictor and resulting $\hat{z}_t$ is crucial for the intuition for DreamerV2. Hidden state $h_t$ undergoes
+              gradient-based optimization caused by the reward predictor, the image predictor, and the disparity between
+              $z_t$ and $\hat{z}_t$, the synthetic latent representation. The latter is attained by minimizing the 
+              Kullack-Leibler divergence. Therefore, the closer the categorical vectors $\hat{z}_t$ to $z_t$, the more
+              realistic the environment information encoded within $h_t$ will be. Following real-world exposure and
+              accompanying optimization, the model-derived $\hat{z}$ can substitute actual observations $z$.
+              Essentially, DreamerV2 establishes a fully simulated environment for conducting RL, where
+              actor-critic learning is employed to determine action choices and trace long-term rewards.
+            </p>
+            <h3>Latent Representation</h3>
+            <p class="blog-p">
+              With DreamerV2, each sensory perception input into the world model is represented using $32 \times 32$
+              categorical variables \cite{hafner2020mastering}. DreamerV1 had modeled the latent space as one continuous distribution \cite{hafner2019dream}.
+              For the switch from V1 to V2, the authors argue that discrete representations enable a more distinguishable embedding
+              of multimodal distributions. This capability is deemed crucial for accurate representation of complex probability
+              systems \cite{hafner2021blog}. The encoder transforms each image into $32$ distributions over $32$ classes. The
+              interpretation of these classes is entirely up to the model itself during the learning process of it. To facilitate
+              backpropagation through these latent representations, straight-through gradients are employed, which allow for automatic
+              differentiation.<br />
+              The reason as to why employing categorical variables offers advantages can be expressed best when looking at the
+              latent representation $z_t$ from a perspective of $h_t$. The hidden state aims to predict $z_t$ through $\hat{z}_t$.
+              If $z_t$ were to model a Gaussian, then $\hat{z}_t$ would be expressed to a mean and a variance. The problem here is
+              that in a given setting and after a given $a_t$ is executed, $h_t$ should be able to express through $\hat{z}_t$ that
+              multiple sensory inputs are perceived to be possible as next input, each with a different associated likelihood.
+              However, to express this, $\hat{z}_t$ could only use mean and variance. The single Gaussian expressed by $\hat{z}_t$ is
+              thus deemed conceptually inadequate for concisely modeling potentially multimodal distributions.
+              As perceived by the authors, a lack of this concise modeling capability through an implementation of $\hat{z}_t$ as a
+              distribution also implies a more complicated learning process for attaining a well-representing $\hat{z}_t$, as it
+              conceptually imposes a lack of predictive resolution \cite{hafner2021blog}. Given a $z_t$ representation, $\hat{z}_t$
+              can be expressed as such a categorical distribution, aiming to mirror $z_t$. In total, a more informed prediction with
+              distributions representing multiple likelihoods can be used to predict $z_t$ now, implying a now more fine-grained training.
+            </p>
+            <h3>Behavior Learning</h3>
+            <p class="blog-p">
+              With the components in place, the world model is able to fill a replay buffer of $n$ representations, $z_{1:n}$.
+              Consequently, the world model assembles a maintainable, efficient, low-memory representation of environment dynamics, from which
+              individual $z_t$ can be sampled from as starting points for the RSSM.<br />
+              Behavior Learning now introduces the actual RL component for policy refinement. DreamerV2 utilizes six networks for Behavior Learning: 
+              The RSSM, the representation model, a critic network, and predictors for transition, reward and action, the latter being called the actor.
+              It is to be noted that the RSSM, the representation model, and the predictors for transition and reward are not trained during
+              behavior learning, as they were trained by the world model. The agent's behavior is optimized through actor-critic learning.
+              The actor determines the actions to execute with the aim of respectively maximizing the critic's prediction signal.
+              While doing so, the actor introduces stochasticity for action selection according to an exploration-exploitation trade-off.
+              The actor is implemented as an MLP activated by Exponential Linear Unit activation (ELU). The critic, which is also an 
+              ELU-activated MLP, predicts the sum of future rewards, called the value $v$ per each state of the RSSM.
+            </p>
+            <div class="blog-img">
+              <img src="../img/dv2_1.png" alt="DreamerV2 Behavior Learning" style="width: 65%" />
+              <p class="blog-img-caption">The Behavior Learning of DreamerV2. Altered Image. Original Image Source: \cite{hafner2020mastering}</p>
+            </div>
+            <p class="blog-p">
+              The critic is trained using temporal difference learning. Temporal difference learning by itself is a model-free optimization
+              within DreamerV2 \cite{anand2021preferential}. The critic learns to predict the expected future rewards $\hat{v}_t$ by making
+              predictions based on the current state and the subsequent states. The agent gradually updates its predictions by comparing the
+              rewards it receives from the reward predictor with the rewards it expected to receive. Behavior Learning trajectories are
+              respectively limited to a horizon $H=15$, meaning $15$ imaginary states are generated per learning iteration. The efficiency of
+              DreamerV2 and hence its applicability to real-world settings become evident when shifting the focus to the basis upon which
+              actor and critic optimize each other.<br />
+              The policy refinement is done from a sampled state onwards based on imagined state representations $\hat{z}_t$ only.
+              No actual engagement with an environment is necessary for policy refinement. This increases DreamerV2's performance during model
+              learning to such an extend that DreamerV2 does not require simulation in order to refine a policy. The actor network then can later
+              be used to provide a choice of action for the world model for further situational exploration and thus more focused data collection.
+            </p>
+            <h3>Updates for DreamerV3</h3>
+            <p class="blog-p">
+              The aptly named successor to DreamerV2, DreamerV3, evolved to address further remaining challenges for generalized reinforcement learning.
+              Specifically, while DreamerV2 had made significant advances with its categorical representations and experience- and imagination-based learning,
+              DreamerV3 introduces additional improvements in robustness techniques, network architecture, optimization methods, and replay buffer management \cite{hafner2023master}.<br />
+              <br />
+              Unlike V2, DreamerV3 applies what is called a symmetric logarithmic (symlog) transformation to the raw observation vectors.
+              Symlog compresses large positive and negative values while behaving very similar to the identity function near zero.
+              This added measure prevents large inputs and thus extreme reconstruction gradients from destabilizing training.
+              Symlog particularly hardens Dreamer against outlier observations, i.e. unpredictable occurrences in real-world data.<br />
+              <br />
+              In the case that encountered environment dynamics turn out to be too easy/mild, having the KL divergence get very small, 
+              DreamerV2 could learn to produce a very deterministic or uninformative prior distribution that articulates little
+              about the actual diversity of possible states. In other words, the model would inadvertedly and accidentally train itself into an
+              overly simplistic world view. DreamerV3 implements what the authors call KL balancing and "Free Bits" to counteract this.<br />
+              For each time step, the respective dynamics loss ($L_{dyn}$) and the representation loss ($L_{rep}$) are truncated below a threshold of
+              $1 \text{nat}$ ($\approx 1.44 \text{bits}$). In other words, as long as the KL divergence between the prior and the posterior is
+              already very low (i.e., the dynamics are already well modeled/predictable), the contribution to of dynamics and representation loss to the
+              total loss is outright 'squashed' to zero. Moreover, this change not only reduces the loss jitter, but also allows the model to focus more explicitly on
+              prediction errors ($L_{pred}$). And this rebalancing of the loss terms to focus on what matters ($L_{pred}$) is what the authors refer to as
+              KL balancing through "Free Bits" (thresholding).<br />
+              <br />
+              We just saw that to maintain effective exploration and thus effective reinforcement learning, we have to avoid deterministic behavior, as
+              e.g. a deterministic actor would always choose the same action in a given state, which would in turn cut short any exploration of new
+              and potentially better action strategies and have KL divergence go to zero in an ill-fashioned way.<br />
+              We saw that DreamerV2 had used $32 \times 32$ categorical variables to represent the sensory input into the world model. DreamerV3 does
+              this too, but to help prevent the categorical distributions from becoming deterministic, DreamerV3 additionally implements a mixture of
+              $99\%$ of the predicted softmax output with $1\%$ of a uniform distribution. Yes, we assign an always same
+              probability to all categories with an 'intensity' of $1\%$ with regards to the predicted softmax output.
+              This is done to meaningfully yet subtly and non-distoringly assign some relevance to all categories, even if
+              the model is confident about a certain category to avoid falling into full on determinism. This is refered to as "$1\%$ Unimix".<br />
+              <br />
+              Let's take a look at the actor. Remember that the actor is trained to predict the next action based on the current state and the predicted next state.
+              Where DreamerV2 wasn't too clear about the normalization for the actor, i.e. the normalizing the prediction across the action space   
+              by the standard deviation of the predicted action distribution, DreamerV3 proposes a concrete and robust approach.
+              DreamerV3 normalizes actor returns based on the $5^{\text{th}}$ and $95^{\text{th}}$ percentiles of all returns observed until that point.
+              This bolsters the actor's choice of action against influence of outliers in the step-wise return distributions and thus helps enable more stable
+              exploration. This change is particularly beneficial for sparse reward environments where occasional high rewards, just by their sudden appearance, could
+              distort the learning process in this 'reward-encountering' step.<br />
+              <br />
+              Going back again, with DreamerV2, the reward predictor MLP directly served as output the current time step's predicted reward $r$.
+              Equally, the critic network was an ELU-activated MLP that saw its output directly getting interpreted as the value $v$ of the
+              current time step. This is the case with DreamerV3 still, but the way in which predictions are made and trained has changed through what is called
+              Symexp-Twohot Loss. The output layer and the associated loss function of the MLPs are adjusted accordingly. The output layer
+              generates logits for a probability distribution over exponentially distributed bins (respective value ranges from that distrubution).
+              Symexp-Twohot Loss takes this discretized probability distribution and compares it to the two-hot encoded target value.
+              The loss function forces the network to increase the probability in the bins that correspond to the actual value.<br />
+              <br />
+              Several changes are structural in nature. For example, DreamerV3 exchanges activation functions of the actor and critic networks from ELU to Swish and
+              adds RMSNorm for normalization. While they found that layer norm wasn't providing improvements for DreamerV2, RMSNorm was found to be beneficial,
+              especially as the RSSM was updated to use the paper's own Block GRU architecture, which is still a GRU, but extended with block-diagonal recurrent
+              weights, meaning the recurrent weights are divided into blocks, in this case it is $8$ blocks specifically. Each block is connected to a different
+              part of the input.
+              <br />
+              DreamerV3 dropped the use of Adam as its optimizer. This is interesting as Adam in particular is highly regarded for its
+              versatility and performance in a wide range of tasks. The authors argue that especially the different scales of loss functions
+              and gradients that DreamerV3 may encounter in various environments can make training with Adam unstable. Dropping Adam, their solution consists of using
+              Adaptive Gradient Clipping (AGC) and the LaProp optimizer instead. AGC is a gradient clipping technique adapting the clipping threshold
+              based on the magnitude of the model weights. If a model weight is small, its gradient is clipped more aggressively.
+              If the weight becomes large, the gradient gets clipped less. For DreamerV3, the clipping threshold is set as
+              a percentage of the L2-norm of the respective weight matrix ($30\%$ for DreamerV3). Notably, gradient clipping happens independently of the
+              scale of the loss function. When adjusting DreamerV3 for a different environment, it may be necessary to change the loss function. We would
+              not have to worry much about the gradients exploding though, as AGC clips them out-of-the-box, independently.<br />
+              The LaProp optimizer is a variant of the Adam optimizer aiming to improve training stability and performance.
+              The optimizer takes the (by then possibly clipped) gradients and uses them to update the model parameters by some update rule, which may
+              concern factors like a learning rate and normalization techniques.
+              LaProp replaces Adam as the authors found that the $\epsilon$ could be set way lower with LaProp. Not going deep into why that is,
+              but a lower $\epsilon$ effectively means that the optimizer can afford to be more sensitive and apply small gradients, which can be
+              beneficial for stability of training in environments with sparse rewards. LaProp provides a more sensible calculation of even tinier
+              gradients while AGC treats the gradient extremes without itself regarding the loss scale.<br />
+              <br />
+              Finally, DreamerV3 introduces a new replay buffer management system, more tightly integrating the 'storage' for iterable experiences
+              with the training process. DreamerV2 had used this to 'record experience into' and then 'sample from' for training. DreamerV3 employs the replay buffer
+              more fluently by ensuring that even recently collected experiences are available for training immediately. Moreover, latent representations that 
+              are iterated over receive a refresh through the additional replay. DreamerV3 has this refresh happen directly within the replay buffer itself.
+            </p>
+            <h3>Conclusion</h3>
+            <p class="blog-p">
+              Dreamer is not only a powerful exercise in RL, but in model-based ML in general. While the field of RL suffered for quite some time form being called expensive,
+              as trial-and-error can take up time and resources and rewards may additionally be sparse or delayed, Dreamer's world model-centered approach mitigates these
+              issues by establishing a back-to-back trainable, fully simulated environment to sample and learn from increasingly reasonably imagined dynamic trajectories.<br />
+              One could say that the world model is a self-emerging, flexible abstraction. The key to generalizability is that this
+              abstraction can be adapted. Now, for example, think of vanilla Large Language Models (LLM). They utilize the external abstraction that is language.
+              The abstraction is fixed and the model is trained to adapt to it. This intuitively restricts the generalizability of LLM capabilities.
+              In other words, LLMs are not Artifical General Intelligence (AGI), but they should be cut some slack still, they are Advanced Machine Intelligence (AMI).
+              For the exact reasons we just discussed, both world models and efficient RL policy refinement are really hot topics right now \cite{garrido2024learning} \cite{matsuo2022deep} \cite{hopkins2024llms}.
+              I assume we will hear a lot more about Dreamer and its conceptual successors in the near future.
+            </p>
+          </div>
+          <div id="references"></div>
+        </div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+    <div id="bibtex" style="display: none">
+        <div id="sutton2018reinforcement">
+            <p>@book{sutton2018reinforcement,
+              title={Reinforcement learning: An introduction},
+              author={Sutton, Richard S and Barto, Andrew G},
+              year={2018},
+              publisher={MIT press}
+              }</p>
+            <a>https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf</a>
+        </div>
+        <div id="jiang2023importance">
+          <p>@article{jiang2023importance,
+            title={On the importance of exploration for generalization in reinforcement learning},
+            author={Jiang, Yiding and Kolter, J Zico and Raileanu, Roberta},
+            journal={arXiv preprint arXiv:2306.05483},
+            year={2023},
+            }</p>
+            <a>https://arxiv.org/abs/2306.05483</a>
+        </div>
+        <div id="justesen2019deep">
+          <p>@article{justesen2019deep,
+            title={Deep learning for video game playing},
+            author={Justesen, Niels and Bontrager, Philip and Togelius, Julian and Risi, Sebastian},
+            journal={IEEE Transactions on Games},
+            volume={12},
+            number={1},
+            pages={1--20},
+            year={2019},
+            publisher={IEEE}
+            }</p>
+          <a>https://arxiv.org/abs/1708.07902</a>
+        </div>
+        <div id="silver2017mastering">
+          <p>@article{silver2017mastering,
+            title={Mastering the game of go without human knowledge},
+            author={Silver, David and Schrittwieser, Julian and Simonyan, Karen and Antonoglou, Ioannis and Huang, Aja and Guez, Arthur and Hubert, Thomas and Baker, Lucas and Lai, Matthew and Bolton, Adrian and others},
+            journal={nature},
+            volume={550},
+            number={7676},
+            pages={354--359},
+            year={2017},
+            publisher={Nature Publishing Group}
+            }</p>
+          <a>https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf</a>
+        </div>
+        <div id="kober2013reinforcement">
+          <p>@article{kober2013reinforcement,
+            title={Reinforcement learning in robotics: A survey},
+            author={Kober, Jens and Bagnell, J Andrew and Peters, Jan},
+            journal={The International Journal of Robotics Research},
+            volume={32},
+            number={11},
+            pages={1238--1274},
+            year={2013},
+            publisher={SAGE Publications Sage UK: London, England}
+            }</p>
+            <a>https://link.springer.com/chapter/10.1007/978-3-642-27645-3_18</a>
+        </div>
+        <div id="kakade2003sample">
+          <p>@book{kakade2003sample,
+            title={On the sample complexity of reinforcement learning},
+            author={Kakade, Sham Machandranath},
+            year={2003},
+            publisher={University of London, University College London (United Kingdom)}
+          }</p>
+          <a>https://homes.cs.washington.edu/~sham/papers/thesis/sham_thesis.pdf</a>
+        </div>
+        <div id="hafner2019learning">
+          <p>@inproceedings{hafner2019learning,
+            title={Learning latent dynamics for planning from pixels},
+            author={Hafner, Danijar and Lillicrap, Timothy and Fischer, Ian and Villegas, Ruben and Ha, David and Lee, Honglak and Davidson, James},
+            booktitle={International conference on machine learning},
+            pages={2555--2565},
+            year={2019},
+            organization={PMLR}
+            }</p>
+          <a>https://proceedings.mlr.press/v97/hafner19a/hafner19a.pdf</a>
+        </div>
+        <div id="cahuantzi2023comparison">
+          <p>@inproceedings{cahuantzi2023comparison,
+            title={A comparison of LSTM and GRU networks for learning symbolic sequences},
+            author={Cahuantzi, Roberto and Chen, Xinye and G{\"u}ttel, Stefan},
+            booktitle={Science and Information Conference},
+            pages={771--785},
+            year={2023},
+            organization={Springer}
+            }</p>
+          <a>https://arxiv.org/abs/2107.02248</a>
+        </div>
+        <div id="gao2022enhance">
+          <p>@article{gao2022enhance,
+            title={Enhance Sample Efficiency and Robustness of End-to-end Urban Autonomous Driving via Semantic Masked World Model},
+            author={Gao, Zeyu and Mu, Yao and Shen, Ruoyan and Chen, Chen and Ren, Yangang and Chen, Jianyu and Li, Shengbo Eben and Luo, Ping and Lu, Yanfeng},
+            journal={arXiv preprint arXiv:2210.04017},
+            year={2022},
+            }</p>
+          <a>https://arxiv.org/abs/2210.04017</a>
+        </div>
+        <div id="bank2023autoencoders">
+          <p>@article{bank2023autoencoders,
+            title={Autoencoders},
+            author={Bank, Dor and Koenigstein, Noam and Giryes, Raja},
+            journal={Machine Learning for Data Science Handbook: Data Mining and Knowledge Discovery Handbook},
+            pages={353--374},
+            year={2020},
+            publisher={Springer}
+            }</p>
+          <a>https://arxiv.org/abs/2003.05991</a>
+        </div>
+        <div id="hafner2019dream">
+          <p>@article{hafner2019dream,
+            title={Dream to control: Learning behaviors by latent imagination},
+            author={Hafner, Danijar and Lillicrap, Timothy and Ba, Jimmy and Norouzi, Mohammad},
+            journal={arXiv preprint arXiv:1912.01603},
+            year={2019},
+            }</p>
+          <a>https://arxiv.org/abs/1912.01603</a>
+        </div>
+        <div id="hafner2020mastering">
+          <p>@article{hafner2020mastering,
+            title={Mastering atari with discrete world models},
+            author={Hafner, Danijar and Lillicrap, Timothy and Norouzi, Mohammad and Ba, Jimmy},
+            journal={arXiv preprint arXiv:2010.02193},
+            year={2020},
+          }</p>
+          <a>https://arxiv.org/abs/2010.02193</a>
+        </div>
+        <div id="hafner2021blog">
+          <p>@online{hafner2021blog,
+            title = {Mastering atari with discrete world models - Blog},
+            year = {2021},
+            author = {Hafner, Danijar},
+            url = {https://blog.research.google/2021/02/mastering-atari-with-discrete-world.html},
+            urldate = {2023-11-06},
+            }</p>
+          <a>https://blog.research.google/2021/02/mastering-atari-with-discrete-world.html</a>
+        </div>
+        <div id="anand2021preferential">
+          <p>@article{anand2021preferential,
+            title={Preferential temporal difference learning},
+            author={Anand, Nishanth and Precup, Doina},
+            journal={arXiv preprint arXiv:2106.06508},
+            year={2021},
+            }</p>
+          <a>https://arxiv.org/abs/2106.06508</a>
+        </div>
+        <div id="garrido2024learning">
+          <p>@article{garrido2024learning,
+            title={Learning and Leveraging World Models in Visual Representation Learning},
+            author={Garrido, Quentin and Assran, Mahmoud and Ballas, Nicolas and Bardes, Adrien and Najman, Laurent and LeCun, Yann},
+            journal={arXiv preprint arXiv:2403.00504},
+            year={2024},
+          }</p>
+          <a>https://arxiv.org/abs/2403.00504</a>
+        </div>
+        <div id="lin2023learning">
+          <p>@article{lin2023learning,
+            title={Learning to model the world with language},
+            author={Lin, Jessy and Du, Yuqing and Watkins, Olivia and Hafner, Danijar and Abbeel, Pieter and Klein, Dan and Dragan, Anca},
+            journal={arXiv preprint arXiv:2308.01399},
+            year={2023},
+          }</p>
+          <a>https://arxiv.org/abs/2308.01399</a>
+        </div>
+        <div id="hopkins2024llms">
+          <p>@online{hopkins2024llms,
+            title={LLMs, Make Room For World Models},
+            year={2024},
+            author={Hopkins, Brian},
+            urldate={2024-04-17},
+          }</p>
+          <a>https://www.forrester.com/blogs/llms-make-room-for-world-models/</a>
+        </div>
+        <div id="matsuo2022deep">
+          <p>@article{matsuo2022deep,
+            title={Deep learning, reinforcement learning, and world models},
+            author={Matsuo, Yutaka and LeCun, Yann and Sahani, Maneesh and Precup, Doina and Silver, David and Sugiyama, Masashi and Uchibe, Eiji and Morimoto, Jun},
+            journal={Neural Networks},
+            volume={152},
+            pages={267--275},
+            year={2022},
+            publisher={Elsevier}
+          }</p>
+          <a>https://www.sciencedirect.com/science/article/pii/S0893608022001150</a>
+        </div>
+        <div id="hafner2023master">
+          <p>@article{hafner2023mastering,
+            title={Mastering diverse domains through world models},
+            author={Hafner, Danijar and Pasukonis, Jurgis and Ba, Jimmy and Lillicrap, Timothy},
+            year={2023},
+            journal={arXiv preprint arXiv:2301.04104}
+          }</p>
+          <a>https://arxiv.org/abs/2301.04104</a>
+        </div>
+    </div>
+  </body>
+</html>

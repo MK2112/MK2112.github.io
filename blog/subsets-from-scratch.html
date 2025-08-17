@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../js/no-flash.js"></script>
+    <meta http-equiv="content-security-policy" content="" />
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
+    <link href="../css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/languages/python.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="../js/search.js"></script>
+    <script defer src="../js/theme-toggle.js"></script>
+    <title>Finding Data Subsets, from Scratch</title>
+    <meta name="description" content="Challenge the 'more data is better' mantra. Discover how MiniPile-inspired dataset
+    distillation can achieve competitive LLM performance with just around 1% of the original data, revealing surprising
+    'sweet spots' for model training." />
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <div class="project">
+          <h2>Finding Data Subsets, from Scratch</h2>
+          <p class="thin project-p">February 2025 • Reading Time: 7 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+              The past decade saw datasets growing exponentially in size, domain coverage and complexity.
+              This development was made possible by the increasing availability and generation of data, and the compute to produce and process it,
+              for example in the context of deep learning. Nowadays, private companies conduct training and research on petabyte-scale datasets,
+              while academia increasingly struggles to keep up with providing resources to conduct training even on terabyte-level datasets.
+              While the mantra "scaling means improving" drove remarkable advances, it has also sparked an important question: Will
+              it suffice to just stick to scaling? How much training data is truly necessary?<br />
+              <br />
+              This exploration leads down a path of investigating dataset distillation techniques.
+              Specifically, we will be focusing on reproducing, improving and musing about implications of the MiniPile approach.<br />
+              You can find the code for this project on <a class="highlight" target="_blank" title="github.com/MK2112/minicorpus"href="https://github.com/MK2112/minicorpus">GitHub</a>.
+            </p>
+            <h3>Distilling knowledge from the deduplicated Pile</h3>
+            <p class="blog-p">
+              The premise seems deceptively simple: We are given a large dataset, EleutherAI's deduplicated Pile. 
+              Compared to training on the big dataset, is it possible to sample a substantially smaller subset of the deduplicated Pile
+              that would be able to preserve the capabilities in models trained on it?<br/>
+              Jean Kaddour's work on MiniPile indicates that this is indeed possible. By producing MiniPile, Kaddour achieved
+              competitive performance to The deduplicated Pile with just $\sim 1\%$ of the unedited, original dataset. But, given this
+              idea as basis, can we replicate this? And if so, could we push this further? And, more importantly, would perceived
+              effects of MiniPile and potential improvements hold across different model sizes?
+            </p>
+            <h4>Reproducing MiniPile</h4>
+            <p class="blog-p">
+              First, we need to reproduce the pipeline that builds MiniPile.<br />
+              MiniPile draws meaning from text data by means of embeddings. These embeddings serve as proxies for each text's syntactic
+              and semantic content. Each text is embedded into a $768$-dimensional numeric vector. Jean Kaddour's work used the embedding model
+              E5-Large for this. We deviate and use E5-Base-4k with a context size of $1024$ instead of $512$ for more speed.<br/>
+              The core idea behind Kaddour's MiniPile is the utilization of the proxy embeddings by means of their geometric expressiveness.
+              In other words, it is the geometric similarities between the vectors that we interpret as indicators for each represented text's
+              properties. And, sticking with that notion, a text's uniqueness can be measured by the distance of its embedding to other embeddings
+              in the dataset. Embeddings that turn out to be closer together in the $768$-dimensional embedding space will be assumed to represent
+              texts more similar to one another, content-wise. With the embedding process in full swing across the full, deduplicated Pile,
+              producing one vector per text example, we can go on to prepare $k$-Means clustering for the produced embeddings.<br />
+              Kaddour set $k=220$, as the deduplicated Pile was assembled from $220$ topically different, smaller datasets originally.
+              This effectively aims to reverse the piling together by making groups of data contents distinguishable as such again.
+              During clustering, additionally, we construct a file containing $10$ text examples (excerpts of them) represented by the
+              farthest and closest embeddings per identified centroid,
+              as well as the total count and average distance of embeddings to their assigned cluster centroid.<br />
+              <br />
+              Another factor as to why we cluster in the first place concerns that we can ensure a preservation of diversity from clusters we
+              elect to retain, while unwanted, noisy, derogatory or otherwise uninformative content can be excluded in bulk.
+              In fact, that's exactly what we do next. With the clustered dataset and the $20$ retrieved texts per cluster, we now
+              manually audit the texts and based on them, disregard a cluster for further processing if example texts fit into 
+              the categories for excludable clusters as layed out in the MiniPile paper:
+            </p>
+            <ul class="blog-p">
+              <li>Near-duplicate documents,</li>
+              <li>Pornography,</li>
+              <li>Webpage navigation bars,</li>
+              <li>Product specifications, and</li>
+              <li>Lists of named entities.</li>
+            </ul>
+            <p class="blog-p">
+              Kaddour excluded $38$ clusters with this method. We adhered to this number.
+              Notably, despite our deviation from the original embedding model,
+              we could find distinct clusters for all the described categories. With the assembled list of $38$ excludable clusters,
+              we go on to randomly sample a total amount of $1,010,500$ examples
+              ($1e6$ train : $500$ val : $1e4$ test) from across the remaining clusters, to equal parts from each cluster.
+              This selected subset ultimately forms our "MiniPile Reproduction" dataset.<br />
+              <br />
+              While we had to make some compromises for practical reasons, our reproduction achieved closely comparable results
+              to the original MiniPile when trained accordingly on a decoder-only Pythia 160M, with multiple benchmarks even showing slight
+              improvements. A promising start!
+            </p>
+            <h4>Exploring and improving</h4>
+            <p class="blog-p">
+              Can we do better than MiniPile, though?<br />
+              We go on to test a variety of differently informed, differently focused sampling strategies, as well as a raised cluster resolution of
+              $k = 220 \times 2 = 440$ for more detailed exclusion of $38 \times 2 = 76$ clusters.
+              I focus on this particular part of the pipeline for improvement for the downstream ease of its applicability in
+              low-resource settings. And still, intuitively, mending the sampling of examples for a more informed selection can potentially
+              yield significant performance gains.<br />
+              <br />
+              With size-density-proportionate sampling, I found an improvement. This modified sampling technique
+              weighs both cluster size and cluster density when selecting samples from the non-exlcuded clusters.
+              The formula for the cluster proportion, by which we would then randomly sample the calculated amount, is given by:
+              
+              $$\text{Cluster Proportion}_i = \frac{|C_i|}{|\bigcup_j C_j|} \cdot (1 - \omega \cdot \rho(C_i))$$
+
+              Here, $|C_i|$ is the cluster size, $\rho(C_i)$ is the cluster density, and $\omega$ is our tunable parameter that controls
+              the influence of density on the sampling process. This approach was particularly motivated by an information-theoretic intuition:
+              Dense regions in the embedding space likely represent common, well-understood text patterns, while sparse regions might indicate
+              unique or specialized, rare knowledge. By balancing between the weight of the presence of these regions, we can aim at capturing
+              both fundamental patterns while still explicitly encouraging to consider diverse edge cases alike.<br />
+              <br />
+              Motivated by the results, I scaled down the size-density-sampled dataset size from $946k$ to $250k$ examples.
+              The original MiniPile, aswell as the size-density-sampled and the pico-size-density-sampled MiniPile
+              were trained on with a Pythia 160M and a Pythia 1.4B model.
+            </p>
+            <div class="blog-img">
+              <img src="../img/minicorpus_160M.png" alt="Pythia 160M Benchmark Results" style="width: 100%" /><br />
+              <br />
+              <img src="../img/minicorpus_160M_Ablations.png" alt="Pythia 160M ablation benchmark results" style="width: 100%" /><br />
+              <br />
+              <img src="../img/minicorpus_1.4B.png" alt="Pythia 1.4B benchmark results" style="width: 100%" /><br />
+              <br />
+              <br />
+            </div>
+            <h3>Surprising Discoveries</h3>
+            <p class="blog-p">
+              Unintuitive findings emerged from training across the two Pythia model sizes, revealing unexpectedly
+              nuanced relationships between dataset size, model capacity, and performance.
+            </p>
+            <h4>Non-Linear Scaling Effects</h4>
+            <p class="blog-p">
+              The training runs revealed unexpected relationships between dataset size and model performance.<br />
+              Benchmark performance did not degrade linearly with dataset size reduction. Instead, some
+              capabilities showed threshold effects on Pythia 160M, maintaining some strength until dropping
+              with ablation studies where I ran training for longer, suggesting overfit.
+              Certain benchmarks (like WinoGrande) showed resistance
+              to dataset size reduction. BLiMP scores suggested fundamental reasoning capabilities
+              to persist even with dataset size reduction.<br />
+              On Pythia 1.4B, the pico-size-density-proportionate
+              MiniPile beat all other distillates on a majority of the benchmarks. Indeed, the small dataset 
+              beat not only the original MiniPile, but also the standard-sized density-proportionate MiniPile.
+            </p>
+            <div class="blog-img">
+              <img src="../img/minicorpus_radar_charts.png" alt="Pythia 160M and 1.4B benchmark results across different datasets" style="width: 100%" /><br />
+              <br />
+              <br />
+            </div>
+            <h4>Density-Performance Paradox</h4>
+            <p class="blog-p">
+              The relationship between cluster density and performance revealed interesting patterns.
+              Favoring dense clusters wouldn't result in more informative distillates. Instead, mixed
+              sampling from considering both dense and sparse regions outperformed pure strategies. I believe the optimal density ratio
+              to vary by task type, as language modeling capabilities showed different density sensitivity than reasoning tasks.
+            </p>
+            <h3>The Emergence of "Sweet Spots"</h3>
+            <p class="blog-p">
+              Intriguingly, there appears to be a notion of optimal data-to-parameter ratios. This seems to have been skipped over by
+              simply scaling the dataset until now. We presume "sweet spots" to exist, suggesting that for given model architectures,
+              there might be an ideal distillate size, attainable by balancing the efficiency of feature extraction, the memorization
+              capacity, and the target reasoning capability.<br />
+              This implication would have particularly interesting implications e.g. for curriculum learning approaches, where we might want
+              to carefully control the complexity, volume and precise impact of training data at different stages of the learning process.
+              Different tasks showed distinct optimal conditions. Reasoning tasks preferred balanced density sampling, and language modeling
+              tasks showed higher tolerance for dataset size reduction. Some tasks showed better transfer with specific cluster compositions.
+              An optimal dataset size, in the end, seemed to vary depending on task type.
+            </p>
+            <h3>Future Directions</h3>
+            <p class="blog-p">
+              While this work demonstrated several promising approaches to dataset distillation, it also revealed some fundamental
+              limitations of current (proxy-based) geometric distillation methods. Some promising directions for future research include:
+              <ol class="blog-p">
+                <li><b>Semantic Deduplication:</b> Incorporating more sophisticated semantic similarity measures could help identify
+                  truly redundant information beyond surface-level patterns.</li>
+                <li><b>Dynamic Sampling:</b> Developing methods that adaptively adjust sampling strategies based on model capacity
+                  and training progress.</li>
+                <li><b>Cross-Dataset Generalization:</b> Investigating how well these techniques transfer to other large-scale text
+                  corpora, particularly those with different structural characteristics from The Pile.</li>
+              </ol>
+            </p>
+            <h3>Conclusion</h3>
+            <p class="blog-p">
+              With our exploration into dataset distillation with the MiniPile approach coming to an end, it reveals that the relationship between
+              data quantity and model quality is more nuanced than previously thought. We've shown that careful sampling strategies can
+              maintain impressive performance with remarkably little data, particularly for medium-sized models.<br />
+              The practical implications extend beyond academic interest. As the field continues to grapple with the
+              computational and environmental costs of training large language models, techniques for efficient dataset distillation
+              become increasingly necessary and valuable.
+            </p>
+          </div>
+        </div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>

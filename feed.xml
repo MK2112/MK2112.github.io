@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+  <channel>
+    <title>Blog</title>
+    <link>https://mk2112.github.io</link>
+    <description>Posts from my blog</description>
+    <generator>rfeed v1.1.1</generator>
+    <docs>https://github.com/svpino/rfeed/blob/master/README.md</docs>
+    <item>
+      <title>An Evolution of Wireless Channel Equalization</title>
+      <link>https://mk2112.github.io/blog/equalizers.html</link>
+      <description>Wireless signals drive modern tech, but they are error-prone and easily distorted.
+                This post explores how wireless signal correction has evolved, from classic methods like Zero-Forcing and MMSE to
+                adaptive algorithms like LMS and RLS, and finally to upcoming AI-powered equalization techniques for
+                large-scale, accurate signal restoration.</description>
+      <pubDate>Thu, 14 Aug 2025 13:38:01 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/equalizers.html</guid>
+    </item>
+    <item>
+      <title>Diffusion Language Models</title>
+      <link>https://mk2112.github.io/blog/diffusion-lm.html</link>
+      <description>Diffusion drives the field of generative modeling, but its application to language tasks was limited. That is, until recently.
+                Diffusion language models emerge as a promising alternative to pre-existing language modeling paradigms, generating text as a whole rather than autoregressively,
+                thus saving time. We explore how diffusion language models work, their potential to advance text generation, and their shortcomings.</description>
+      <pubDate>Thu, 26 Jun 2025 08:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/diffusion-lm.html</guid>
+    </item>
+    <item>
+      <title>A Systematic Approach to Digital Self-Sovereignty</title>
+      <link>https://mk2112.github.io/blog/digital-self-sovereignty.html</link>
+      <description>Privacy means negotiation between security and usability. Owning your data increasingly becomes a focus again and techniques
+                that layer protections can actively help in reducing your exposure without complicating life. To achieve this, we break
+                privacy down to its ingredients, and provide actionable solutions that help reducing your digital footprint.</description>
+      <pubDate>Sun, 23 Mar 2025 21:07:27 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/digital-self-sovereignty.html</guid>
+    </item>
+    <item>
+      <title>Finding Data Subsets, from Scratch</title>
+      <link>https://mk2112.github.io/blog/subsets-from-scratch.html</link>
+      <description>Increasingly, research and academia find themselves hindered by the breathtaking demands for resources required to keep up with
+                industrial, closed AI research.
+                Let's discuss data subset distillation and efficient approaches to distill data subsets even in resource-constrained settings.
+                Applying these distillations can enable orders of magnitude faster training times while still majorly retaining performance, 
+                saving time, energy, money, and help leveling the playing field.</description>
+      <pubDate>Wed, 05 Feb 2025 23:09:33 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/subsets-from-scratch.html</guid>
+    </item>
+    <item>
+      <title>Installing 64-Bit Linux on a 32-Bit EFI Device</title>
+      <link>https://mk2112.github.io/blog/64-bit-linux-on-32-bit-efi.html</link>
+      <description>Modern computing can often present calculated constraints. The ASUS X205TA, a machine architecturally capable 
+                of 64-bit computing, is restricted to 32-bit operation by its EFI. This is a story of circumvention, understanding
+                system boundaries and methodically dismantling them.</description>
+      <pubDate>Fri, 29 Nov 2024 02:35:09 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/64-bit-linux-on-32-bit-efi.html</guid>
+    </item>
+    <item>
+      <title>DreamerV2 and DreamerV3, Explained</title>
+      <link>https://mk2112.github.io/blog/dreamer.html</link>
+      <description>Developing intelligent systems for robustly perceiving, exploring, and attaining incrementally complex insights remains a persistent challenge in the field.
+                The Dreamer algorithm addresses this by employing latent imagination and reinforcement learning, enabling the development of effective policies for various
+                tasks in different environments.</description>
+      <pubDate>Sun, 28 Apr 2024 15:54:46 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/dreamer.html</guid>
+    </item>
+    <item>
+      <title>Long Short-Term Memory</title>
+      <link>https://mk2112.github.io/blog/lstm.html</link>
+      <description>Long Short-Term Memory is a recurrent neural network type for learning long-term dependencies. This was hard to achieve, especially due to the vanishing
+                gradient problem experienced up until that point. LSTM was the first in overcoming this issue, and it proved foundational for many subsequent advances
+                in deep learning.</description>
+      <pubDate>Sat, 24 Feb 2024 03:57:35 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/lstm.html</guid>
+    </item>
+  </channel>
+</rss>

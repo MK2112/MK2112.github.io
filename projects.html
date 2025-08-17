@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./js/no-flash.js"></script>
+    <meta http-equiv="content-security-policy" content="" />
+    <link href="./css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <script defer src="./js/main.js" onload="setupKatex();"></script>
+    <script defer src="./js/search.js"></script>
+    <script defer src="./js/theme-toggle.js"></script>
+    <title>Projects</title>
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="./index.html">Marcus Koppelmann</a>
+        <p>Projects</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="./projects.html"><b>projects</b></a>
+        <a class="dynamic-anchor" title="Blog" href="./blog.html">blog</a>
+        <a class="dynamic-anchor" title="Resume" href="./resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <a class="static-anchor" title="DreamStride" href="https://github.com/mk2112/dreamstride" target="_blank">
+          <div class="project">
+            <div class="project-description">
+              <div>
+                <h2 id="dreamstride">
+                  DreamStride
+                </h2>
+                <p class="thin project-p">May 2025 • Robotics</p>
+                <p align="justify">
+                  DreamStride is a modular implementation of the DayDreamer reinforcement learning algorithm for training a simulated
+                  Spot robot in WeBots. It recreates the walking dog experiment from DayDreamer, using socket-based communication to
+                  bridge perception, action, and learning. This makes Dreamer’s real-world efficiency accessible in a
+                  controlled, reproducible simulation environment that can be scaled.
+                </p>
+              </div>
+              <div>
+                <img
+                  class="project-img"
+                  style="filter: brightness(1.1) contrast(1.05); object-position: 0% 55% !important;"
+                  src="https://images.pexels.com/photos/6153362/pexels-photo-6153362.jpeg"
+                  alt="DreamStride"
+                />
+                <p class="img-p">Photo by Cottonbro Studios</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        <a class="static-anchor" title="MiniCorpus" href="https://github.com/mk2112/miniCorpus" target="_blank">
+          <div class="project">
+            <div class="project-description">
+              <div>
+                <h2 id="minicorpus">
+                  MiniCorpus
+                </h2>
+                <p class="thin project-p">February 2025 • NLP</p>
+                <p align="justify">
+                  MiniCorpus investigates, reproduces and improves MiniPile, a distilled subset of The Pile Deduplicated. 
+                  Introducing several sampling techniques, like size-density-proportionate sampling, MiniCorpus creates training datasets 
+                  that are smaller than MiniPile while maintaining competitive performance. The project provides a complete 
+                  pipeline for dataset distillation, from embedding generation to cluster-based sampling, with 
+                  comprehensive benchmarking across multiple sampling strategies and sketches theoretical ideas too.
+                </p>
+              </div>
+              <div>
+                <img
+                  class="project-img"
+                  style="filter: invert(100%);"
+                  src="https://images.pexels.com/photos/4004375/pexels-photo-4004375.jpeg"
+                  alt="MiniCorpus"
+                />
+                <p class="img-p">Photo by Evie Shaffer</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        <a class="static-anchor" title="MobileYOLOv3" href="https://github.com/mk2112/mobileYOLOv3" target="_blank">
+          <div class="project">
+            <div class="project-description">
+              <div>
+                <h2 id="mobileYOLOv3">
+                  MobileYOLOv3
+                </h2>
+                <p class="thin project-p">October 2024 • Vision</p>
+                <p align="justify">
+                  MobileYOLOv3 is a tiny, back-to-back implementation of the YOLOv3 object detection algorithm in PyTorch.
+                  Its aim is to showcase an entire training pipeline, from data preparation to model inference, in a single Jupyter Notebook.
+                  The model is trained on the ICDAR2015 dataset and gets one-shot pruned and quantized, making it suitable for use cases like
+                  real-time text detection on resource-constrained devices.
+                </p>
+              </div>
+              <div>
+                <img
+                  class="project-img"
+                  src="https://images.pexels.com/photos/7203700/pexels-photo-7203700.jpeg"
+                  alt="MobileYOLOv3"
+                />
+                <p class="img-p">Photo by SHVETS Production</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        <a class="static-anchor" title="GPTemplate" href="https://github.com/mk2112/GPTemplate" target="_blank">
+          <div class="project">
+            <div class="project-description">
+              <div>
+                <h2 id="gptemplate">
+                  GPTemplate
+                </h2>
+                <p class="thin project-p">January 2024 • NLP</p>
+                <p align="justify">
+                  GPTemplate is a fully trainable and usable Generative Pre-Trained Transformer (GPT) within a Jupyter Notebook. 
+                  I built this as a progression beyond Andrej Karpathy's Neural Networks Series 
+                  to showcase GPT's implementation efficiency and basic inner workings. Users only need to provide a text file. 
+                  GPT internalizes the textual patterns therein and generates contextually aligned text, given a prompt.
+                  The hugely popular GPT approach to NLP is thus made a bit more accessible.
+                </p>
+              </div>
+              <div>
+                <img
+                  class="project-img"
+                  src="https://images.pexels.com/photos/6045366/pexels-photo-6045366.jpeg"
+                  alt="GPTemplate"
+                />
+                <p class="img-p">Photo by Skylar Kang</p>
+              </div>
+            </div>
+          </div>
+        </a>
+        <a class="static-anchor" title="Any_To_Any.py" href="https://github.com/mk2112/any_to_any.py" target="_blank">
+          <div class="project">
+            <div class="project-description">
+              <div>
+                <h2 id="any_to_any.py">
+                  Any_To_Any.py
+                </h2>
+                <p class="thin project-p">November 2023 • Preprocessing</p>
+                <p align="justify">
+                  The ability to swiftly convert media files between different
+                  file formats poses a critical necessity in data processing. With
+                  Any_To_Any.py, I wanted to address this need through providing a
+                  Python-based, lightweight tool that allows conversion between an
+                  array of media formats. From audio files like MP3 and FLAC, to
+                  image-based formats like PNG, GIF, BMP, and video files like
+                  MP4, WebM, and AVI.<br /><br />
+                  In short, this tool aims to just solve the headache that can be
+                  file conversion, all with a straightforward interface.
+                </p>
+              </div>
+              <div>
+                <img
+                  class="project-img"
+                  src="https://images.pexels.com/photos/114820/pexels-photo-114820.jpeg"
+                  alt="Any_To_Any.py"
+                />
+                <p class="img-p">Photo by Mike Bird</p>
+              </div>
+            </div>
+          </div>
+        </a>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>

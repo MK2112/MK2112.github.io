@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../js/no-flash.js"></script>
+    <meta http-equiv="content-security-policy" content="" />
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
+    <link href="../css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/languages/python.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
+    <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="../js/search.js"></script>
+    <script defer src="../js/theme-toggle.js"></script>
+    <title>Diffusion Language Models</title>
+    <meta name="description" content="Explore the paradigm of Diffusion Language Models (DLMs) in natural language processing, 
+    combining diffusion processes with text generation to overcome limitations of autoregressive and masked models. Understand
+    their mechanics, advantages, challenges, and future potential for fast, parallel, and controllable language modeling." />
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <div class="project">
+          <h2>Diffusion Language Models</h2>
+          <p class="thin project-p">June 2025 • Reading Time: 15 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+              I think diffusion language models (DLMs) are <i>really</i> exciting.
+              They entail a stack of twists and turns in their approach to language modeling and address conceptual shortcomings of pre-existing, popular paradigms, opening genuinely new perspectives.
+              I believe DLMs to be so important that it is worth taking a look at them from scratch.
+            </p>
+            <h3>Hypes and Masks</h3>
+            <p class="blog-p">
+              Neural Network-based language modeling has been dominated by two distinct paradigms for roughly the past decade:
+              <b>Autoregressive language models</b> generate text sequentially. <b>Masked language models</b> complete text by
+              filling in blanks across a given sequence. No autoregression is taking place with the masked approach, we just
+              evaluate the text we have and from that derive what should be placed in the masked spot within the text. 
+              This allows masked language models to evaluate not only the past, autoregressively formed text, but the
+              bi-directional context to the left and to the right of a masked subsequence. The conceptual duopoly has served us
+              quite well, but it has also imposed technical constraints on modeling flexibility, resulting in ceilings to attainable performance.<br />
+              <br />
+              Autoregressive models, like GPT-4o or GPT-o3, excel at generating coherent text. They do this unidirectionally, only ever being
+              able to refer to any past text to generate some next word. Using said models through ChatGPT, this seems to work just fine,
+              but note that it isn't the same as formulating a sentence as a whole or choosing words with respect to something that you want
+              to lead up to later on. Autoregressive models also struggle with long-range dependencies due to their limited in size context window \cite{hosseini2024efficient}.
+              I challenge you to feed a state-of-the-art autoregressive model the Harry Potter Series and afterwards have it be able to recount any
+              details from "The Philosopher's Stone". While future autoregressive models may apply ever-larger context windows, each increase comes
+              at a steep price, requiring disproportionately greater resources for both training and inference. In fact, this cost generally grows
+              quadratically with the context size \cite{muhtasham2023explorecontext}.<br />
+              <br />
+              Masked models, like BERT, are adept at understanding contextual, and bidirectional relationships. However, there are clear limitations
+              in their fill-in-the-blank approach: Being able to fill in blanks requires some context first \cite{devlin2019bert}. Using BERT to generate text from zero
+              can lead to incoherent or nonsensical outputs \cite{samuel2024berts}. And this is what put autoregressive models in the lead for text generation
+              <i>(again, see ChatGPT)</i>. BERT has its place in the field though, masked models excel at tasks where text is given already, like understanding
+              and classification tasks \cite{chen2024combined}.<br />
+              <br />
+              <b>Masked language models can understand more deeply, while autoregressive models can produce coherent text easily, but at the cost
+                 of a genuine bidirectional grasp of this text.</b><br />
+              <br />
+              Both masked models and autoregressive models don't directly work on text, as in, the sequence of letters and symbols.
+              Much rather, they require text to be embedded into a numeric
+              representation, which is a sequence of tokens. A token is a numerical vector expressing a distinct chunk of text present in the data.
+              Text can be embedded into chunks, and decoded from them back into the original text again \cite{liao2020probabilisticially}.<br />
+              <br />
+              With the history covered, from here, let's actually step back and generalize some of the terms we just encountered. At its core, any
+              language model aims to capture the true, albeit unknown, distribution of language, i.e. which phrases are made up of which letters to
+              express something using syntax, semantics and pragmatics. Borrowing the syntax from \cite{nie2025large}, this goal can be formalized
+              and expressed as minimizing the so-called Kullback-Leibler-Divergence between the true textual data distribution $p_{\text{true}}(x)$
+              and the approximation of that distribution $p_\theta(x)$ which in turn is embedded in the language model's parameters $\theta$ and
+              expressed through that model's
+              generated text. Autoregressive language models achieve the approximation of a true textual data distribution by factorizing the
+              probability of a sequence token-by-token:
+              $$p_{\text{true}}(x) \approx p_{\theta}(x) = p_{\theta}(x^1) \prod_{i=2}^{L} p_{\theta}(x^i | x^1, ..., x^{i-1})$$
+              Here, $x$ is a sequence of tokens, and $x^i$ is the token at index $i$. In total $x$ contains $L$ tokens. What this formal expression
+              expresses is that a sequence of choices to sample individual tokens one after another will iteratively amount to the approximation of an
+              overall textual data distribution.<br />
+              <br />
+              If you don't know what this formula means or if you feel like you're getting stuck here because of it, don't worry about it.
+              This is about as complicated as it will get. Also, as you see below the formula, I will at all times make an effort to explain
+              the expression fully after showing it, so you don't need to depend on reading them, because throwing around formulas to convey
+              a topic is just pretentious.
+            </p>
+            <h3>The Mechanics of Diffusion in Language Models</h3>
+            <p class="blog-p">
+              <b>Fundamentally, DLMs merge two distinct ideas, and pull tricks to do so: They combine iterative refinement principles of
+              generative diffusion processes used mainly for image generation with discrete text generation.</b> Unlike the unidirectional
+              autoregressive models or the "fill-in-the-blank" masked models, DLMs operate through iterative denoising. This technique
+              gradually transforms something we will call noise into coherent text, and it does so through a learned reverse diffusion
+              processes that occurs all across the to-be-generated text at once.<br />
+              To introduce DLMs, I will refer mostly to the foundational example of the transformer-based <b>LLaDA (Large Language
+              Diffusion with masking)</b> model from \cite{nie2025large}.<br />
+              <br />
+              Generally, diffusion as a concept models a distribution $p_\theta(x)$ via a forward data masking process and a reverse
+              prediction process. <b>Pre-Training of LLaDA</b> begins with a clean sequence of tokens, $x_0$, sampled from the training data.
+              According to \cite{nie2025large}, we chronologically run two processes on this:<br />
+              <br />
+              1. <b>The Forward Process:</b> We systematically "corrupt" $x_0$. For LLaDA, this corruption is a masking process.
+              Yes, you've heard that somewhere in this post before, but it's not the same thing. At a conceptual "time" $t=0$,
+              the sequence $x_0$ is entirely clean/clear. Then, as $t$ increases towards $1$, tokens are independently masked,
+              each with a probability of $t$. At $t=1$, the sequence is fully masked, denoted $x_1$. We don't actually have time
+              that processes, but this works as a beautiful vehicle for the notation that follows and for clarity. Actually, we are
+              sampling $t$ uniformly from $[0, 1]$ for our token sequence $x$. We train the model on a wide spectrum of partially
+              masked sequences, $x_t$. <b>We therefore expose the model during training not only to different data, but also to
+              different stages of this data's corruption.</b><br />
+              <br />
+              2. <b>The Reverse Process:</b> This is where the learning happens. The model, referred to as a <i>Mask Predictor</i>,
+              is given a corrupted sequence $x_t$ and is tasked to predict the original, unmasked tokens for all masked positions
+              <i>simultaneously</i>. The goal is to learn the data distribution of $x_0$ to effectively reverse the noising process,
+              moving from an <i>(at worst)</i> fully masked state at $t=1$ back to a fully cleaned state at $t=0$. Once this is achieved,
+              we can go ahead and <i>discard the forward process</i> and use the learned reverse process for generation.
+            </p>
+            <div class="blog-img">
+              <img src="../img/dlm_a.png" alt="Diffusion Language Model Pre-Training" style="width: 35%" />
+              <p class="blog-img-caption">The two stage Pre-training step for a DLM. Image Source: \cite{nie2025large}</p>
+            </div>
+            <p class="blog-p">
+              The training is driven by a Cross-Entropy loss, averaged over all possible timesteps $t$, clean sequences $x_0$, and
+              masked sequences $x_t$. The loss function is formulated as:
+              $$\mathcal{L}(\theta)\overset{\Delta}{=} -\mathbb{E}_{t,x_0,x_t}\left[ \frac{1}{t} \sum_{i=1}^L1[x^i_t=\text{M}]\log p_\theta (x^i_0|x_t) \right]$$
+              Overall, we sum up the log-likelihoods <i>(those are just the $p_\theta$ put through a logarithm to make addition work for probabilities)</i> of the model
+              drawing the correct token $x_0^i$ given the masked $x_t$, and we accumulate across only the masked tokens. How can we be selective like this?<br />
+              Overall, $\mathbf{1}[x_t^i = M]$ is an indicator function that ensures we only calculate the loss for said masked tokens <i>(those where $x_t^i = M$
+              is in fact $1$)</i>. The $\frac{1}{t}$ term is a pretty crucial weighting factor: It increases the loss for less-masked sequences <i>(i.e., where $t$ is
+              relatively small)</i>, as predicting these should be an easier task because the model would have more context to draw conclusions based upon.<br />
+              <br />
+              Supervised fine-tuning (SFT) is very much possible with DLMs, and \cite{nie2025large} show how to do it in a way that is
+              conceptually similar to autoregressive SFT:
+              Like with autoregressive SFT, we expect SFT data to be of a form $x_0=\text{concat}(\text{prompt},\text{response})$. The $\text{prompt}$ will later
+              be given by the user when the model is in production. To conduct SFT, we do the exact same thing we did during pre-training, meaning sampling a
+              time $t$ for which we mask individual tokens in $x_0$ with the likelihood $t$. <i>But we only do that for the $\text{response}$ part and never
+              for the $\text{prompt}$.</i>
+            </p>
+            <div class="blog-img">
+              <img src="../img/dlm_b.png" alt="Diffusion Language Model Fine-Tuning" style="width: 35%" />
+              <p class="blog-img-caption">Fine-Tuning consists of Masking and denoising for only the $\text{response}$ part. Image Source: \cite{nie2025large}</p>
+            </div>
+            <p class="blog-p">
+              Ultimately, after pre-training and fine-tuning concluded, inference has us provide the mask predictor with a sequence that only contains the prompt.
+              To put what then happens in the \cite{nie2025large}'s terms, <i>"LLaDA simulates a diffusion process from $t = 1$ (fully masked) to $t = 0$ (fully unmasked)"</i> from here on.
+            </p>
+            <div class="blog-img">
+              <img src="../img/dlm_c.png" alt="Diffusion Language Model Inference" style="width: 35%" />
+              <p class="blog-img-caption">Inference has the DLM reconstruct a non-existent/fully noised $\text{response}$. Image Source: \cite{nie2025large}</p>
+            </div>
+            <p class="blog-p">
+              At this point one might ask, <b>"Didn't BERT do something similar, like masking and predicting masked tokens? And if so, why is this diffusion modeling so
+              new then?"</b> Masked language models and DLMs conceptually have one thing in common: The word "mask" and that's about it. BERT fills a fixed number of
+              "gaps" one at a time, whereas a DLM like LLaDA treats the entire sequence as a single corpus where parallel inferences happen all simultaneously.
+              LLaDA also uses a continuously and randomly varying mask ratio, while traditional masked language models use a fixed one.<br />
+              <br />
+              Hyperparameters for such a LLaDA DLM include the <i>generation length</i>, i.e. the length of what we are supposed to "unmask" during inference.
+              This is an upper ceiling, not restricting where information ends within that generation length. But doesn't that mean LLaDA's inference
+              is either wasteful or too small? Does a response's diffusion process always have to span across the entire generation length, because there is a
+              possibility that all of it will be occupied by text after diffusion? This is where things start to become less rosy for DLMs, because yes, this
+              can be wasteful and it restricts us in terms of how long generated texts can become. <b>This is a glaring constraint not present in autoregressive models.</b>
+            </p>
+            <h4>Fixing Generation Length Contraints</h4>
+            <p class="blog-p">
+              The generation length constraint was very quickly addressed by \cite{arriola2025block}. The authors introduced <b>Block Diffusion Language Models (BDLMs)</b>.
+              BDLMs are semi-autoregressive, interpolating between diffusion and autoregressive principles. They are autoregressive <i>across blocks</i> of some
+              amount of tokens, but perform diffusion <i>within each of these blocks</i>, with the contextual awareness of this block and prior blocks.<br />
+              <br />
+              The probability of a sequence is now modeled as:
+              $$\log p_{\theta}(x) = \sum_{b=1}^{B} \log p_{\theta}(x_b | x_{ \lt b })$$
+              Where each block-level probability $p_{\theta}(x_b | x_{\lt b})$ is itself modeled using the denoising diffusion process. This hybrid approach
+              pretty elegantly combines the speed of "all-at-once" diffusion with the "arbitrary length output" of autoregressive model. BDLMs can simply
+              continue generating blocks until an end-of-sequence condition is met.
+            </p>
+            <h3>Advantages and Capabilities</h3>
+            <p class="blog-p">
+              I've kind of hinted at most of these already, but the shift to a diffusion-based paradigm with arbitrary length generation capabilities unlocks
+              significant advantages.<br />
+              DLMs and also BDLMs are fast. Diffusion happens for all tokens in the generation length, <b>simultaneously</b>. It is hard to describe just how profound
+              this advancement is, but luckily Peitro Schirano shows the implications of it directly in <a class="highlight" href="https://x.com/skirano/status/1930332481078616296" target="_blank">an impressive video</a>.
+              It takes roughly $3$ seconds from the prompt being entered to having a running, working game of tic-tac-toe, programmed in Python.<br />
+              <br />
+              Autoregressive models can struggle with tasks that require reversal or multi-directional reasoning. For instance, a model trained extensively on
+              "A is B" may fail to correctly answer "What is B?". Diffusion models, which incorporate bidirectional dependencies within the generation
+              length by design, are therefore inherently better suited for such tasks. In experiments, LLaDA was for example shown to significantly
+              outperform GPT-4 on a reversal poem completion task, highlighting this structural advantage \cite{nie2025large}.<br />
+              Also, given that we have stepped through most of the main parts of what make up a DLM, the iterative nature of the diffusion process provides
+              natural points of intervention and controllability. Denoising offers handles for controlling the generation process, a feature less accessible
+              in the monolithic, token-by-token generation \cite{arriola2025block}.<br />
+              <br />
+              A critical question is whether DLMs can leverage advanced post-training techniques, such as reinforcement learning (RL), which have successfully
+              enhanced the reasoning abilities of autoregressive models. In said autoregressive models, reasoning often involves breaking down complex tasks
+              into step-by-step chains of thought spread across the context window, to ease per-token complexity in their choice. You could argue that this
+              is deeply related to the autoregressive nature itself, we have to front-load a chain-of-thought to only then generate a well-referenced answer.
+              And we just saw how differently DLMs generate text. <b>Is RL and the idea of chain-of-thought therefore applicable to DLMs in the first place?</b><br />
+              <br />
+              The work of \cite{zhao2025d1} on their <b>d1</b> framework provides quite a resounding "yes." The authors developed a novel RL algorithm adapted
+              for the non-autoregressive nature of DLMs, to then successfully adapt a pre-trained LLaDA model into a diffusion-based reasoning engine.
+              Experiments confirm that d1 consistently outperforms the base SFT model across multiple mathematical and logical reasoning benchmarks, proving
+              that the diffusion paradigm is not a dead end for advanced capabilities but a new, fast-pace ground for them.
+            </p>
+            <h3>Challenges</h3>
+            <p class="blog-p">
+              Despite their promise, DLMs are not without their own set of challenges and limitations, many of which are active areas of research.
+              While diffusion models promise parallel generation, contrasting with the costly sequential generation of AR models, their inference
+              is not inherently free of waste. We've seen that with a naive implementation of LLaDA, we'd span a static, fixed-length context window
+              for every response. We need to take a quarter of a step back into autoregressive territories with BDLMs to obtain arbitrary-length
+              generation capabilities again. And that, in total, amounts to quite a complex language model implementation.<br />
+              Interestingly, DLMs were also observed to produce what's refered to as "local consistency issues", meaning they can struggle with
+              small-scale grammatical consistency and finer details in formulation of text, compared to autoregressive models.
+              Also, the shorter a text that is generated, the more inefficient the diffusion approach is, compared to autoregressive approaches \cite{yu2025dimple}.
+              Finally, at this <i>early</i> stage for DLMs, they are fast, but they also are computationally intensive and require significant resources.
+            </p>
+            <h3>Conclusion</h3>
+            <p class="blog-p">
+              DLMs are a very recent addition to the set of paradigms for language modeling. They offer promising advantages in parallelism and speed,
+              global coherence, and controllability, especially for long or complex text generation. Initial hurdles have been resolved, BDLMs generate
+              arbitrary-length texts and RL can be integrated for increased reasoning abilities, akin to what was observed for RL in autoregressive models.
+              However, DLMs still face challenges in local consistency, computational efficiency for short outputs, and context handling, with their
+              efficiency gains still depending heavily on the evaluation metric, use case and the resource availability to afford running them.<br />
+              <br />
+              <b>With all that, why did I say I was so stoked about (B)DLMs?</b><br />
+              It is precisely because of their approach. Their capabilities could be intensely valuable in rapidly informing systems like world models,
+              where dynamic states of an observed environment are learned and predicted over time. The ability to treat text as a spatial medium where
+              tokens exist in a sort of malleable plane, exposed to potentially iterative, parallel refinement, could represent a qualitative leap if
+              integrated right. Consider an agent operating in a dynamic environment: rather than sequentially narrating its observations and plans,
+              it could maintain a continuously updated <i>linguistic "state space"</i> that would evolve in real-time parallel to environmental changes.
+              The DLM becomes not just a text generator, but a dynamic knowledge representation to be queried into, reasoned over or updated at multiple
+              temporal scales simultaneously, while being human-readable <i>(if tokens are chosen to actually represent textual data that is)</i> and process-wise
+              controllable, all of which inherently important factors for future AI systems.
+            </p>
+          </div>
+          <div id="references"></div>
+        </div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+    <div id="bibtex" style="display: none">
+        <div id="nie2025large">
+          <p>@article{nie2025large,
+            title={Large language diffusion models},
+            author={Nie, Shen and Zhu, Fengqi and You, Zebin and Zhang, Xiaolu and Ou, Jingyang and Hu, Jun and Zhou, Jun and Lin, Yankai and Wen, Ji-Rong and Li, Chongxuan},
+            journal={arXiv preprint arXiv:2502.09992},
+            year={2025},
+            }</p>
+          <a>https://arxiv.org/abs/2502.09992</a>
+        </div>
+        <div id="chen2024combined">
+          <p>@article{chen2024combined,
+            title={A Combined Encoder and Transformer Approach for Coherent and High-Quality Text Generation},
+            author={Chen, Jiajing and Wang, Shuo and Qi, Zhen and Zhang, Zhenhong and Wang, Chihang and Zheng, Hongye},
+            journal={arXiv preprint arXiv:2411.12157},
+            year={2024},
+          }</p>
+          <a>https://arxiv.org/abs/2411.12157</a>
+        </div>
+        <div id="hosseini2024efficient">
+          <p>@article{hosseini2024efficient,
+            title={Efficient solutions for an intriguing failure of llms: Long context window does not mean llms can analyze long sequences flawlessly},
+            author={Hosseini, Peyman and Castro, Ignacio and Ghinassi, Iacopo and Purver, Matthew},
+            journal={arXiv preprint arXiv:2408.01866},
+            year={2024},
+          }</p>
+          <a>https://arxiv.org/abs/2408.01866</a>
+        </div>
+        <div id="liao2020probabilisticially">
+          <p>@article{liao2020probabilistically,
+            title={Probabilistically masked language model capable of autoregressive generation in arbitrary word order},
+            author={Liao, Yi and Jiang, Xin and Liu, Qun},
+            journal={arXiv preprint arXiv:2004.11579},
+            year={2020},
+          }</p>
+          <a>https://arxiv.org/abs/2004.11579</a>
+        </div>
+        <div id="arriola2025block">
+          <p>@article{arriola2025block,
+            title={Block diffusion: Interpolating between autoregressive and diffusion language models},
+            author={Arriola, Marianne and Gokaslan, Aaron and Chiu, Justin T and Yang, Zhihan and Qi, Zhixuan and Han, Jiaqi and Sahoo, Subham Sekhar and Kuleshov, Volodymyr},
+            journal={arXiv preprint arXiv:2503.09573},
+            year={2025},
+          }</p>
+          <a>https://arxiv.org/abs/2503.09573</a>
+        </div>
+        <div id="devlin2019bert">
+          <p>@inproceedings{devlin2019bert,
+            title={Bert: Pre-training of deep bidirectional transformers for language understanding},
+            author={Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+            booktitle={Proceedings of the 2019 conference of the North American chapter of the association for computational linguistics: human language technologies, volume 1 (long and short papers)},
+            pages={4171--4186},
+            year={2019},
+          }</p>
+          <a>https://aclanthology.org/N19-1423.pdf</a>
+        </div>
+        <div id="samuel2024berts">
+          <p>@article{samuel2024berts,
+            title={BERTs are generative in-context learners},
+            author={Samuel, David},
+            journal={Advances in Neural Information Processing Systems},
+            volume={37},
+            pages={2558--2589},
+            year={2024},
+          }</p>
+          <a>https://proceedings.neurips.cc/paper_files/paper/2024/file/04ea184dfb5f1babb78c093e850a83f9-Paper-Conference.pdf</a>
+        </div>
+        <div id="zhao2025d1">
+          <p>@article{zhao2025d1,
+            title={d1: Scaling reasoning in diffusion large language models via reinforcement learning},
+            author={Zhao, Siyan and Gupta, Devaansh and Zheng, Qinqing and Grover, Aditya},
+            journal={arXiv preprint arXiv:2504.12216},
+            year={2025},
+          }</p>
+          <a>https://arxiv.org/abs/2504.12216</a>
+        </div>
+        <div id="yu2025dimple">
+          <p>@article{yu2025dimple,
+            title={Dimple: Discrete diffusion multimodal large language model with parallel decoding},
+            author={Yu, Runpeng and Ma, Xinyin and Wang, Xinchao},
+            journal={arXiv preprint arXiv:2505.16990},
+            year={2025},
+          }</p>
+          <a>https://arxiv.org/abs/2505.16990</a>
+        </div>
+        <div id="muhtasham2023explorecontext">
+          <p>@misc{muhtasham2023explorecontext,
+            title     = {Blog: Exploring Ways to Extend Context Length in Transformers},
+            author    = {Muhtasham, Oblokulov},
+            year      = {2023},
+          }</p>
+          <a>https://muhtasham.github.io/blog/posts/explore-context/</a>
+        </div>
+    </div>
+  </body>
+</html>

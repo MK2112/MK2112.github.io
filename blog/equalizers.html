@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../js/no-flash.js"></script>
+    <meta http-equiv="content-security-policy" content="" />
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
+    <link href="../css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/languages/python.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
+    <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="../js/search.js"></script>
+    <script defer src="../js/theme-toggle.js"></script>
+    <title>An Evolution of Wireless Channel Equalization</title>
+    <meta name="description" content="Wireless signals drive modern tech, but they are error-prone and easily distorted.
+    This post explores how wireless signal correction has evolved, from classic methods like Zero-Forcing and MMSE to
+    adaptive algorithms like LMS and RLS, and finally to upcoming AI-powered equalization techniques for
+    large-scale, accurate signal restoration." />
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <div class="project">
+          <h2>An Evolution of Wireless Channel Equalization</h2>
+          <p class="thin project-p">August 2025 • Reading Time: 17 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+              Radio waves tell lies by the time they arrive. In modern wireless communication systems like Wi-Fi,
+              Bluetooth, or Starlink, the transmitted signal works against an adversary: the channel.
+              Transmitting a signal over the air corrupts through scattering, interference, shadowing, noise,
+              and unpredictable fading.
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_signal_transformation.png" alt="Signal Transformation: Input, Channel and Output" style="width: 85%" />
+              <p class="blog-img-caption">Signal transformation: Channel effects on a transmitted signal</p>
+            </div>
+            <p class="blog-p">
+              The air is a favored medium for its flexibility, offering rapid scalability. A central challenge of wireless
+              communication is the restoration of the true signal contents from distortion
+              through the easily affectable wireless transmission channel. The restoration should happen efficiently and
+              swiftly. This is precisely the task that channel estimation and equalization are concerned with.<br />
+              <br />
+              This post explores the inner workings of channel equalization, tracing an evolution from early
+              linear filters to adaptive equalizers and the AI-driven systems of tomorrow that learn and
+              adapt in real-time as signal properties constantly change beneath them.
+            </p>
+            <h3>The Hostile Channel</h3>
+            <p class="blog-p">
+              Wireless signals are confronted with several distinct phenomena degrading
+              their quality and interpretability. Effects like multipath propagation, thermal and background noise,
+              Doppler shifts, and nonlinear amplifications become increasingly severe as data rates and operating
+              frequencies increase \cite{tse2004fundamentals} \cite{madhow2008fundamentals} \cite{hassan2022performance}. To build high-throughput
+              systems capable of extracting meaning from affected signals, we therefore must first understand the
+              nature of the adversaries we face.
+            </p>
+            <h4>Attenuation and Free-Space Path Loss</h4>
+            <p class="blog-p">
+              A wireless signal loses its strength as distance increases. In an environment with no
+              obstructions whatsoever, the received signal's power $P_r$ diminishes with the square
+              of the distance $d$, but also by quite important other factors, as described by the
+              Friis transmission equation:
+              $$ P_r = P_t \cdot G_t \cdot G_r \cdot \left(\frac{\lambda}{4\pi d}\right)^2 $$
+              Where:
+            </p>
+            <ul class="blog-ul">
+              <li>$P_r$, the received signal's power (in Watts)</li>
+              <li>$P_t$, the power with which the signal was transmitted (in Watts)</li>
+              <li>$G_t$, the transmitting antenna's gain relative to a hypothetical, spherically emitting antenna (the isotropic radiator)</li>
+              <li>$G_r$, the gain of the receiving antenna relative to an isotropic radiator</li>
+              <li>$\lambda$, the transmitted signal's wavelength (in meters), calculated with the speed of light $c$ and frequency $f$: $\lambda = c / f$</li>
+              <li>$d$ is the distance between sender and receiver antennas (in meters)</li>
+            </ul>
+            <p class="blog-p">
+              Friis' equation illustrates that even in the simple setting of a free, unobstructed
+              space, the receivable power of a signal decreases as the distance increases \cite{madhow2008fundamentals}.
+              Again, this is intuitive, but the factors appearing in the equation may not be.<br />
+              This attenuation, or fading, occurs because only a portion of a sphere describing the emitted energy reaches the receiver,
+              and this fraction diminishes as distance grows. We have to consider quite a multitude of
+              factors to express these signal emission characteristics: Sent signal power, antenna
+              characteristics, the wavelength and this particular way in which we model an ideal
+              spherical signal emission from the sender.
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_spherical_propagation.png" alt="Spherical Signal Propagation with Receiver Subarea" style="width: 32%" />
+              <p class="blog-img-caption">Spherical signal propagation with receiver subarea</p>
+            </div>
+            <p class="blog-p">
+              In practical contexts, a 5G signal at 28 GHz experiences much higher path loss compared to a 4G signal
+              at 2 GHz over the same distance, often resulting in tens of decibels increase in loss (e.g., around 29 dB
+              higher path loss for 28 GHz vs. 2 GHz given a distance of 1 km). This necessitates more sophisticated
+              equalization techniques, and we have to research and apply more increasingly
+              equalization techniques as they reward us with higher data rates \cite{senic2022challenges}.
+              Path loss really is just one of several challenges, though.
+            </p>
+            <h4>Noise</h4>
+            <p class="blog-p">
+              Noise can be understood as any random amount of energy added with no periodicity to a signal by the
+              environment and the receiver \cite{agbo2017principles}. Remarkably, it was found that this highly unpredictable
+              occurrence can often be aptly modeled and simulated by the so-called Additive White Gaussian Noise (AWGN).
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_awgn_distortion.png" alt="Three stages of varying AWGN intensity" style="width: 55%" />
+              <p class="blog-img-caption">Three stages of varying AWGN intensity</p>
+            </div>
+            <p class="blog-p">
+              You can see that some AWGN can be bearable, but the stronger noise gets, the less
+              distinctly interpretable the signal's characteristics, i.e., the less distinctive
+              and interpretable the periodic wave-form.<br />
+              The Signal-to-Noise Ratio (SNR), the ratio of signal power to noise power, is a
+              critical measure of signal quality and fundamentally limits the achievable data
+              rate, as described by the Shannon-Hartley theorem \cite{madhow2008fundamentals}:
+              $$ C = B \cdot \log_2(1 + \frac{P_{\text{Signal}}}{P_{\text{Noise}}}) $$
+              Where:
+            </p>
+            <ul class="blog-ul">
+              <li>$C$: Channel capacity, the maximum transmission rate given the channel conditions. (in Bits/s)</li>
+              <li>$B$: Channel bandwidth, the width of the frequency band used for communication. (in Hertz)</li>
+              <li>$P_{\text{Signal}}$: Average power of the received signal. (in Watts)</li>
+              <li>$P_{\text{Noise}}$: Average power of encountered noise within the bandwidth $B$. (in Watts)</li>
+              <li>$P_{\text{Signal}}/P_{\text{Noise}}$: Our SNR. This expresses how much stronger a signal is compared to the noise.</li>
+              <li>$\log_2$: Logarithm with base $2$, helping to express the result in binary representation.</li>
+            </ul>
+            <p class="blog-p">
+              The Shannon-Hartley theorem expresses that the channel capacity can be increased either by
+              using more bandwidth or by improving the SNR, meaning raising the signal's
+              power or decreasing noise. However, the theorem assumes this noise to be
+              AWGN, a simplification that breaks down in real-world scenarios all too
+              often. AWGN is just one component in what we call noise, so looking at it
+              is helpful, but we're still not done with a full description of what noise entails.
+            </p>
+            <h4>Multipath Fading and Intersymbol Interference</h4>
+            <p class="blog-p">
+              Signals transmitted over the air may reflect off buildings, scatter, diffract, and be shadowed by obstacles.
+              These effects cause parts of the signal to travel different distances, resulting in the signal arriving
+              smeared across time rather than at a single determinable instant \cite{akram2007pilot} \cite{tse2004fundamentals}.
+              This is because reflections act like weakened copies of the signal, arriving at the receiver with different delays.
+              Additionally, this multipath propagation may affect different frequencies in different ways, leading to 
+              (frequency-selective) Intersymbol Interference (ISI).
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_isi_cause.png" alt="Signals arrive at different times, causing Intersymbol Interference" style="width: 40%" />
+              <p class="blog-img-caption">Components of the same signal arrive at different times, causing Intersymbol Interference</p>
+            </div>
+            <p class="blog-p">
+              ISI is problematic. Symbols smearing into one another can change the
+              value we may interpret from them. Below, we send the intended
+              sequence $1011010110$, but with ISI corrupting and smearing the signals,
+              we falsely read $1111111111$ at the receiver.
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_isi_bleeding.png" alt="ISI-caused bleeding of symbols into one another" style="width: 80%" />
+              <p class="blog-img-caption">ISI-caused bleeding of symbols into one another</p>
+            </div>
+            <p class="blog-p">
+              <b>The task of an equalizer is to mitigate fading, noise and ISI for a signal to such an extent
+                 that the equalized signal represents the sent values again.</b>
+                 The ISI-affected signal in the above graph reaches higher amplitudes than the original because multiple delayed copies
+                 overlap constructively. This periodically boosts the received signal's amplitude.
+            </p>
+            <h3>Linear Equalization</h3>
+            <p class="blog-p">
+              One approach to reversing signal distortions is to treat the
+              channel as a linear, time-invariant (LTI) system \cite{tse2004fundamentals}. Under this assumption,
+              when a signal $x(t)$ is sent, the received signal $y(t)$ is only ever
+              scaled by a constant factor $h$:
+              $$y(t) = h \cdot x(t)$$
+              With five times more power, a five times stronger signal
+              will be received, always affected by the constant scaling factor $h$.
+              Formalized, this means:
+              $$a \cdot y(t) = h \cdot a \cdot x(t)$$
+              The channel may introduce a delay $d$ between the sent and the received signal.
+              If we assume the channel to be an LTI system, $d$ were to always remain the same:
+              $$y(t + d) = h \cdot x(t)$$
+              The LTI assumption underlies linear equalization, which employs inverse
+              filtering to reverse the channel's influences. We will look at two of
+              the most common linear equalizers.
+            </p>
+            <h4>Zero-Forcing Equalization</h4>
+            <p class="blog-p">
+              The Zero-Forcing (ZF) equalizer attempts to perfectly invert the
+              channel's frequency response, expressed by the complex-valued function
+              $H(j\omega)$. This function takes as input a frequency $\omega$ (rad/s)
+              and produces as output a complex number representing the amplitude gain
+              and phase shift that the channel applies to a sinusoidal input at that
+              frequency \cite{jiang2011performance}. We won't look into complex values
+              here, but $j\omega$
+              expresses a frequency as originally being a component of a complex value
+              expression, hence the $j$. The ideal ZF equalizer simply formulates the
+              inverse of the channel: $$C(j\omega) = \frac{1}{H(j\omega)}$$
+              A received signal $Y(j\omega)$ is ZF-equalized by multiplying it with $C(j\omega)$:
+              $$\text{Signal}_{\text{ZF-equalized}} = C(j\omega) \cdot Y(j\omega) = \frac{Y(j\omega)}{H(j\omega)}$$
+              A problem arises when the channel has a deep/'strong' fade (meaning
+              $|H(j\omega)|$ is close to zero) at certain frequencies. The equalizer's
+              response will be enormous in order to correct for those frequencies. A weak
+              signal implies a low SNR, meaning that signal and noise become increasingly
+              indistinguishable. Therefore, given low SNR, the ZF equalizer will massively
+              amplify the signal but also the noise and by doing so potentially obliterate
+              any remaining distinct signal information \cite{jiang2011performance}. Today,
+              because of this, ZF is only rarely used, and more advanced equalizers found
+              their way to widespread adoption.
+            </p>
+            <h4>Minimum Mean Square Error Equalization</h4>
+            <p class="blog-p">
+              The Minimum Mean Square Error (MMSE) equalizer is utilized in modern Wi-Fi and
+              LTE systems. It seeks to minimize a mean squared error between the original and
+              equalized signals. The difference to Zero-Forcing is that MMSE balances inverting
+              the channel and amplifying noise by explicitly considering
+              the SNR \cite{kulkarni2014performance}. In low-SNR conditions or at frequencies with deep fades, MMSE tempers
+              the amplification and accepts some residual ISI to avoid excessive noise
+              amplification. The MMSE filter is defined as:
+              $$\text{Signal}_{\text{MMSE-Equalized}} = \frac{H^*(j\omega)}{|H(j\omega)|^2 + \frac{1}{\textrm{SNR}}}$$
+              Where:
+            </p>
+            <ul class="blog-ul">
+              <li>$H(j\omega)$ is the function producing the channel fequency response, we know this from ZF</li>
+              <li>$H^*(j\omega)$ is the complex conjugate of this channel frequency response</li>
+            </ul>
+            <p class="blog-p">
+              As the SNR approaches $\infty$, the signal becomes clearer and the MMSE equalizer converges to the
+              approximate behavior of a ZF equalizer. However, for finite SNR values,
+              MMSE provides a crucial compromise, typically improving bit error rates by $2$ to $3$
+              orders of magnitude compared to ZF in challenging multipath
+              environments \cite{kulkarni2014performance}.<br />
+              <br />
+              To put this into context, ZF inverts the channel exactly, hence the
+              $C(j\omega) = \frac{1}{H(j\omega)}$. MMSE now inverts approximately,
+              specifically because of noise. Hence the above formulation for
+              $F_{\text{MMSE}}(j\omega)$. The point is that the $\frac{1}{\text{SNR}}$
+              term acts as a regularizer, preventing outsized amplification when the
+              squared absolute channel frequency response $|H(j\omega)|^2$ is very
+              small. In other words, we avoid falling into a pit of "rescuing" a small
+              remainder signal from a noised channel.<br />
+              <br />
+              While an improvement, linear equalizers rely on the assumption of LTI realistically
+              expressing how the channel works. This is an idealization, as real-world channels
+              may deviate from perfect LTI behavior, especially under fading, ISI and rapidly
+              changing conditions in general. Linear equalizers still struggle with severely
+              distorted channels, especially those with deep frequency nulls or nonlinear
+              characteristics.
+            </p>
+            <h3>Nonlinear Equalizers: LTI's Looming Shadow</h3>
+            <p class="blog-p">
+              The LTI model for channel behavior falls short of capturing the true
+              complexities and implications for signal reconstruction. To overcome
+              the limitations of linear filters, nonlinear techniques emerged.<br />
+              Nonlinear techniques go beyond a fixed frequency-domain inversion,
+              making use of time-domain relationships and sequence behavior.
+              Specifically, nonlinear equalization approaches feed prior
+              decisions back into the current equalization process, explicitly
+              combating effects like past symbol ISI bleeding into the current
+              symbol \cite{reuter2002mitigating}. This behavior is fundamentally nonlinear and aims to capture
+              time-variant signal properties.
+            </p>
+            <h4>Decision Feedback Equalization</h4>
+            <p class="blog-p">
+              Decision Feedback Equalization (DFE) realizes a hybrid structure that
+              partitions the ISI problem on the time-axis. To do this, DFE applies
+              two distinct filters to the signal as it is being received. A linear
+              Feedforward filter (FFF) tackles the ISI caused by symbols yet to
+              arrive, the so-called precursor ISI. An additional, nonlinear
+              Feedback filter (FBF) uses the receiver's past symbol equalization
+              decisions to estimate the ISI by which they are estimated to affect
+              the current symbol, the postcursor ISI.<br />
+              <br />
+              In a discrete time domain, DFE can be formulated like so:
+              $$\text{Signal}_\text{DFE-Equalized} = \underbrace{\sum_{l=-L_\text{FFF}}^{0} q_\text{FFF}[l] \cdot z[m-l]}_{\text{Feedforward Filter}} + \underbrace{\sum_{l=1}^{L_\text{FBF}} q_\text{FBF}[l] \cdot a[m-l]}_{\text{Feedback Filter}}$$
+              Where:
+            </p>
+            <ul class="blog-ul">
+              <li>$z[m]$ denotes the input sequence to the DFE, which gets sampled from the received signal</li>
+              <li>$q_\text{FFF}[l]$ are the feedforward filter coefficients, the filter settings, applied over time indices $l=-L_\text{FFF}$ to $0$ to suppress precursor ISI from $-L_\text{FFF}$ yet to arrive next symbols</li>
+              <li>$q_\text{FBF}[l]$ are the feedback filter coefficients applied over $l=1$ to $L_\text{FBF}$ to reconstruct and cancel postcursor ISI from the already-detected past symbols</li>
+              <li>$a[m - l]$ represents the decision output of the estimated transmitted symbols at time $m-l$, which is used by the feedback filter to estimate the ISI caused by prior, distinct and already seen symbols</li>
+            </ul>
+            <div class="blog-img">
+              <img src="../img/eq_dfe_cause.png" alt="Precursor ISI and Postcursor ISI affecting a currently received symbol" style="width: 80%" />
+              <p class="blog-img-caption">Precursor ISI and Postcursor ISI affecting a currently received symbol</p>
+            </div>
+            <p class="blog-p">
+              By subtracting the dedicated pre- and postcursor ISI estimates from
+              the incoming signal, DFE avoids the noise amplification problem of
+              linear equalizers and explicitly addresses non-linear factors like
+              postcursor ISI \cite{reuter2002mitigating}. DFE much more closely follows of a line of
+              distinguishing the signal and its behavior from what the channel
+              induces upon it. However, things aren't all that perfect.<br />
+              DFE introduces a new vulnerability: error propagation. If the
+              receiver makes a wrong decision about a symbol, that incorrect
+              information corrupts the ISI estimate, affecting the feedback
+              filter and increasing the likelihood of filtering subsequent
+              errors. A single error can trigger a cascade of errors until
+              the system recovers.<br />
+              <br />
+              With the example below, a DFE system is applied to a moderately noisy
+              QPSK signal (SNR $= 30\ \text{dB}$) that has passed through a
+              4-tap channel exhibiting strong postcursor ISI. The DFE operates
+              decision-directed with only two forward and three feedback taps.
+              When we inject a short burst of symbol errors, their wrong values
+              get fed back into the ISI cancellation, corrupting subsequent symbol
+              estimates and triggering the observed propagated error.
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_error_propagation_dfe.png" alt="Error propagation affecting DFE equalization performance" style="width: 80%" />
+              <p class="blog-img-caption">Error propagation affecting DFE equalization performance</p>
+            </div>
+            <p class="blog-p">
+              Burst errors are indeed a regular occurrence in wireless channels,
+              which makes being susceptible to them a particularly bad slip-up
+              on DFE's end. If there is a potential for a single event to
+              cascade into a chain of subsequent errors, it could
+              compromise DFE's use for particularly complex channel settings.
+            </p>
+            <h4>Maximum Likelihood Sequence Estimation</h4>
+            <p class="blog-p">
+              If DFE is a clever trick, Maximum Likelihood Sequence Estimation
+              (MLSE) is the theoretically optimal solution for channels with ISI
+              in the presence of AWGN \cite{madhow2008fundamentals}. Instead of deciding one
+              after another for each symbol on equalization properties, MLSE asks
+              a more holistic question: given the entire received sequence of
+              distorted symbols, what is the most likely sequence of symbols that
+              was originally transmitted, causing this received shape?<br />
+              <br />
+              MLSE finds its application for example in GSM cellular systems.<br />
+              To be usable in such settings, MLSE models a channel's memory,
+              and its interaction with itself across the time-axis. This is visualized
+              using a trellis diagram. This will be shown in just a moment.
+              With the trellis diagram as basis, the Viterbi algorithm is applied
+              to the received signal sequence (some limited horizon back into
+              the past) \cite{manelis2013signal}. Across this sequence, Viterbi
+              allows for efficiently finding the most probable set of actually sent
+              symbols, whose corresponding sequence produces a signal that most
+              closely matches what was received.
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_mlse_trellis.png" alt="MLSE applies the Viterbi algorithm in a trellis diagram" style="width: 70%" />
+              <p class="blog-img-caption">MLSE applies the Viterbi algorithm in a trellis diagram</p>
+            </div>
+            <p class="blog-p">
+              The above figure shows a complete MLSE decoding example. In its
+              context, the trellis diagram in the middle represents all
+              possible sequences of the previous $\text{L} = 2$ transmitted symbols
+              as distinct states at each time step. Each node in the diagram
+              corresponds to a unique history of the last two bits, and each
+              edge a possible transition caused by the new input bit. For every
+              transition, the expected noiseless channel output is computed
+              from the channel impulse response and the bits defining that
+              transition.<br />
+              The Viterbi algorithm uses this structure to efficiently find the
+              path through the trellis whose sequence of outputs most closely
+              matches the received, noisy signal (top graph). From this optimal
+              path, the decoded bit sequence is recovered (bottom graph),
+              producing a reconstructed waveform that closely
+              follows the originally transmitted signal despite the
+              channel distortion and noise.<br />
+              <br />
+              MLSE works very differently than all the other equalization
+              techniques we discussed, but its complexity also is its greatest
+              shortcoming. The number of states in a trellis grows exponentially
+              with the channel's memory length ($L$) and the modulation order
+              ($M$), as $M^L$. For a 64-QAM system with a 10-tap channel impulse
+              response, this translates to $64^{10} \approx 10^{18}$ states,
+              computationally overwhelming for real-time processing. On top of
+              this, the Viterbi algorithm is susceptible to veering off course
+              in its restoration efforts when encountering burst errors spanning
+              multiple symbols \cite{wu2013twophase}. This is why MLSE is rarely
+              used in high-order modulation systems, despite its theoretical optimality.
+            </p>
+            <h3>The Adaptive Revolution: Equalizers that Learn</h3>
+            <p class="blog-p">
+              Real-world communication channels are rarely static, but rather
+              time-variant. Smartphones are carried around constantly, environmental
+              conditions around them change, and the channel characteristics morph and shift along
+              with that. An equalizer with fixed coefficients is insufficient for such highly dynamic systems.
+              An equalizer must adapt to changing conditions in the channel, quickly, cheaply and reliably so.<br />
+              <br />
+              Adaptive equalizers continuously adjust their filter coefficients.
+              This is typically achieved in two phases: A training
+              phase utilizes some known sequence that is sent specifically to
+              allow for initial convergence on the receiver's filter settings.
+              The follow-up, the tracking phase, then has the equalizer adapt
+              based on its own decisions and changes in transmission while live
+              data is coming in \cite{hassan2022performance}.
+            </p>
+            <h4>Least Mean Squares</h4>
+            <p class="blog-p">
+              The Least Mean Squares (LMS) algorithm is often applied due to
+              its simplicity and low computational cost ($O(N)$ per symbol, $N$
+              being the number of filter taps). One can think of LMS as a form
+              of stochastic gradient descent. It can be found in virtually every
+              modern communication system from Bluetooth to satellite modems.<br />
+              <br />
+              For each symbol, LMS calculates the error $e[n]$ between its output
+              and the desired signal and then adjusts its filter weights ($w$) in
+              the direction that minimizes this perceived error \cite{jalali2012wireless}.
+              In this sense, the core of this algorithm is its weight update rule:
+              $$ w[n+1] = w[n] + \mu \cdot e^*[n] \cdot x[n] $$
+              One can think of $\mu$ as the step-size parameter. It expresses a
+              pretty important trade-off: a larger $\mu$ leads to faster
+              convergence but more residual error ("misadjustment") in the
+              steady state. This effect is called "overshooting."
+              Consequently, a smaller $\mu$ has LMS converge slower but more
+              precisely so. The vector $x[n]$ contains the current and recent
+              input samples, meaning the raw data being fed into the adaptive
+              filter. The term $e[n]$ is calculated by $d[n] - y[n]$, expressing
+              the difference between the desired output $d[n]$ and the filter's
+              actual output $y[n]$. Note that LMS actually uses its complex
+              conjugate $e^*[n]$ in the update to ensure that the update follows
+              the gradient of the squared error function when working with
+              complex-valued signals and weights. All of this feeds into
+              the update of the weight vector $w[n]$, representing the former
+              filter configuration.
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_lms_adaptation.png" alt="LMS equalization and behavior under different µ" style="width: 75%" />
+              <p class="blog-img-caption">LMS equalization and behavior under different µ</p>
+            </div>
+            <p class="blog-p">
+              LMS takes a step in the direction that reduces the error only for
+              one respective current symbol at a time. In practical
+              implementations like Wi-Fi, LMS converges better than any of the
+              above non-adaptive equalization schemes, typically reaching a local optimum
+              within 20-40 microseconds for 802.11ac systems \cite{wyglinski2018sdr}.
+              This makes LMS a widely adopted equalization scheme today.
+            </p>
+            <h4>Recursive Least Squares</h4>
+            <p class="blog-p">
+              While LMS specifically considers the error of the current symbol,
+              the RLS algorithm takes a more global, historically-informed view.
+              This makes it a preferred choice for rapidly changing, strongly
+              affected channels. RLS seeks to find the set of filter coefficients
+              that would have minimized the total weighted squared error over
+              all past symbols, not just the current one \cite{jalali2012wireless}.
+              It does this by recursively updating the filter coefficients, giving
+              more weight to recent errors via a "forgetting factor" $\lambda$,
+              which is typically a little lower than $1$. The cost function $\lambda$
+              minimizes is:
+              $$ C(n) = \sum_{i=0}^n \lambda^{n-i} e[i]^2 $$
+              Considering the ever-accumulating history for tuning the current
+              filter settings yields a broader view of signal characteristics
+              and thus more broadly educated filter updates \cite{vijay2014performance}. This grants RLS
+              higher convergence speeds compared to LMS, which is a
+              crucial advantage in scenarios where channel coherence times can be
+              short (e.g., Car2X, military applications).
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_mse_rls.png" alt="Comparison of convergence time between LMS and RLS" style="width: 50%" />
+              <p class="blog-img-caption">Comparison of convergence time between LMS and RLS</p>
+            </div>
+            <p class="blog-p">
+              However, the added performance comes at the cost of a computational
+              complexity of $O(N^2)$ and a greater risk of numerical instability
+              from constantly adding values over time. Commercial RLS
+              implementations typically require 32-bit floating-point arithmetic
+              versus 16-bit fixed-point for LMS, increasing both power consumption
+              and silicon area.
+            </p>
+            <h3>The AI Frontier</h3>
+            <p class="blog-p">
+              Traditionally, channel equalizers used mathematical models (like ZF and
+              MMSE) or update rules (LMS and RLS) to tune filters based on signal
+              differences. Current research however is moving away from the traditional,
+              model-driven concepts toward data-driven AI methods.
+            </p>
+            <div class="blog-img">
+              <img src="../img/eq_hassan_etal_2022.png" alt="Utilization of a neural network in an equalizer" style="width: 75%" />
+              <p class="blog-img-caption">Utilization of a neural network in an equalizer. Source: \cite{hassan2022performance}</p>
+            </div>
+            <p class="blog-p">
+              Neural networks like Recurrent Neural Networks (RNN), Long Short-Term
+              Memory (LSTM), Gated Recurrent Units (GRU), and Transformers allow for
+              modeling complex, non-linear signal behavior and interdependencies
+              \cite{hassan2022performance} \cite{zhu2025liquid}.
+              Reinforcement Learning optimizes strategies through interaction (e.g.,
+              antenna positioning), boosting throughput in vehicular links.
+              As a newly emerging architectural approach, Liquid Neural Networks
+              offer real-time adaptation with low energy consumption \cite{zhu2025liquid}.<br />
+              <br />
+              But there really is no free lunch. AI equalizers demand more
+              compute, require extensive, broadly representative training data,
+              and lack the interpretability of linear methods. Specialized hardware
+              and emerging standards are addressing these issues.
+            </p>
+            <h3>Conclusion</h3>
+            <p class="blog-p">
+              Channel equalization has evolved from simple linear inversion techniques
+              to sophisticated AI-driven adaptive systems. While classical methods
+              like DFE and MLSE remain workhorses, the future belongs to adaptive
+              algorithms, learning and evolving with the channel characteristics in
+              real-time. The integration of AI techniques promises steep performance
+              gains, though challenges around computational complexity and
+              interpretability remain. Developments advance towards 6G \cite{samsung2025ai}.
+              In its context, the synergy between classical signal processing
+              principles and modern machine learning approaches will become increasingly
+              crucial in shaping highly capable and robust wireless communication systems.
+            </p>
+          </div>
+          <div id="references"></div>
+        </div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+    <div id="bibtex" style="display: none">
+        <div id="akram2007pilot">
+          <p>@article{akram2007pilot,
+            title={Pilot-based channel estimation in OFDM systems},
+            author={Akram, Muhammad Saad},
+            year={2007},
+            }</p>
+          <a>https://www2.imm.dtu.dk/pubdb/edoc/imm5405.pdf</a>
+        </div>
+        <div id="hassan2022performance">
+          <p>@article{hassan2022performance,
+            title={Performance Evaluation of Machine Learning-Based Channel Equalization Techniques: New Trends and Challenges},
+            author={Hassan, Shahzad and Tariq, Noshaba and Naqvi, Rizwan Ali and Rehman, Ateeq Ur and Kaabar, Mohammed KA},
+            journal={Journal of Sensors},
+            volume={2022},
+            number={1},
+            year={2022},
+            publisher={Wiley Online Library},
+          }</p>
+          <a>https://onlinelibrary.wiley.com/doi/full/10.1155/2022/2053086</a>
+        </div>
+        <div id="madhow2008fundamentals">
+          <p>@book{madhow2008fundamentals,
+            title={Fundamentals of digital communication},
+            author={Madhow, Upamanyu},
+            year={2008},
+            publisher={Cambridge university press},
+          }</p>
+          <a>https://www.cambridge.org/core/books/fundamentals-of-digital-communication/41C6F0409EB850F94E7542F4FED36AC1</a>
+        </div>
+        <div id="zhu2025liquid">
+          <p>@article{zhu2025liquid,
+            title={Liquid Neural Networks: Next-Generation AI for Telecom from First Principles},
+            author={Zhu, Fenghao and Wang, Xinquan and Zhu, Chen and Huang, Chongwen},
+            journal={arXiv preprint arXiv:2504.02352},
+            year={2025},
+          }</p>
+          <a>https://arxiv.org/pdf/2504.02352</a>
+        </div>
+        <div id="senic2022challenges">
+          <p>@inproceedings{senic2022challenges,
+            title={Challenges for 5G and Beyond},
+            author={Senic, Jelena and Bhardwaj, Anmol and Gentile, Camillo and Caudill, Derek and Lai, Chiehping and Senic, Damir and Jun, Sung Yun and Chuang, Jack and Wang, Jian and Bodi, Anuraag and others},
+            booktitle={2022 16th European Conference on Antennas and Propagation (EuCAP)},
+            pages={1--5},
+            year={2022},
+            organization={IEEE},
+          }</p>
+          <a>https://tsapps.nist.gov/publication/get_pdf.cfm?pub_id=933609</a>
+        </div>
+        <div id="tse2004fundamentals">
+          <p>@article{tse2004fundamentals,
+            title={Fundamentals of wireless communication},
+            author={Tse, David and Viswanath, Pramod},
+            journal={Notes},
+            pages={583},
+            year={2004},
+          }</p>
+          <a>http://web.stanford.edu/~dntse/papers/book121004.pdf</a>
+        </div>
+        <div id="jalali2012wireless">
+          <p>@book{jalali2012wireless,
+            title={Wireless channel equalization in digital communication systems},
+            author={Jalali, Sammuel},
+            year={2012},
+            publisher={The Claremont Graduate University},
+          }</p>
+          <a>https://scholarship.claremont.edu/cgi/viewcontent.cgi?article=1047&context=cgu_etd</a>
+        </div>
+        <div id="kulkarni2014performance">
+          <p>@article{kulkarni2014performance,
+            title={Performance analysis of zero forcing and minimum mean square error equalizers on multiple input multiple output system on a spinning vehicle},
+            author={Kulkarni, Aditya},
+            year={2014},
+            publisher={Missouri University of Science and Technology},
+          }</p>
+          <a>https://scholarsmine.mst.edu/cgi/viewcontent.cgi?article=8312&context=masters_theses</a>
+        </div>
+        <div id="reuter2002mitigating">
+          <p>@article{reuter2002mitigating,
+            title={Mitigating error propagation effects in a decision feedback equalizer},
+            author={Reuter, Michael and Allen, Jeffery C and Zeidler, James R and North, Richard C},
+            journal={IEEE Transactions on Communications},
+            volume={49},
+            number={11},
+            pages={2028--2041},
+            year={2002},
+            publisher={IEEE},
+          }</p>
+          <a>https://apps.dtic.mil/sti/tr/pdf/ADA505689.pdf</a>
+        </div>
+        <div id="jiang2011performance">
+          <p>@article{jiang2011performance,
+            title={Performance analysis of ZF and MMSE equalizers for MIMO systems: An in-depth study of the high SNR regime},
+            author={Jiang, Yi and Varanasi, Mahesh K and Li, Jian},
+            journal={IEEE Transactions on Information Theory},
+            volume={57},
+            number={4},
+            pages={2008--2026},
+            year={2011},
+            publisher={IEEE},
+          }</p>
+          <a>http://www.sal.ufl.edu/yjiang/papers/VbitwcR6.pdf</a>
+        </div>
+        <div id="samsung2025ai">
+          <p>@article{samsung2025ai,
+            author={Abebe, Ameha Tsegaye and Sun, Feifei and Ji, Hyoungju and Onggosanusi, Eko},
+            title={6G AI/ML for Physical-layer: Part I - General Views},
+            year={2025},
+            url={https://research.samsung.com/blog/6G-AI-ML-for-Physical-layer-Part-I-General-Views},
+          }</p>
+          <a>https://research.samsung.com/blog/6G-AI-ML-for-Physical-layer-Part-I-General-Views</a>
+        </div>
+        <div id="agbo2017principles">
+          <p>@book{agbo2017principles,
+            title={Principles of modern communication systems},
+            author={Agbo, Samuel O. and Sadiku, Matthew NO},
+            year={2017},
+            publisher={Cambridge University Press},
+          }</p>
+          <a>https://www.cambridge.org/highereducation/books/principles-of-modern-communication-systems/B8EA39B4D58AB90F4004E4345C0ED63A#overview</a>
+        </div>
+        <div id="manelis2013signal">
+          <p>@article{manelis2013signal,
+            author={Manelis, V. B. and Novikov, A. V.},
+            title={Signal demodulation in the GSM analyzer of base stations},
+            journal={Radioelectronics and Communications Systems},
+            year={2013},
+            volume={56},
+            number={2},
+            pages={89--94},
+            doi={10.3103/S0735272713020040},
+          }</p>
+          <a>https://radioelektronika.org/public/journals/16/preview/2013/S0735272713020040_preview.pdf</a>
+        </div>
+        <div id="wu2013twophase">
+          <p>@inproceedings{wu2013twophase,
+            author={Wu, C. L. and Chen, P. N. and Skoglund, M. and Xiao, M. and Shieh, S. L.},
+            title={A two-phase maximum-likelihood sequence estimation for receivers with partial CSI},
+            booktitle={2013 9th International Conference on Information, Communications & Signal Processing (ICICS)},
+            year={2013},
+            publisher={IEEE},
+            doi={10.1109/ICICS.2013.6782822},
+          }</p>
+          <a>https://arxiv.org/abs/1304.6245</a>
+        </div>
+        <div id="wyglinski2018sdr">
+          <p>@book{wyglinski2018sdr,
+            title={Software-Defined Radio for Engineers},
+            author={Wyglinski, Alexander M. and Getz, Travis and Collins, Travis F. and Pu, Di},
+            year={2018},
+            publisher={Artech House},
+            address={Norwood, MA},
+            isbn={978-1-63081-457-1},
+          }</p>
+          <a>https://uk.artechhouse.com/Software-Defined-Radio-for-Engineers-P1938.aspx</a>
+        </div>
+        <div id="vijay2014performance">
+          <p>@article{vijay2014performance,
+            title={Performance Analysis of RLS over LMS Algorithm for MSE in Adaptive Filters},
+            author={Vijay, J. P. and Sharma, N. K.},
+            journal={International Journal of Technology Enhancements and Emerging Engineering Research},
+            volume={2},
+            number={4},
+            pages={40--44},
+            year={2014},
+            }</p>
+          <a>https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=f83b893f522d4e10096ae6efa7b17e49fbea2998</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

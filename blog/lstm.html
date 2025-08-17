@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../js/no-flash.js"></script>
+    <meta http-equiv="content-security-policy" content="" />
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
+    <link href="../css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/languages/python.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
+    <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="../js/search.js"></script>
+    <script defer src="../js/theme-toggle.js"></script>
+    <title>Long Short-Term Memory</title>
+    <meta name="description" content="Learn about the breakthrough of Long Short-Term Memory (LSTMs). Dive into
+    how this foundational neural network type conquered the 'vanishing gradient' problem in RNNs, enabling AI
+    to learn even from rather distant past information." />
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <div class="project">
+          <h2>Long Short-Term Memory</h2>
+          <p class="thin project-p">February 2024 • Reading Time: 5 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+                The 1990s were quite the decade for Artificial Intelligence. DeepBlue defeated Garry Kasparov in a chess match and the initial development of what later evolved into transformers with linearized self-attention was released \cite{schlag2021linear}.
+                In addition to these events, in 1997, a curious paper was published. Its title: "Long Short-Term Memory" \cite{hochreiter1997long}.<br/>
+                <br/>
+                Long Short-Term Memory (LSTM) was invented by
+                Sepp Hochreiter and Jürgen Schmidhuber to address the problem of vanishing gradients of preceding Recurrent Neural Networks (RNN).
+                But why did this problem occur, what made LSTMs work and why did they turn out foundational to the field?
+            </p>
+            <h3>Vanishing Gradients in RNNs</h3>
+            <p class="blog-p">
+                In RNNs, vanishing gradients occur due to an iterative multiplication of weight matrices during backpropagation.
+                Very fundamentally, gradients are used to adjust the weights of a neural network. They are calculated per weight using the chain rule of calculus. If done correctly, they
+                nudge each weight in a direction that either minimizes a loss or maximizes a goal. With RNNs, gradients need to be derived for each time step. Let's look at an example.
+                Assume the forward pass to determine a $\sigma$-activated RNN's hidden state $h_t$ as defined by $h_t = \sigma(W_{hh_t}h_{t-1} + W_{xh_t}x_t + b_{h_t})$.
+                Say we calculate a loss $L$. The gradient of $L$ with respect to $h_t$ is:
+                
+                $$\frac{\partial L}{\partial h_t} = \frac{\partial L}{\partial h_{t+1}} \cdot \frac{\partial h_{t+1}}{\partial h_t}$$
+                $$\frac{\partial h_{t+1}}{\partial h_t} = \sigma'(W_{hh_t}h_{t-1}+W_{xh_t}x_t+b_h)\cdot W_{hh_t}$$
+
+                The first term $\frac{\partial L}{\partial h_{t+1}}$ is the gradient of the loss with respect to the next hidden state, i.e. the one closer to $L$ in time.
+                The second term $\frac{\partial h_{t+1}}{\partial h_t}$ is the gradient of the next hidden state with respect to the current hidden state.
+
+                $$\frac{\partial h_{t+1}}{\partial h_t} = \sigma'(W_{hh_t}h_t + W_{xh_t}x_{t+1} + b_{h_t}) \cdot W_{hh_t}$$
+
+                In this multiplication, both terms can actually contribute to the problem. The derivative of the above applied $\sigma(x)$ is $\sigma'(x) = \sigma(x)(1-\sigma(x))$.
+                If an input is extremely large, $\sigma(x)$ will saturate at $1$, the maximum of its range $[0;1]$. The larger $\sigma(x)$ the more $\sigma'(x)$ will then tend towards $0$.
+                And equally, if the weights $W_{hh_t}$ are small, or happen to become small during training, and remain small over multiple time steps, the gradient $\frac{\partial h_{t+1}}{\partial h_t}$ will scale small as well.
+                And if that happens, the gradient $\frac{\partial L}{\partial h_t}$ will necessarily become smaller than the gradient $\frac{\partial L}{\partial h_{t+1}}$ was.
+                We're actively squashing our valuable gradient information.<br/>
+                Small $W_{hh_t}$ can occur due to random initialization of weights or due to prior weight updates.
+                RNNs can somewhat cope with this for short sequences, but with longer sequences, the squashing hinders the learning effect to fully propagate to distant,
+                older time step inputs.
+            </p>
+            <h3>LSTM Architecture</h3>
+            <p class="blog-p">
+                LSTMs can learn dependencies between data points over longer periods of time \cite{hochreiter1991untersuchungen} \cite{bengio1994learning}. 
+                For this purpose, much like RNNs, LSTMs consist of sequentially connected cells. However, these cells maintain a short-term and a long-term memory. 
+                Each cell consists of Forget Gate, Input Gate, Output Gate, Cell State and Hidden State.<br/>
+                <br/>
+                The cell state $C$ can be understood as representing the long-term memory. It holds and mends information attained across prior inputs.
+                The hidden state $h$ contains the short-term memory, i.e. information from immediately preceding inputs. 
+                The forget gate $f_t$ controls the amount of information to be discarded from the previous cell state $C_{t-1}$ \cite{colah2015Understanding}.
+                Both $f_t$ and $C_{t-1}$ are vectors and are calculated as follows:
+
+                $$f_t = \sigma(W_f\cdot[h_{t-1},x_t] + b_f)$$
+
+                $[h_{t-1}, x_t]$ is a vector of the last hidden state $h_{t-1}$ and the current input $x_t$. $W_f$ and $b_f$ are the weight matrix and the bias,
+                specific to the memory cell and the forget gate. The sigmoid function $\sigma(x)$ is used here, too, to compress the result of the calculation
+                $W_f[h_{t-1}, x_t] + b_f$ into a value within $[0;1]$. For each position in $C_{t-1}$, a value in $f_t$ determines 'how much' the specific 
+                information is to be forgotten or retained. The sigmoid function $\sigma(x)$ therefore scales the degree of temporal relevance per entry in $C_{t-1}$.<br/>
+                <br/>
+                The input gate decides with exactly which new information from $h_{t-1}$ and $x_t$ should inform the cell state $C_{t-1}$ \cite{colah2015Understanding}.
+                Three operations are necessary: The creation of the cell state update $\tilde{C_t}$, the calculation of the factor for the element-wise scaling of the
+                cell state update $i_t$, and the addition of the scaled update and the $C_{t-1}$ scaled by $f_t$. The hyperbolic tangent 
+                $tanh(x) = \frac{e^x-e^{-x}}{e^x + e^{-x}}$ compresses $C_t$ into the range $[-1;1]$:
+
+                $$\tilde C_t = tanh(W_c\cdot[h_{t-1},x_t]+b_c)$$
+                $$i_t = \sigma(W_i\cdot[h_{t-1},x_t]+b_i)$$
+                $$C_t = f_t \odot C_{t-1}+i_t\odot \tilde C_t$$
+
+                After the completed cell state update, the output gate $o_t$ finally provides the updated hidden state. $o_t$ is, similar to $f_t$, a sigmoid-activated
+                vector of $h_{t-1}$ and $x_t$, which is multiplied by learnable weights $W_o$ and affected by a bias $b_o$. $o_t$ decides which specific values from the new
+                cell state $C_t$ are to be used to update the hidden state $h_{t-1}$. The cell state is changed to the value range $[-1; 1]$ using $tanh$ 
+                and multiplied by $o_t$ element-wise:
+
+                $$o_t = \sigma(W_o \cdot [h_{t-1}, X_t] + b_o)$$
+                $$h_t = o_t \odot tanh(C_t)$$
+
+                The aim, which again can be equal to RNN setups, is to find the weighting and bias parameters in such a way that
+                the final output of the model corresponds to an expected value or matches one or more data points from the training dataset following the input.
+                During training, these weights are gradually updated for each input-output pair by loss minimization using gradient descent.
+            </p>
+            <h3>Why are LSTMs better, after all?</h3>
+            <p class="blog-p">
+                In essence, LSTM introduces trainable filters through the forget, input and output gates. 
+                These filters can themselves learn to effectively retain or discard information, effectively focusing each cell's impact to really 
+                only be the most relevant contribution at each time step. Especially the selective update of $C$ managed by $f_t$ prevents
+                a rapid decay of relevant gradients over longer durations of time. Contributing to that is the use of specific activation
+                functions at specific positions.<br/>
+                <br/>
+                The sigmoid function $\sigma(x)$ is specifically used as a gatekeeper, because its range is $[0;1]$. So, multiplying with $\sigma$-activated
+                values at best is a pass-through and at worst is a blockage. The hyperbolic tangent $tanh(x)$ is used to compress values within $[-1;1]$. 
+                Only these activated and filtered input representations are then 'let through' to $C_t$, shielding through range uniformity from excessive
+                or insufficiently informative input.<br/>
+                <br/>
+                The careful structural combination of gating mechanisms allows gradients to backflow more effectively through time steps when training. 
+                The scaling and selective updating provided via $f_t, i_t, o_t$ circumvent causes for rapid decay of gradients
+                and enable the model to learn meaningful dependencies even across long sequences.
+            </p>
+            <h3>Is there more?</h3>
+            <p class="blog-p">
+                Given the sizeable performance improvements over RNNs, LSTMs quickly got widely adopted. Still, scenarios remain where LSTMs might 
+                not be the ideal choice. Since being introduced, several LSTM variants have been developed. Jozefowicz and colleagues compared over $10,000$ different
+                architectures, starting from RNNs. They found that modified LSTM architectures outperformed the original LSTM on certain tasks, but were never universally
+                better \cite{jozefowicz2015empirical}. In any way, the special Bidirectional LSTM (BiLSTM) should be mentioned here.<br/>
+                <br/>
+                The BiLSTM model consists of two LSTM layers, one of which processes a given input sequence in the forward direction and the other in the opposite direction.
+                For example, in the context of log data, the BiLSTM could incorporate information from previous but also subsequent log entries with and against the
+                the course of time \cite{wei2022lstm}. This in turn can enable more accurate modeling of temporal patterns and can improve the ability to detect
+                contextual anomalies \cite{li2020swisslog}. Also, by now, Transformer-based models have been shown to outperform LSTMs on a variety 
+                of Natural Language Processing (NLP) tasks. LSTMs are foundational to the field, but they are, by far, not the end of the story.
+            </p>
+          </div>
+          <div id="references"></div>
+        </div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+    <div id="bibtex" style="display: none">
+        <div id="schlag2021linear">
+            <p>@inproceedings{schlag2021linear,
+                title={Linear transformers are secretly fast weight programmers},
+                author={Schlag, Imanol and Irie, Kazuki and Schmidhuber, Jürgen},
+                booktitle={International Conference on Machine Learning},
+                pages={9355--9366},
+                year={2021},
+                organization={PMLR}
+              }</p>
+            <a>https://arxiv.org/abs/2102.11174</a>
+        </div>
+        <div id="hochreiter1997long">
+            <p>@article{hochreiter1997long,
+                title={Long short-term memory},
+                author={Hochreiter, Sepp and Schmidhuber, Jürgen},
+                journal={Neural computation},
+                volume={9},
+                number={8},
+                pages={1735--1780},
+                year={1997},
+                publisher={MIT press}
+              }</p>
+            <a>https://blog.xpgreat.com/file/lstm.pdf</a>
+        </div>
+        <div id="hochreiter1991untersuchungen">
+            <p>@article{hochreiter1991untersuchungen,
+                title={Untersuchungen zu dynamischen neuronalen Netzen},
+                author={Hochreiter, Sepp},
+                journal={Diploma, Technische Universit{\"a}t M{\"u}nchen},
+                volume={91},
+                number={1},
+                pages={31},
+                year={1991},
+              }</p>
+            <a>https://www.bioinf.jku.at/publications/older/3804.pdf</a>
+        </div>
+        <div id="bengio1994learning">
+            <p>@article{bengio1994learning,
+                title={Learning long-term dependencies with gradient descent is difficult},
+                author={Bengio, Yoshua and Simard, Patrice and Frasconi, Paolo},
+                journal={IEEE transactions on neural networks},
+                volume={5},
+                number={2},
+                pages={157--166},
+                year={1994},
+                publisher={IEEE}
+              }</p>
+            <a>http://www.comp.hkbu.edu.hk/~markus/teaching/comp7650/tnn-94-gradient.pdf</a>
+        </div>
+        <div id="colah2015Understanding">
+            <p>@online{colah2015Understanding,
+                title={Understanding LSTM Networks},
+                year={2015},
+                author={Olah, Christopher},
+                urldate={2023-06-15},
+              }</p>
+            <a>https://colah.github.io/posts/2015-08-Understanding-LSTMs/</a>
+        </div>
+        <div id="jozefowicz2015empirical">
+            <p>@inproceedings{jozefowicz2015empirical,
+                title={An empirical exploration of recurrent network architectures},
+                author={Jozefowicz, Rafal and Zaremba, Wojciech and Sutskever, Ilya},
+                booktitle={International conference on machine learning},
+                pages={2342--2350},
+                year={2015},
+                organization={PMLR}
+              }</p>
+            <a>https://proceedings.mlr.press/v37/jozefowicz15.pdf</a>
+        </div>
+        <div id="wei2022lstm">
+            <p>@article{wei2022lstm,
+                title={LSTM-Autoencoder based anomaly detection for indoor air quality time series data}, 
+                author={Wei, Yuanyuan and Jang-Jaccard, Julian and Xu, Wen and Sabrina, Fariza and Camtepe, Seyit and Boulic, Mikael},
+                journal={arXiv preprint arXiv:2204.06701},
+                year={2022},
+              }</p>
+            <a>https://arxiv.org/abs/2204.06701</a>
+        </div>
+        <div id="li2020swisslog">
+            <p>@inproceedings{li2020swisslog,
+                title={Swisslog: Robust and unified deep learning based log anomaly detection for diverse faults},
+                author={Li, Xiaoyun and Chen, Pengfei and Jing, Linxiao and He, Zilong and Yu, Guangba},
+                booktitle={2020 IEEE 31st International Symposium on Software Reliability Engineering (ISSRE)},
+                pages={92--103},
+                year={2020},
+                organization={IEEE}
+              }</p>
+            <a>https://yuxiaoba.github.io/publication/swisslog20/swisslog20.pdf</a>
+        </div>
+    </div>
+  </body>
+</html>

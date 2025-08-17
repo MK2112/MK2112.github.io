@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../js/no-flash.js"></script>
+    <meta http-equiv="content-security-policy" content="" />
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
+    <link href="../css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/languages/python.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="../js/search.js"></script>
+    <script defer src="../js/theme-toggle.js"></script>
+    <title>Installing 64-Bit Linux on a 32-Bit EFI Device</title>
+    <meta name="description" content="Step-by-step guide to installing 64-bit Ubuntu Linux on an ASUS X205TA, a device
+    with 64-bit hardware but 32-bit EFI firmware. Learn how to overcome bootloader limitations, configure GRUB for
+    bypassing 32-bit EFI, and bring new life to restricted hardware." />
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <div class="project">
+          <h2>Installing 64-Bit Linux on a 32-Bit EFI Device</h2>
+          <p class="thin project-p">November 2024 • Reading Time: 6 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+              It seems that a restrictive systems design approach is gaining more traction in the end-user compute market, intentionally
+              locking users into a preset operating system configuration. This enables manufacturers to exercise more control over the system, 
+              which on the one hand can increase security, but on the other hand may also allow for software-induced
+              planned obsolescence. For instance, the Windows 11 requirements for TPM 2.0 and Secure Boot effectively excluded older
+              hardware from running the latest Windows version. Support for Windows 10 is scheduled to seize by 2025. However, some cases are more
+              subtle, requiring a closer look.<br />
+              <br />
+              The ASUS X205TA exemplifies such a case. While it features 64-bit-capable hardware, its chipset defaults to 32-bit EFI firmware.
+              The system ships with safe-boot-protected 32-bit Windows 8.1 pre-installed - a design choice that imposes artificial software
+              restrictions, limiting the system's potential despite its 64-bit hardware architecture.<br />
+              One key restriction from this choice is the inability to run modern operating systems, which are increasingly exclusive to 64-bit environments.
+              This trend is intriguing and motivates my goal: Find a way to install Ubuntu by circumventing the imposed 32-bit
+              constraints to provide a fully functional 64-bit Linux environment.
+            </p>
+            <h4>What is EFI?</h4>
+            <p class="blog-p">
+              EFI (Extensible Firmware Interface) is the more modern replacement for the legacy BIOS (Basic Input/Output System).
+              It serves as the core interface between a computer's chipset firmware and the installed operating system, acting
+              essentially as a mediator between the two to provide the booting operating system with control over the hardware resources needed for operation.<br />
+              <br />
+              EFI is designed to address limitations of BIOS, offering for example:<br />
+              <br />
+              $\rightarrow$ Faster boot times, <br />
+              $\rightarrow$ Improved security features, and <br />
+              $\rightarrow$ Support for larger storage devices. <br />
+              <br />
+              The ASUS X205TA comes with 32-bit EFI. It uses 32-bit addressing, limiting compatibility with 64-bit bootloaders.
+              Systems with 64-bit CPUs but 32-bit EFI firmware, like the ASUS X205TA, cannot natively boot 64-bit operating systems, 
+              as they expect a compatible 64-bit EFI or BIOS environment. In other words, we need a workaround.
+            </p>
+            <h4>What is GRUB?</h4>
+            <p class="blog-p">
+              GRUB (GRand Unified Bootloader) is a bootloader typically used by Linux systems, enabling the kick-off for the boot routines
+              of an installed operating system. GRUB can present a menu to choose between installed operating systems. If configured properly,
+              GRUB can then load the Linux kernel into memory and pass control to it, starting the operating system.
+              GRUB must be installed in a way that integrates with the EFI's boot process. If we encounter a mismatch between
+              the EFI architecture and GRUB configurations, we will encounter boot errors, making GRUB and any installed operating system unusable.
+            </p>
+            <h3>Preparation Phase</h3>
+            <p class="blog-p">
+              $\textbf{1)}$ I chose to install Ubuntu 22.04.5 LTS for the X205TA. At the time of writing this (2024), 22.04 LTS was
+              quite battle-proven and still supported with updates. I downloaded the regular amd64 iso file.<br />
+              <br />
+              $\textbf{2)}$ (Skip this if you only have systems running Windows available at this point) I only had the X205TA itself,
+              so I had to make all pre-configurations from within Windows. However, if you are lucky and have a seperate system running
+              Linux, you may modify the iso file there before creating the bootable USB stick by treating the iso with the
+              <code>treetoobitiso.sh</code> from <a class="highlight" target="_blank" href="https://linuxiumcomau.blogspot.com/2022/05/adding-32-bit-grub-bootloader-to-boot.html">linuxium.com.au</a>.<br />
+              <br />
+              $\textbf{3)}$ I thoroughly recommend creating the bootable USB for Linux with the Windows-only tool Rufus, because Rufus
+              allows for explicitly setting the partition scheme and the boot mode for the bootable USB. I turned the Ubuntu iso file
+              into a bootable USB with these Rufus settings:<br />
+              <br />
+              $\rightarrow$ <code>GPT</code> partition scheme <br />
+              $\rightarrow$ <code>UEFI (non-CSM)</code> boot mode <br />
+              $\rightarrow$ <code>FAT32</code> file system <br />
+              $\rightarrow$ Everything else left to default<br />
+              <br />
+              $\textbf{4)}$ (Skip this if you performed step $2$) The install process requires the presence of a file
+              called <code>bootia32.efi</code>. This file enables the Ubuntu installer to run in 32-bit EFI mode. Download the 
+              <code>bootia32.efi</code> file from <a class="highlight" target="_blank" href="https://github.com/nguyentumine/AIO-Boot/blob/master/EFI/BOOT/bootia32.efi">github.com/nguyentumine/AIO-Boot</a>
+              and paste it into <code>/EFI/boot</code> on your bootable USB.<br />
+              <br />
+              $\textbf{5)}$ Disconnect the USB from your computer and shut down the X205TA. While shut off, place the X205TA in front of
+              you and plug the USB into the USB port closest to you on the right side. Using specifically this port will allow for the
+              USB to become a boot option in EFI later.
+            </p>
+            <h3>Setting EFI and Booting into the Live System</h3>
+            <p class="blog-p">
+              From here on out, embrace complexity:<br />
+              <br />
+              $\textbf{6)}$ Boot the X205TA while hitting <code>F2</code> repeatedly to show the EFI menu. Within EFI, <code>disable</code> the Safe Boot option.
+              Save this change without exiting and select the USB drive as your Boot override option.
+              The Ubuntu installer should start up.<br />
+              <br />
+              $\textbf{7)}$ When prompted, do not go for a direct installation, but start the live system. From within there, run the full installation process.<br />
+              <br />
+              $\textbf{8)}$ Anticipate GRUB installation errors popping up. They will occur right at the end of the installation, because
+              the GRUB packages contained within the installation medium address only 64-bit-EFI, 64-bit-BIOS or 32-bit-BIOS systems.
+              What we need is support for our 32-bit-EFI.<br />
+              <br />
+              $\textbf{9)}$ <b>Do not restart</b> after the installation completes. Instead, opt for staying in the live system.
+            </p>
+            <h3>Adapting GRUB</h3>
+            <p class="blog-p">
+              GRUB's initial installation will fail due to incompatibilities. However, we can fix this first attempt through
+              some reconfiguration:<br />
+              <br />
+              $\textbf{10)}$ Connect the live system to the internet, if not done already. There, download the <code>grubia32.efi</code>
+              from <a class="highlight" target="_blank" href="https://github.com/nguyentumine/AIO-Boot/blob/master/EFI/BOOT/grubia32.efi">github.com/nguyentumine/AIO-Boot</a>.
+              Then, open a terminal and type this:</p>
+<pre><code># Navigate to where the grubia32.efi was downloaded to
+cd ~/Downloads<br />
+                
+# Mount system partitions
+# Find your system partitions by running `lsblk`, look for those marked `boot` and `root`
+# This is the root partition
+sudo mount /dev/mmcblk2p2 /mnt
+# This is the boot partition
+sudo mount /dev/mmcblk2p1 /mnt/boot/efi
+                
+# Bind critical system directories
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /proc /mnt/proc
+sudo mount --bind /sys /mnt/sys
+sudo mount --bind /run /mnt/run
+                
+# Replace 64-bit GRUB with 32-bit equivalent
+sudo cp grubia32.efi /mnt/boot/efi/EFI/ubuntu/grubx64.efi</code></pre>
+            <p class="blog-p">
+              This sequence essentially hot-wires GRUB to pretend to Ubuntu that it is 64-bit while actually being compatible with
+              the 32-bit boot setting. Note that we didn't install GRUB yet, we just overrode a file.<br />
+              <br />
+              $\textbf{11)}$ To now go on and install this hot-wired GRUB, type this into the terminal:</p>
+<pre><code>sudo chroot /mnt
+update-grub
+update-grub2
+</code></pre>
+            <p class="blog-p">
+              $\textbf{12)}$ Step 11's commands will still throw warnings, but they will create the files necessary for
+              booting into GRUB. Still within the terminal, type this:
+            </p>
+<pre><code>exit
+sudo umount /mnt/dev /mnt/proc /mnt/sys /mnt/boot/efi /mnt
+sudo reboot
+</code></pre>
+            <p class="blog-p">
+              $\textbf{13)}$ The X205TA will now boot into a GRUB command line interface. Once you're there, type this:
+            </p>
+<pre><code>set root=(hd0,gpt2) 
+configfile /boot/grub/grub.cfg
+</code></pre>
+            <p class="blog-p">
+              At this point, we made the 32-bit EFI interact with GRUB successfully, but GRUB doesn't yet itself know exactly
+              how to boot our installed Ubuntu. However, with these GRUB commands, we can hot-wire that too. Your Ubuntu will
+              now boot (initial boot, it takes some time). The problem is that you would have to type the GRUB commands everytime
+              you boot. Let's fix that.
+            </p>
+            <h3>Adapting GRUB, Reloaded</h3>
+            <p class="blog-p">
+              $\textbf{14)}$ Connect to the internet. Then, run this:<br />
+<pre><code>sudo apt update
+
+sudo apt-get purge --allow-remove-essential shim-signed grub-efi-amd64-signed
+sudo apt-get install --allow-remove-essential grub-efi-ia32 grub-efi-ia32-bin
+
+sudo mount /dev/mmcblk2p2 /mnt
+sudo mount /dev/mmcblk2p1 /mnt/boot/efi
+
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /proc /mnt/proc
+sudo mount --bind /run /mnt/run
+sudo mount --bind /sys /mnt/sys
+
+sudo chroot /mnt
+
+grub-install --target=i386-efi --efi-directory=/boot/efi --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+exit
+
+sudo umount /mnt/dev /mnt/proc /mnt/run /mnt/sys /mnt/boot/efi /mnt
+sudo reboot
+</code></pre>
+            <p class="blog-p">
+              This overrides the makeshift GRUB setup we used to get the system running and now fully supplies the correct GRUB with
+              the correct system paths for booting. The system should reboot without requiring the GRUB commands anymore.<br />
+              <br />
+              A quick note on the <code>chroot</code> command: The <code>chroot</code> (change root) command temporarily changes
+              the root directory for the current running terminal. This creates an isolated environment where the system behaves
+              as if the specified directory we build by mounting specific partitions in specific locations is the root of the filesystem.
+              We essentially play a game of pretend with the GRUB installer.<br />
+              <br />
+              As we ran a very modified installation of Ubuntu, you might encounter residual items from the installing process within the
+              installed system, like the live system's icon offering you to <code>"Install RELEASE"</code>. Don't click it, but instead
+              remove it via <code>sudo apt-get remove ubiquity</code>.
+            </p>
+            <h3>Conclusion</h3>
+            <p class="blog-p">
+              The ASUS X205TA now runs 64-bit Ubuntu 22.04.5 LTS behind a 32-bit EFI. Note that procedures for updates and even distribution upgrades can be applied just as usual. I managed to upgrade to 24.04.1 LTS which brought further noticable improvements in system performance.<br /> 
+              What began as a constrained hardware environment became a playground for systemic understanding.
+              Ubuntu now runs, not by design, but through our intervention. This grants an older,
+              but capable system like the X205TA a new and extended life.
+            </p>
+            <h3>References & Acknowledgements</h3>
+            <p class="blog-p">
+              $\rightarrow$ <a class="highlight" target="_blank" href="https://linuxiumcomau.blogspot.com/2022/05/adding-32-bit-grub-bootloader-to-boot.html">linuxium.com.au</a><br />
+              $\rightarrow$ <a class="highlight" target="_blank" href="https://github.com/nguyentumine/AIO-Boot/">github.com/nguyentumine/AIO-Boot</a><br />
+              $\rightarrow$ <a class="highlight" target="_blank" href="https://askubuntu.com/questions/337615/after-updating-ubuntu-now-i-have-a-install-release-icon-in-the-desktop-what-s">askubuntu.com</a><br />
+              $\rightarrow$ <a class="highlight" target="_blank" href="https://unix.stackexchange.com/questions/206274/how-do-i-repair-grub2-not-booting-32-bit-efi-on-a-64-bit-machine">unix.stackexchange.com</a><br />
+              $\rightarrow$ <a class="highlight" target="_blank" href="https://bbs.archlinux.org/viewtopic.php?id=252627">bbs.archlinux.org</a><br />
+            </p>
+          </div>
+        </div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>
