@@ -305,7 +305,7 @@ footer {
     color: var(--mist-grey);
     background-color: var(--paper-grey);
     transition: background-color 0.3s ease, color 0.05s ease, border-color 0.3s ease;
-    margin-top: 3rem;
+    margin-top: 4rem;
     padding-bottom: 2rem;
 }
 
