@@ -56,12 +56,12 @@
     </item>
     <item>
       <title>DreamerV2 and DreamerV3, Explained</title>
-      <link>https://mk2112.github.io/blog/dreamer.html</link>
+      <link>https://mk2112.github.io/blog/dreamer-3.html</link>
       <description>Developing intelligent systems for robustly perceiving, exploring, and attaining incrementally complex insights remains a persistent challenge in the field.
                 The Dreamer algorithm addresses this by employing latent imagination and reinforcement learning, enabling the development of effective policies for various
                 tasks in different environments.</description>
       <pubDate>Sun, 28 Apr 2024 15:54:46 GMT</pubDate>
-      <guid isPermaLink="true">https://mk2112.github.io/blog/dreamer.html</guid>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/dreamer-3.html</guid>
     </item>
     <item>
       <title>Long Short-Term Memory</title>
