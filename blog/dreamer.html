@@ -223,7 +223,7 @@
               $99\%$ of the predicted softmax output with $1\%$ of a uniform distribution. Yes, we assign an always same
               probability to all categories with an 'intensity' of $1\%$ with regards to the predicted softmax output.
               This is done to meaningfully yet subtly and non-distoringly assign some relevance to all categories, even if
-              the model is confident about a certain category to avoid falling into full on determinism. This is refered to as "$1\%$ Unimix".<br />
+              the model is confident about a certain category to avoid falling into full on determinism. This is referred to as "$1\%$ Unimix".<br />
               <br />
               Let's take a look at the actor. Remember that the actor is trained to predict the next action based on the current state and the predicted next state.
               Where DreamerV2 wasn't too clear about the normalization for the actor, i.e. the normalizing the prediction across the action space   
