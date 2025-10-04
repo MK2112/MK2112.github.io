@@ -115,7 +115,7 @@
               is to over time learn a hidden state transition that effectively represents the dynamics of the environment.
               The consideration of the time dimension allows for a more nuanced choice of action, as a current
               input can now be put into context \cite{gao2022enhance}. Let's see what this means in detail.<br />
-              For each time step $t$, a sensory observation $x_t$ is obtained. The RSSM derives a hidden state $h_t$,
+              For each timestep $t$, a sensory observation $x_t$ is obtained. The RSSM derives a hidden state $h_t$,
               influenced by $h_{t-1}$, the previous action $a_{t-1}$, and the prior latent state $z_{t-1}$. To now let
               information from $x_t$ affect the RSSM, $x_t$ undergoes informed dimensionality reduction through the
               representation model, yielding $z_t$ after sampling. The immediate output of the representation model is an
@@ -208,7 +208,7 @@
               DreamerV2 could learn to produce a very deterministic or uninformative prior distribution that articulates little
               about the actual diversity of possible states. In other words, the model would inadvertedly and accidentally train itself into an
               overly simplistic world view. DreamerV3 implements what the authors call KL balancing and "Free Bits" to counteract this.<br />
-              For each time step, the respective dynamics loss ($L_{dyn}$) and the representation loss ($L_{rep}$) are truncated below a threshold of
+              For each timestep, the respective dynamics loss ($L_{dyn}$) and the representation loss ($L_{rep}$) are truncated below a threshold of
               $1 \text{nat}$ ($\approx 1.44 \text{bits}$). In other words, as long as the KL divergence between the prior and the posterior is
               already very low (i.e., the dynamics are already well modeled/predictable), the contribution to of dynamics and representation loss to the
               total loss is outright 'squashed' to zero. Moreover, this change not only reduces the loss jitter, but also allows the model to focus more explicitly on
@@ -233,15 +233,18 @@
               exploration. This change is particularly beneficial for sparse reward environments where occasional high rewards, just by their sudden appearance, could
               distort the learning process in this 'reward-encountering' step.<br />
               <br />
-              Going back again, with DreamerV2, the reward predictor MLP directly served as output the current time step's predicted reward $r$.
-              Equally, the critic network was an ELU-activated MLP that saw its output directly getting interpreted as the value $v$ of the
-              current time step. This is the case with DreamerV3 still, but the way in which predictions are made and trained has changed through what is called
-              Symexp-Twohot Loss. The output layer and the associated loss function of the MLPs are adjusted accordingly. The output layer
-              generates logits for a probability distribution over exponentially distributed bins (respective value ranges from that distrubution).
-              Symexp-Twohot Loss takes this discretized probability distribution and compares it to the two-hot encoded target value.
-              The loss function forces the network to increase the probability in the bins that correspond to the actual value.<br />
+              Going back to DreamerV2. The reward-predicting MLP directly served the current timestep's predicted reward $r$ as output.
+              Equally, the critic network was an ELU-activated MLP that had its output directly interpreted as the value $v$ for the
+              current timestep. DreamerV3 applies this approach still, but the way in which predictions are made and trained has changed through what is called
+              Symexp-Twohot loss. The output layer and the associated loss function of the MLPs are adjusted accordingly. The output layer
+              generates logits for a probability distribution over exponentially distributed bins (respective value ranges from that distribution).
+              Symexp-Twohot loss takes this discretized probability distribution and compares it to a two-hot encoded target value.
+              Two-hot encoding is a generalization of one-hot encoding to continuous values, producing a vector of length $|B|$ with zeros everywhere
+              except for the two entries nearest the target value (positions $k$ and $k+1$), whose probabilities sum to 1, with more weight given to
+              the closer entry. It is an added measure of resolution for the target value, while keeping the encoding itself simple.
+              In total, this symexp-twohot loss function forces the network to increase the probability in the distinct bins that correspond to the actual value.<br />
               <br />
-              Several changes are structural in nature. For example, DreamerV3 exchanges activation functions of the actor and critic networks from ELU to Swish and
+              Several structural changes were made for DreamerV3. For example, DreamerV3 exchanges activation functions of the actor and critic networks from ELU to Swish and
               adds RMSNorm for normalization. While they found that layer norm wasn't providing improvements for DreamerV2, RMSNorm was found to be beneficial,
               especially as the RSSM was updated to use the paper's own Block GRU architecture, which is still a GRU, but extended with block-diagonal recurrent
               weights, meaning the recurrent weights are divided into blocks, in this case it is $8$ blocks specifically. Each block is connected to a different
