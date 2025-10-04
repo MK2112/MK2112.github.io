@@ -244,7 +244,7 @@
               the closer entry. It is an added measure of resolution for the target value, while keeping the encoding itself simple.
               In total, this symexp-twohot loss function forces the network to increase the probability in the distinct bins that correspond to the actual value.<br />
               <br />
-              Several structural changes were made for DreamerV3. For example, DreamerV3 exchanges activation functions of the actor and critic networks from ELU to Swish and
+              Several structural changes were made. In DreamerV3, the actor and critic networks replace their ELU activations with Swish and
               adds RMSNorm for normalization. While they found that layer norm wasn't providing improvements for DreamerV2, RMSNorm was found to be beneficial,
               especially as the RSSM was updated to use the paper's own Block GRU architecture, which is still a GRU, but extended with block-diagonal recurrent
               weights, meaning the recurrent weights are divided into blocks, in this case it is $8$ blocks specifically. Each block is connected to a different
