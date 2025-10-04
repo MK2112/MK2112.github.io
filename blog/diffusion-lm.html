@@ -37,6 +37,7 @@
     <script defer src="../js/main.js" onload="setupKatex();"></script>
     <script defer src="../js/search.js"></script>
     <script defer src="../js/theme-toggle.js"></script>
+    <script defer src="../js/image-enlarge.js"></script>
     <title>Diffusion Language Models</title>
     <meta name="description" content="Explore the paradigm of Diffusion Language Models (DLMs) in natural language processing, 
     combining diffusion processes with text generation to overcome limitations of autoregressive and masked models. Understand
@@ -153,6 +154,7 @@
               we can go ahead and <i>discard the forward process</i> and use the learned reverse process for generation.
             </p>
             <div class="blog-img">
+              <!--Enlarge: 30%-->
               <img src="../img/dlm_a.png" alt="Diffusion Language Model Pre-Training" style="width: 40%" />
               <p class="blog-img-caption">The two stage Pre-training step for a DLM. Image Source: \cite{nie2025large}</p>
             </div>
@@ -174,6 +176,7 @@
               for the $\text{prompt}$.</i>
             </p>
             <div class="blog-img">
+              <!--Enlarge: 30%-->
               <img src="../img/dlm_b.png" alt="Diffusion Language Model Fine-Tuning" style="width: 40%" />
               <p class="blog-img-caption">Fine-Tuning consists of masking (partially or fully) and denoising only the $\text{response}$ part. Image Source: \cite{nie2025large}</p>
             </div>
@@ -182,6 +185,7 @@
               To put what then happens in the \cite{nie2025large}'s terms, <i>"LLaDA simulates a diffusion process from $t = 1$ (fully masked) to $t = 0$ (fully unmasked)"</i> from here on.
             </p>
             <div class="blog-img">
+              <!--Enlarge: 30%-->
               <img src="../img/dlm_c.png" alt="Diffusion Language Model Inference" style="width: 40%" />
               <p class="blog-img-caption">Inference has the DLM reconstruct a non-existent/fully noised $\text{response}$. Image Source: \cite{nie2025large}</p>
             </div>
