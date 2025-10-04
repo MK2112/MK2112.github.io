@@ -79,23 +79,23 @@
                 In RNNs, vanishing gradients occur due to an iterative multiplication of weight matrices during backpropagation.
                 Very fundamentally, gradients are used to adjust the weights of a neural network. They are calculated per weight using the chain rule of calculus. If done correctly, they
                 nudge each weight in a direction that either minimizes a loss or maximizes a goal. With RNNs, gradients need to be derived for each timestep. Let's look at an example.
-                Assume the forward pass to determine a $\sigma$-activated RNN's hidden state $h_t$ as defined by $h_t = \sigma(W_{hh_t}h_{t-1} + W_{xh_t}x_t + b_{h_t})$.
+                Assume the forward pass to determine a $\sigma$-activated RNN's hidden state $h_t$ as defined by $h_t = \sigma(W_{hh}h_{t-1} + W_{xh}x_t + b_{h})$.
                 Say we calculate a loss $L$. The gradient of $L$ with respect to $h_t$ is:
                 
-                $$\frac{\partial L}{\partial h_t} = \frac{\partial L}{\partial h_{t+1}} \cdot \frac{\partial h_{t+1}}{\partial h_t}$$
-                $$\frac{\partial h_{t+1}}{\partial h_t} = \sigma'(W_{hh_t}h_{t-1}+W_{xh_t}x_t+b_h)\cdot W_{hh_t}$$
+                $$\frac{\partial L}{\partial h_t} = \left(\prod_{k=t}^{T-1} \frac{\partial h_{k+1}}{\partial h_k}\right) \cdot \frac{\partial L}{\partial h_T}$$
+                $$\frac{\partial h_{t+1}}{\partial h_t} = \operatorname{diag}\!\big(\sigma'(W_{hh} h_t + W_{xh} x_{t+1} + b_h)\big) \cdot W_{hh}$$
 
                 The first term $\frac{\partial L}{\partial h_{t+1}}$ is the gradient of the loss with respect to the next hidden state, i.e. the one closer to $L$ in time.
                 The second term $\frac{\partial h_{t+1}}{\partial h_t}$ is the gradient of the next hidden state with respect to the current hidden state.
 
-                $$\frac{\partial h_{t+1}}{\partial h_t} = \sigma'(W_{hh_t}h_t + W_{xh_t}x_{t+1} + b_{h_t}) \cdot W_{hh_t}$$
+                $$\frac{\partial h_{t+1}}{\partial h_t} = \sigma'(W_{hh}h_t + W_{xh}x_{t+1} + b_h) \cdot W_{hh}$$
 
-                In this multiplication, both terms can actually contribute to the problem. The derivative of the above applied $\sigma(x)$ is $\sigma'(x) = \sigma(x)(1-\sigma(x))$.
+                In this multiplication, both terms can actually contribute to the problem. The derivative of the above applied $\sigma(x)$ is $\sigma'(x) = \sigma(x) \cdot \left(1-\sigma(x)\right)$.
                 If an input is extremely large, $\sigma(x)$ will saturate at $1$, the maximum of its range $[0;1]$. The larger $\sigma(x)$ the more $\sigma'(x)$ will then tend towards $0$.
-                And equally, if the weights $W_{hh_t}$ are small, or happen to become small during training, and remain small over multiple timesteps, the gradient $\frac{\partial h_{t+1}}{\partial h_t}$ will scale small as well.
+                And equally, if the weights $W_{hh}$ are small, or happen to become small during training, and remain small over multiple timesteps, the gradient $\frac{\partial h_{t+1}}{\partial h_t}$ will scale small as well.
                 And if that happens, the gradient $\frac{\partial L}{\partial h_t}$ will necessarily become smaller than the gradient $\frac{\partial L}{\partial h_{t+1}}$ was.
                 We're actively squashing our valuable gradient information.<br/>
-                Small $W_{hh_t}$ can occur due to random initialization of weights or due to prior weight updates.
+                Small $W_{hh}$ can occur due to random initialization of weights or due to prior weight updates.
                 RNNs can somewhat cope with this for short sequences, but with longer sequences, the squashing hinders the learning effect to fully propagate to distant,
                 older timestep inputs.
             </p>
@@ -163,7 +163,7 @@
                 better \cite{jozefowicz2015empirical}. In any way, the special Bidirectional LSTM (BiLSTM) should be mentioned here.<br/>
                 <br/>
                 The BiLSTM model consists of two LSTM layers, one of which processes a given input sequence in the forward direction and the other in the opposite direction.
-                For example, in the context of log data, the BiLSTM could incorporate information from previous but also subsequent log entries with and against the
+                For example, in the context of log data, the BiLSTM could incorporate information from previous but also subsequent log entries with and against
                 the course of time \cite{wei2022lstm}. This in turn can enable more accurate modeling of temporal patterns and can improve the ability to detect
                 contextual anomalies \cite{li2020swisslog}. Also, by now, Transformer-based models have been shown to outperform LSTMs on a variety 
                 of Natural Language Processing (NLP) tasks. LSTMs are foundational to the field, but they are, by far, not the end of the story.
