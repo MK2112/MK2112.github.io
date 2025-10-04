@@ -68,20 +68,21 @@
           <div class="blog-entry">
             <p class="blog-p">
               I think diffusion language models (DLMs) are <i>really</i> exciting.
-              They entail a stack of twists and turns in their approach to language modeling and address conceptual shortcomings of pre-existing, popular paradigms, opening genuinely new perspectives.
-              I believe DLMs to be so important that it is worth taking a look at them from scratch.
+              Their approach to language modeling entails a stack of new approaches, addressing conceptual shortcomings of
+              pre-existing, popular paradigms, opening genuinely new perspectives for how language modeling can be done.
+              I believe DLMs to be so interesting that it is worth taking a look at them from scratch.
             </p>
             <h3>Hypes and Masks</h3>
             <p class="blog-p">
               Neural Network-based language modeling has been dominated by two distinct paradigms for roughly the past decade:
               <b>Autoregressive language models</b> generate text sequentially. <b>Masked language models</b> complete text by
-              filling in blanks across a given sequence. No autoregression is taking place with the masked approach, we just
-              evaluate the text we have and from that derive what should be placed in the masked spot within the text. 
-              This allows masked language models to evaluate not only the past, autoregressively formed text, but the
-              bi-directional context to the left and to the right of a masked subsequence. The conceptual duopoly has served us
-              quite well, but it has also imposed technical constraints on modeling flexibility, resulting in ceilings to attainable performance.<br />
+              filling in blanks across a given sequence; we evaluate the text patches we have and from that derive what should be
+              placed in the masked patches within the sequence.
+              This allows masked language models to evaluate not only the past and autoregressively formed text, but the
+              bi-directional context to the left and to the right of a masked patch. Both model types have served us
+              quite well, but they also both imposed technical constraints on modeling flexibility, resulting in ceilings to attainable performance.<br />
               <br />
-              Autoregressive models, like GPT-4o or GPT-o3, excel at generating coherent text. They do this unidirectionally, only ever being
+              Autoregressive models, like GPT 4o or GPT o3, excel at generating coherent text. They do this unidirectionally, only ever being
               able to refer to any past text to generate some next word. Using said models through ChatGPT, this seems to work just fine,
               but note that it isn't the same as formulating a sentence as a whole or choosing words with respect to something that you want
               to lead up to later on. Autoregressive models also struggle with long-range dependencies due to their limited in size context window \cite{hosseini2024efficient}.
@@ -152,17 +153,17 @@
               we can go ahead and <i>discard the forward process</i> and use the learned reverse process for generation.
             </p>
             <div class="blog-img">
-              <img src="../img/dlm_a.png" alt="Diffusion Language Model Pre-Training" style="width: 35%" />
+              <img src="../img/dlm_a.png" alt="Diffusion Language Model Pre-Training" style="width: 40%" />
               <p class="blog-img-caption">The two stage Pre-training step for a DLM. Image Source: \cite{nie2025large}</p>
             </div>
             <p class="blog-p">
               The training is driven by a Cross-Entropy loss, averaged over all possible timesteps $t$, clean sequences $x_0$, and
               masked sequences $x_t$. The loss function is formulated as:
               $$\mathcal{L}(\theta)\overset{\Delta}{=} -\mathbb{E}_{t,x_0,x_t}\left[ \frac{1}{t} \sum_{i=1}^L1[x^i_t=\text{M}]\log p_\theta (x^i_0|x_t) \right]$$
-              Overall, we sum up the log-likelihoods <i>(those are just the $p_\theta$ put through a logarithm to make addition work for probabilities)</i> of the model
-              drawing the correct token $x_0^i$ given the masked $x_t$, and we accumulate across only the masked tokens. How can we be selective like this?<br />
-              Overall, $\mathbf{1}[x_t^i = M]$ is an indicator function that ensures we only calculate the loss for said masked tokens <i>(those where $x_t^i = M$
-              is in fact $1$)</i>. The $\frac{1}{t}$ term is a pretty crucial weighting factor: It increases the loss for less-masked sequences <i>(i.e., where $t$ is
+              We can adopt the convention that the term is just zero when $t=0$, because no tokens are masked at that timestep anyway.
+              For $t>0$, the sum runs over all masked tokens in $x_t$, computing the log-likelihood of the model predicting each original token
+              $x_0^i$ given the partially masked sequence. The indicator function $1[x_t^i=M]$ ensures that only masked tokens contribute to the loss.
+              The $\frac{1}{t}$ term is a weighting factor: It increases the loss for less-masked sequences <i>(i.e., where $t$ is
               relatively small)</i>, as predicting these should be an easier task because the model would have more context to draw conclusions based upon.<br />
               <br />
               Supervised fine-tuning (SFT) is very much possible with DLMs, and \cite{nie2025large} show how to do it in a way that is
@@ -173,15 +174,15 @@
               for the $\text{prompt}$.</i>
             </p>
             <div class="blog-img">
-              <img src="../img/dlm_b.png" alt="Diffusion Language Model Fine-Tuning" style="width: 35%" />
-              <p class="blog-img-caption">Fine-Tuning consists of Masking and denoising for only the $\text{response}$ part. Image Source: \cite{nie2025large}</p>
+              <img src="../img/dlm_b.png" alt="Diffusion Language Model Fine-Tuning" style="width: 40%" />
+              <p class="blog-img-caption">Fine-Tuning consists of masking (partially or fully) and denoising only the $\text{response}$ part. Image Source: \cite{nie2025large}</p>
             </div>
             <p class="blog-p">
               Ultimately, after pre-training and fine-tuning concluded, inference has us provide the mask predictor with a sequence that only contains the prompt.
               To put what then happens in the \cite{nie2025large}'s terms, <i>"LLaDA simulates a diffusion process from $t = 1$ (fully masked) to $t = 0$ (fully unmasked)"</i> from here on.
             </p>
             <div class="blog-img">
-              <img src="../img/dlm_c.png" alt="Diffusion Language Model Inference" style="width: 35%" />
+              <img src="../img/dlm_c.png" alt="Diffusion Language Model Inference" style="width: 40%" />
               <p class="blog-img-caption">Inference has the DLM reconstruct a non-existent/fully noised $\text{response}$. Image Source: \cite{nie2025large}</p>
             </div>
             <p class="blog-p">
@@ -212,9 +213,10 @@
             <p class="blog-p">
               I've kind of hinted at most of these already, but the shift to a diffusion-based paradigm with arbitrary length generation capabilities unlocks
               significant advantages.<br />
-              DLMs and also BDLMs are fast. Diffusion happens for all tokens in the generation length, <b>simultaneously</b>. It is hard to describe just how profound
-              this advancement is, but luckily Peitro Schirano shows the implications of it directly in <a class="highlight" href="https://x.com/skirano/status/1930332481078616296" target="_blank">an impressive video</a>.
-              It takes roughly $3$ seconds from the prompt being entered to having a running, working game of tic-tac-toe, programmed in Python.<br />
+              DLMs and also BDLMs are fast. Diffusion happens for all tokens in the generation length, <b>simultaneously</b>.
+              Pietro Schirano demonstrates the power of this approach in <a class="highlight" href="https://x.com/skirano/status/1930332481078616296" target="_blank">
+              an impressive video</a>, where Google's Gemini Diffusion goes from receiving a prompt to producing a fully functional Python game of tic-tac-toe
+              within about three seconds.
               <br />
               Autoregressive models can struggle with tasks that require reversal or multi-directional reasoning. For instance, a model trained extensively on
               "A is B" may fail to correctly answer "What is B?". Diffusion models, which incorporate bidirectional dependencies within the generation
