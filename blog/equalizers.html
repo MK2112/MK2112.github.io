@@ -37,6 +37,7 @@
     <script defer src="../js/main.js" onload="setupKatex();"></script>
     <script defer src="../js/search.js"></script>
     <script defer src="../js/theme-toggle.js"></script>
+    <script defer src="../js/image-enlarge.js"></script>
     <title>An Evolution of Wireless Channel Equalization</title>
     <meta name="description" content="Wireless signals drive modern tech, but they are error-prone and easily distorted.
     This post explores how wireless signal correction has evolved, from classic methods like Zero-Forcing and MMSE to
@@ -74,7 +75,8 @@
               and unpredictable fading.
             </p>
             <div class="blog-img">
-              <img src="../img/eq_signal_transformation.png" alt="Signal Transformation: Input, Channel and Output" style="width: 85%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_signal_transformation.png" alt="Signal Transformation: Input, Channel and Output" style="width: 80%" />
               <p class="blog-img-caption">Signal transformation: Channel effects on a transmitted signal</p>
             </div>
             <p class="blog-p">
@@ -124,8 +126,9 @@
               spherical signal emission from the sender.
             </p>
             <div class="blog-img">
-              <img src="../img/eq_spherical_propagation.png" alt="Spherical Signal Propagation with Receiver Subarea" style="width: 32%" />
-              <p class="blog-img-caption">Spherical signal propagation with receiver subarea</p>
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_spherical_propagation.png" alt="Spherical Signal Propagation with Receiver Subarea" style="width: 25%" />
+              <p class="blog-img-caption">Spherical signal propagation with receiver-relevant emission subarea</p>
             </div>
             <p class="blog-p">
               In practical contexts, a 5G signal at 28 GHz experiences much higher path loss compared to a 4G signal
@@ -142,6 +145,7 @@
               occurrence can often be aptly modeled and simulated by the so-called Additive White Gaussian Noise (AWGN).
             </p>
             <div class="blog-img">
+              <!--Enlarge: 50%-->
               <img src="../img/eq_awgn_distortion.png" alt="Three stages of varying AWGN intensity" style="width: 55%" />
               <p class="blog-img-caption">Three stages of varying AWGN intensity</p>
             </div>
@@ -181,7 +185,8 @@
               (frequency-selective) Intersymbol Interference (ISI).
             </p>
             <div class="blog-img">
-              <img src="../img/eq_isi_cause.png" alt="Signals arrive at different times, causing Intersymbol Interference" style="width: 40%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_isi_cause.png" alt="Signals arrive at different times, causing Intersymbol Interference" style="width: 35%" />
               <p class="blog-img-caption">Components of the same signal arrive at different times, causing Intersymbol Interference</p>
             </div>
             <p class="blog-p">
@@ -191,7 +196,8 @@
               we falsely read $1111111111$ at the receiver.
             </p>
             <div class="blog-img">
-              <img src="../img/eq_isi_bleeding.png" alt="ISI-caused bleeding of symbols into one another" style="width: 80%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_isi_bleeding.png" alt="ISI-caused bleeding of symbols into one another" style="width: 90%" />
               <p class="blog-img-caption">ISI-caused bleeding of symbols into one another</p>
             </div>
             <p class="blog-p">
@@ -316,7 +322,8 @@
               <li>$a[m - l]$ represents the decision output of the estimated transmitted symbols at time $m-l$, which is used by the feedback filter to estimate the ISI caused by prior, distinct and already seen symbols</li>
             </ul>
             <div class="blog-img">
-              <img src="../img/eq_dfe_cause.png" alt="Precursor ISI and Postcursor ISI affecting a currently received symbol" style="width: 80%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_dfe_cause.png" alt="Precursor ISI and Postcursor ISI affecting a currently received symbol" style="width: 90%" />
               <p class="blog-img-caption">Precursor ISI and Postcursor ISI affecting a currently received symbol</p>
             </div>
             <p class="blog-p">
@@ -342,7 +349,8 @@
               estimates and triggering the observed propagated error.
             </p>
             <div class="blog-img">
-              <img src="../img/eq_error_propagation_dfe.png" alt="Error propagation affecting DFE equalization performance" style="width: 80%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_error_propagation_dfe.png" alt="Error propagation affecting DFE equalization performance" style="width: 90%" />
               <p class="blog-img-caption">Error propagation affecting DFE equalization performance</p>
             </div>
             <p class="blog-p">
@@ -374,7 +382,8 @@
               closely matches what was received.
             </p>
             <div class="blog-img">
-              <img src="../img/eq_mlse_trellis.png" alt="MLSE applies the Viterbi algorithm in a trellis diagram" style="width: 70%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_mlse_trellis.png" alt="MLSE applies the Viterbi algorithm in a trellis diagram" style="width: 75%" />
               <p class="blog-img-caption">MLSE applies the Viterbi algorithm in a trellis diagram</p>
             </div>
             <p class="blog-p">
@@ -453,7 +462,8 @@
               filter configuration.
             </p>
             <div class="blog-img">
-              <img src="../img/eq_lms_adaptation.png" alt="LMS equalization and behavior under different µ" style="width: 75%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_lms_adaptation.png" alt="LMS equalization and behavior under different µ" style="width: 80%" />
               <p class="blog-img-caption">LMS equalization and behavior under different µ</p>
             </div>
             <p class="blog-p">
@@ -485,7 +495,8 @@
               short (e.g., Car2X, military applications).
             </p>
             <div class="blog-img">
-              <img src="../img/eq_mse_rls.png" alt="Comparison of convergence time between LMS and RLS" style="width: 50%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_mse_rls.png" alt="Comparison of convergence time between LMS and RLS" style="width: 55%" />
               <p class="blog-img-caption">Comparison of convergence time between LMS and RLS</p>
             </div>
             <p class="blog-p">
@@ -504,7 +515,8 @@
               model-driven concepts toward data-driven AI methods.
             </p>
             <div class="blog-img">
-              <img src="../img/eq_hassan_etal_2022.png" alt="Utilization of a neural network in an equalizer" style="width: 75%" />
+              <!--Enlarge: 50%-->
+              <img src="../img/eq_hassan_etal_2022.png" alt="Utilization of a neural network in an equalizer" style="width: 85%" />
               <p class="blog-img-caption">Utilization of a neural network in an equalizer. Source: \cite{hassan2022performance}</p>
             </div>
             <p class="blog-p">
