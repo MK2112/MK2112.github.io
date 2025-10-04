@@ -78,7 +78,7 @@
             <p class="blog-p">
                 In RNNs, vanishing gradients occur due to an iterative multiplication of weight matrices during backpropagation.
                 Very fundamentally, gradients are used to adjust the weights of a neural network. They are calculated per weight using the chain rule of calculus. If done correctly, they
-                nudge each weight in a direction that either minimizes a loss or maximizes a goal. With RNNs, gradients need to be derived for each time step. Let's look at an example.
+                nudge each weight in a direction that either minimizes a loss or maximizes a goal. With RNNs, gradients need to be derived for each timestep. Let's look at an example.
                 Assume the forward pass to determine a $\sigma$-activated RNN's hidden state $h_t$ as defined by $h_t = \sigma(W_{hh_t}h_{t-1} + W_{xh_t}x_t + b_{h_t})$.
                 Say we calculate a loss $L$. The gradient of $L$ with respect to $h_t$ is:
                 
@@ -92,12 +92,12 @@
 
                 In this multiplication, both terms can actually contribute to the problem. The derivative of the above applied $\sigma(x)$ is $\sigma'(x) = \sigma(x)(1-\sigma(x))$.
                 If an input is extremely large, $\sigma(x)$ will saturate at $1$, the maximum of its range $[0;1]$. The larger $\sigma(x)$ the more $\sigma'(x)$ will then tend towards $0$.
-                And equally, if the weights $W_{hh_t}$ are small, or happen to become small during training, and remain small over multiple time steps, the gradient $\frac{\partial h_{t+1}}{\partial h_t}$ will scale small as well.
+                And equally, if the weights $W_{hh_t}$ are small, or happen to become small during training, and remain small over multiple timesteps, the gradient $\frac{\partial h_{t+1}}{\partial h_t}$ will scale small as well.
                 And if that happens, the gradient $\frac{\partial L}{\partial h_t}$ will necessarily become smaller than the gradient $\frac{\partial L}{\partial h_{t+1}}$ was.
                 We're actively squashing our valuable gradient information.<br/>
                 Small $W_{hh_t}$ can occur due to random initialization of weights or due to prior weight updates.
                 RNNs can somewhat cope with this for short sequences, but with longer sequences, the squashing hinders the learning effect to fully propagate to distant,
-                older time step inputs.
+                older timestep inputs.
             </p>
             <h3>LSTM Architecture</h3>
             <p class="blog-p">
@@ -142,7 +142,7 @@
             <p class="blog-p">
                 In essence, LSTM introduces trainable filters through the forget, input and output gates. 
                 These filters can themselves learn to effectively retain or discard information, effectively focusing each cell's impact to really 
-                only be the most relevant contribution at each time step. Especially the selective update of $C$ managed by $f_t$ prevents
+                only be the most relevant contribution at each timestep. Especially the selective update of $C$ managed by $f_t$ prevents
                 a rapid decay of relevant gradients over longer durations of time. Contributing to that is the use of specific activation
                 functions at specific positions.<br/>
                 <br/>
@@ -151,7 +151,7 @@
                 Only these activated and filtered input representations are then 'let through' to $C_t$, shielding through range uniformity from excessive
                 or insufficiently informative input.<br/>
                 <br/>
-                The careful structural combination of gating mechanisms allows gradients to backflow more effectively through time steps when training. 
+                The careful structural combination of gating mechanisms allows gradients to backflow more effectively through timesteps when training. 
                 The scaling and selective updating provided via $f_t, i_t, o_t$ circumvent causes for rapid decay of gradients
                 and enable the model to learn meaningful dependencies even across long sequences.
             </p>
