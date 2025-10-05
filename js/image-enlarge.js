@@ -122,8 +122,14 @@
 
     cloned.alt = imgEl.alt || '';
     cloned.loading = 'eager';
-    cloned.style.maxWidth = `${Math.min(Math.max(pct, 10), 200)}vw`;
-    cloned.style.width = `${pct}vw`;
+    
+    function computeEffectivePct() {
+      return (window.innerHeight > window.innerWidth) ? 100 : pct;
+    }
+    let effectivePct = computeEffectivePct();
+
+    cloned.style.maxWidth = `${Math.min(Math.max(effectivePct, 10), 200)}vw`;
+    cloned.style.width = `${effectivePct}vw`;
     cloned.style.boxSizing = 'border-box';
     cloned.style.maxHeight = '90vh';
     modal.appendChild(cloned);
@@ -171,7 +177,9 @@
     function onResize() {
       if (rAF) cancelAnimationFrame(rAF);
       rAF = requestAnimationFrame(() => {
-        cloned.style.width = `${pct}vw`;
+        effectivePct = computeEffectivePct();
+        cloned.style.width = `${effectivePct}vw`;
+        cloned.style.maxWidth = `${Math.min(Math.max(effectivePct, 10), 200)}vw`;
       });
     }
 
