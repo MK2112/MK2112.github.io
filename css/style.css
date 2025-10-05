@@ -44,10 +44,6 @@ html, body, * {
         margin-left: var(--margin-min);
         margin-right: var(--margin-min);
     }
-
-    footer {
-        padding-bottom: 72px;
-    }
 }
 
 @media only screen and (min-width: 800px) and (max-width: 1199px) {
@@ -310,7 +306,7 @@ footer {
     background-color: var(--paper-grey);
     transition: background-color 0.3s ease, color 0.05s ease, border-color 0.3s ease;
     margin-top: 4rem;
-    padding-bottom: 2rem;
+    padding-bottom: 4rem;
 }
 
 footer a {
