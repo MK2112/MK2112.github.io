@@ -30,7 +30,7 @@ html, body, * {
     }
 }
 
-@media only screen and (max-width: 799px) {
+@media only screen and (max-width: 799px), only screen and (orientation: portrait) {
     .fade-in {
         margin-left: var(--margin-min);
         margin-right: var(--margin-min);
@@ -43,6 +43,10 @@ html, body, * {
     header {
         margin-left: var(--margin-min);
         margin-right: var(--margin-min);
+    }
+
+    footer {
+        padding-bottom: 72px;
     }
 }
 
