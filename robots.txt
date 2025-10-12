@@ -1,19 +1,92 @@
 User-agent: *
 Disallow: /
 
-User-agent: ia_archiver
+User-agent: Googlebot
 Disallow: /
+Allow: /blog/
+Allow: /blog.html
 
-User-agent: archive.org_bot
+User-agent: Bingbot
 Disallow: /
+Allow: /blog/
+Allow: /blog.html
 
-User-agent: ia_archiver-web.archive.org
+User-agent: Slurp
 Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: DuckDuckBot
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: Baiduspider
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: YandexBot
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: Sogou
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: Exabot
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: SeznamBot
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: PerplexityBot
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: Perplexity-User
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: ChatGPT-User
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: Claude-User
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: Gemini-User
+Disallow: /
+Allow: /blog/
+Allow: /blog.html
+
+User-agent: Twitterbot
+Disallow: /
+Allow: /blog/
+Allow: /img/og/
+Allow: /blog.html
+
+User-agent: LinkedInBot
+Disallow: /
+Allow: /blog/
+Allow: /img/og/
+Allow: /blog.html
 
 User-agent: GPTBot
 Disallow: /
 
-User-agent: ChatGPT-User
+User-agent: ClaudeBot
 Disallow: /
 
 User-agent: Google-Extended
@@ -34,21 +107,6 @@ Disallow: /
 User-agent: Applebot
 Disallow: /
 
-User-agent: Baiduspider
-Disallow: /
-
-User-agent: YandexBot
-Disallow: /
-
-User-agent: DuckDuckBot
-Disallow: /
-
-User-agent: Bingbot
-Disallow: /
-
-User-agent: Slurp
-Disallow: /
-
 User-agent: AhrefsBot
 Disallow: /
 
@@ -64,25 +122,10 @@ Disallow: /
 User-agent: ZoominfoBot
 Disallow: /
 
-User-agent: SeznamBot
-Disallow: /
-
-User-agent: Exabot
-Disallow: /
-
 User-agent: BLEXBot
 Disallow: /
 
 User-agent: PetalBot
-Disallow: /
-
-User-agent: Twitterbot
-Disallow: /
-
-User-agent: LinkedInBot
-Disallow: /
-
-User-agent: Sogou
 Disallow: /
 
 User-agent: SputnikBot
@@ -118,4 +161,13 @@ Disallow: /
 User-agent: ToutiaoSpider
 Disallow: /
 
-Crawl-delay: 3600
+User-agent: ia_archiver
+Disallow: /
+
+User-agent: archive.org_bot
+Disallow: /
+
+User-agent: ia_archiver-web.archive.org
+Disallow: /
+
+Sitemap: https://mk2112.github.io/sitemap.xml
