@@ -604,3 +604,12 @@ nav b {
     line-height: 1.25;
     margin-left: 1rem;
 }
+
+.fair-use-statement {
+    color: var(--mist-grey);
+    font-size: 0.7rem;
+    font-weight: 100;
+    font-style: italic;
+    margin-top: 2rem;
+    margin-bottom: 0;
+}
