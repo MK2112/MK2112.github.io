@@ -3,11 +3,20 @@
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <head>
     <meta charset="utf-8" />
-    <meta name="robots" content="noindex, nofollow" />
+    <meta name="robots" content="index, follow">
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Diffusion Language Models" />
+    <meta property="og:description" content="Understanding the Diffusion Language Model paradigm" />
+    <meta property="og:url" content="https://mk2112.github.io/blog/diffusion-lm.html" />
+    <meta property="og:image" content="https://mk2112.github.io/img/og/og_diffusionlm.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Diffusion Language Models" />
+    <meta name="twitter:description" content="Understanding the Diffusion Language Model paradigm" />
+    <meta name="twitter:image" content="https://mk2112.github.io/img/og/og_diffusionlm.png" />
+    <meta name="twitter:creator" content="@marcus_or_so" />
     <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="../js/no-flash.js"></script>
-    <meta http-equiv="content-security-policy" content="" />
     <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
     <link href="../css/style.css" rel="stylesheet" />
     <link 
@@ -39,9 +48,8 @@
     <script defer src="../js/theme-toggle.js"></script>
     <script defer src="../js/image-enlarge.js"></script>
     <title>Diffusion Language Models</title>
-    <meta name="description" content="Explore the paradigm of Diffusion Language Models (DLMs) in natural language processing, 
-    combining diffusion processes with text generation to overcome limitations of autoregressive and masked models. Understand
-    their mechanics, advantages, challenges, and future potential for fast, parallel, and controllable language modeling." />
+    <meta name="description" content="Understanding the Diffusion Language Model paradigm" />
+    <link rel="canonical" href="https://mk2112.github.io/blog/diffusion-lm.html" />
   </head>
   <body>
     <header>
@@ -154,7 +162,6 @@
               we can go ahead and <i>discard the forward process</i> and use the learned reverse process for generation.
             </p>
             <div class="blog-img">
-              <!--Enlarge: 30%-->
               <img src="../img/dlm_a.png" alt="Diffusion Language Model Pre-Training" style="width: 40%" />
               <p class="blog-img-caption">The two stage Pre-training step for a DLM. Image Source: \cite{nie2025large}</p>
             </div>
@@ -176,7 +183,6 @@
               for the $\text{prompt}$.</i>
             </p>
             <div class="blog-img">
-              <!--Enlarge: 30%-->
               <img src="../img/dlm_b.png" alt="Diffusion Language Model Fine-Tuning" style="width: 40%" />
               <p class="blog-img-caption">Fine-Tuning consists of masking (partially or fully) and denoising only the $\text{response}$ part. Image Source: \cite{nie2025large}</p>
             </div>
@@ -185,7 +191,6 @@
               To put what then happens in the \cite{nie2025large}'s terms, <i>"LLaDA simulates a diffusion process from $t = 1$ (fully masked) to $t = 0$ (fully unmasked)"</i> from here on.
             </p>
             <div class="blog-img">
-              <!--Enlarge: 30%-->
               <img src="../img/dlm_c.png" alt="Diffusion Language Model Inference" style="width: 40%" />
               <p class="blog-img-caption">Inference has the DLM reconstruct a non-existent/fully noised $\text{response}$. Image Source: \cite{nie2025large}</p>
             </div>
@@ -273,6 +278,13 @@
             </p>
           </div>
           <div id="references"></div>
+          <div id="fair-use-notice">
+            <p class="fair-use-statement">
+              This post includes cropped or adapted figures from cited academic publications. They are reproduced here exclusively for educational and commentary purposes,
+              in order to explain and analytically discuss the ideas, findings, and methods they illustrate. Original works are credited to their respective authors and sources.
+              No commercial use is made of these materials. Their inclusion is consistent with fair use under 17 U.S.C. § 107.
+            </p>
+          </div>
         </div>
       </main>
       <footer>

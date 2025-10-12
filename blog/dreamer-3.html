@@ -3,11 +3,20 @@
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
   <head>
     <meta charset="utf-8" />
-    <meta name="robots" content="noindex, nofollow" />
+    <meta name="robots" content="index, follow">
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="DreamerV2 and DreamerV3, Explained" />
+    <meta property="og:description" content="Understanding the RL-agents DreamerV2 and DreamerV3" />
+    <meta property="og:url" content="https://mk2112.github.io/blog/dreamer-3.html" />
+    <meta property="og:image" content="https://mk2112.github.io/img/og/og_d3.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DreamerV2 and DreamerV3, Explained" />
+    <meta name="twitter:description" content="Understanding the RL-agents DreamerV2 and DreamerV3" />
+    <meta name="twitter:image" content="https://mk2112.github.io/img/og/og_d3.png" />
+    <meta name="twitter:creator" content="@marcus_or_so" />
     <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="../js/no-flash.js"></script>
-    <meta http-equiv="content-security-policy" content="" />
     <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
     <link href="../css/style.css" rel="stylesheet" />
     <link 
@@ -39,9 +48,8 @@
     <script defer src="../js/theme-toggle.js"></script>
     <script defer src="../js/image-enlarge.js"></script>
     <title>DreamerV2 and DreamerV3, Explained</title>
-    <meta name="description" content="Dive into DreamerV2 and DreamerV3: cutting-edge reinforcement learning algorithms
-    that master environments through 'latent imagination.' Discover how world models can overcome sparse rewards
-    and sample complexity." />
+    <meta name="description" content="Understanding the RL-agents DreamerV2 and DreamerV3" />
+    <link rel="canonical" href="https://mk2112.github.io/blog/dreamer-3.html" />
   </head>
   <body>
     <header>
@@ -107,9 +115,8 @@
               vectors of $32$ classification variables each.
             </p>
             <div class="blog-img">
-              <!--Enlarge: 50%-->
               <img src="../img/dv2_2.png" alt="DreamerV2 World Model" style="width: 72%" />
-              <p class="blog-img-caption">World Model of DreamerV2. Altered Image. Original Image Source: \cite{hafner2020mastering}</p>
+              <p class="blog-img-caption">World Model of DreamerV2. Source: \cite{hafner2020mastering}</p>
             </div>
             <p class="blog-p">
               The RSSM employs a recurrent neural network structure of Gated Recurrent Units (GRU) to capture
@@ -179,9 +186,8 @@
               ELU-activated MLP, predicts the sum of future rewards, called the value $v$ per each state of the RSSM.
             </p>
             <div class="blog-img">
-              <!--Enlarge: 50%-->
               <img src="../img/dv2_1.png" alt="DreamerV2 Behavior Learning" style="width: 65%" />
-              <p class="blog-img-caption">The Behavior Learning of DreamerV2. Altered Image. Original Image Source: \cite{hafner2020mastering}</p>
+              <p class="blog-img-caption">The Behavior Learning of DreamerV2. Source: \cite{hafner2020mastering}</p>
             </div>
             <p class="blog-p">
               The critic is trained using temporal difference learning. Temporal difference learning by itself is a model-free optimization
@@ -289,6 +295,13 @@
             </p>
           </div>
           <div id="references"></div>
+          <div id="fair-use-notice">
+            <p class="fair-use-statement">
+              This post includes cropped or adapted figures from cited academic publications. They are reproduced here exclusively for educational and commentary purposes,
+              in order to explain and analytically discuss the ideas, findings, and methods they illustrate. Original works are credited to their respective authors and sources.
+              No commercial use is made of these materials. Their inclusion is consistent with fair use under 17 U.S.C. § 107.
+            </p>
+          </div>
         </div>
       </main>
       <footer>
