@@ -483,10 +483,10 @@
               The PMPO objective furthermore incorporates <i>behavioral regularization</i>, enforcing consistency with the (frozen) policy prior used
               during imagination rollouts. This is expressed as the KL divergence between the current policy $\pi_\theta$ and the prior
               $\pi_{\text{prior}}$, penalizing stronger deviations from prior behavior. The combined loss is formulated as:
-              $$\mathcal{L}(\theta) = 
+              $$\small{\mathcal{L}(\theta) = 
                 \underbrace{\frac{1-\alpha}{|D^-|} \sum_{i \in D^-} \ln \pi_\theta(a_i \mid \hat z_i)}_\text{negative set contribution} 
                 -\underbrace{\frac{\alpha}{|D^+|} \sum_{i \in D^+} \ln \pi_\theta(a_i \mid \hat z_i)}_\text{positive set contribution}
-                + \underbrace{\frac{\beta}{N} \sum_{i=1}^{N} \mathrm{KL}\big[\pi_\theta(a_i \mid \hat z_i) \,\|\, \pi_{\text{prior}}(a_i \mid \hat z_i)\big]}_\text{behavioral deviation regulation}
+                + \underbrace{\frac{\beta}{N} \sum_{i=1}^{N} \mathrm{KL}\big[\pi_\theta(a_i \mid \hat z_i) \,\|\, \pi_{\text{prior}}(a_i \mid \hat z_i)\big]}_\text{behavioral deviation regulation}}
                 $$
               with weighting factors set at $\alpha = 0.5$ and $\beta = 0.3$. The PMPO objective is applied to the policy head’s parameters.
               Note how the loss term $\mathcal{L}_\text{MTP}(\theta)$ is already linked to the policy head, but the multi-token prediction loss was used
