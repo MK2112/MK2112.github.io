@@ -91,7 +91,7 @@
               bi-directional context to the left and to the right of a masked patch. Both model types have served us
               quite well, but they also both imposed technical constraints on modeling flexibility, resulting in ceilings to attainable performance.<br />
               <br />
-              Autoregressive models, like GPT 4o or GPT o3, excel at generating coherent text. They do this unidirectionally, only ever being
+              Autoregressive models, like GPT-4o or GPT-o3, excel at generating coherent text. They do this unidirectionally, only ever being
               able to refer to any past text to generate some next word. Using said models through ChatGPT, this seems to work just fine,
               but note that it isn't the same as formulating a sentence as a whole or choosing words with respect to something that you want
               to lead up to later on. Autoregressive models also struggle with long-range dependencies due to their limited in size context window \cite{hosseini2024efficient}.
@@ -112,7 +112,7 @@
               Both masked models and autoregressive models don't directly work on text, as in, the sequence of letters and symbols.
               Much rather, they require text to be embedded into a numeric
               representation, which is a sequence of tokens. A token is a numerical vector expressing a distinct chunk of text present in the data.
-              Text can be embedded into chunks, and decoded from them back into the original text again \cite{liao2020probabilisticially}.<br />
+              Text can be embedded into chunks, and decoded from them back into the original text again \cite{liao2020probabilistically}.<br />
               <br />
               With the history covered, from here, let's actually step back and generalize some of the terms we just encountered. At its core, any
               language model aims to capture the true, albeit unknown, distribution of language, i.e. which phrases are made up of which letters to
@@ -149,8 +149,8 @@
               1. <b>The Forward Process:</b> We systematically "corrupt" $x_0$. For LLaDA, this corruption is a masking process.
               Yes, you've heard that somewhere in this post before, but it's not the same thing. At a conceptual "time" $t=0$,
               the sequence $x_0$ is entirely clean/clear. Then, as $t$ increases towards $1$, tokens are independently masked,
-              each with a probability of $t$. At $t=1$, the sequence is fully masked, denoted $x_1$. We don't actually have time
-              that processes, but this works as a beautiful vehicle for the notation that follows and for clarity. Actually, we are
+              each with a probability of $t$. At $t=1$, the sequence is fully masked, denoted $x_1$. We don't actually have a process
+              that unfolds over time, but this works as a beautiful vehicle for the notation that follows and for clarity. Actually, we are
               sampling $t$ uniformly from $[0, 1]$ for our token sequence $x$. We train the model on a wide spectrum of partially
               masked sequences, $x_t$. <b>We therefore expose the model during training not only to different data, but also to
               different stages of this data's corruption.</b><br />
@@ -206,7 +206,7 @@
               possibility that all of it will be occupied by text after diffusion? This is where things start to become less rosy for DLMs, because yes, this
               can be wasteful and it restricts us in terms of how long generated texts can become. <b>This is a glaring constraint not present in autoregressive models.</b>
             </p>
-            <h4>Fixing Generation Length Contraints</h4>
+            <h4>Fixing Generation Length Constraints</h4>
             <p class="blog-p">
               The generation length constraint was very quickly addressed by \cite{arriola2025block}. The authors introduced <b>Block Diffusion Language Models (BDLMs)</b>.
               BDLMs are semi-autoregressive, interpolating between diffusion and autoregressive principles. They are autoregressive <i>across blocks</i> of some
@@ -244,7 +244,7 @@
               The work of \cite{zhao2025d1} on their <b>d1</b> framework provides quite a resounding "yes." The authors developed a novel RL algorithm adapted
               for the non-autoregressive nature of DLMs, to then successfully adapt a pre-trained LLaDA model into a diffusion-based reasoning engine.
               Experiments confirm that d1 consistently outperforms the base SFT model across multiple mathematical and logical reasoning benchmarks, proving
-              that the diffusion paradigm is not a dead end for advanced capabilities but a new, fast-pace ground for them.
+              that the diffusion paradigm is not a dead end for advanced capabilities but a new, fast-paced ground for them.
             </p>
             <h3>Challenges</h3>
             <p class="blog-p">
@@ -334,7 +334,7 @@
           }</p>
           <a>https://arxiv.org/abs/2408.01866</a>
         </div>
-        <div id="liao2020probabilisticially">
+        <div id="liao2020probabilistically">
           <p>@article{liao2020probabilistically,
             title={Probabilistically masked language model capable of autoregressive generation in arbitrary word order},
             author={Liao, Yi and Jiang, Xin and Liu, Qun},
