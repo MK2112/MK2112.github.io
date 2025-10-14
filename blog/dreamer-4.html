@@ -107,7 +107,7 @@
             <p class="blog-p">
               Before an agent can learn to act in accordance with an objective, it must have an idea of the world it acts within. Dreamer 4 provides a
               structurally novel way of constructing a world model, having the world model predict the agent's actions, and then integrating a way to
-              further allow actionless / imagined behavior to finetune this world model. Ultimately, imagined behavior should inform actual behavior
+              further allow actionless / imagined behavior to finetune this world model \cite{hafner2025training}. Ultimately, imagined behavior should inform actual behavior
               through the informed world model.<br />
               <br />
               Constructing Dreamer 4 can be thought of as a three-part process: the agent must learn to see and parse the world into a format it can
@@ -130,7 +130,7 @@
               values. A dense neural network layer then transforms this vector into a higher-dimensional feature space, that being the token
               representation. This can be done in parallel across all frame patches. A patch vector from across $64$ pixels might be mapped to a
               $256$-dimensional vector this way. The spatial relationships matter too. Positional encodings are added to each patch token as to inform the
-              model on the position of the patch in the original image. This is achieved by summing element-wise with the frame patch information.<br />
+              model on the position of the patch in the original image. This is achieved by summing element-wise with the frame patch information \cite{hafner2025training}.<br />
               <br />
               The encoding transformer deals with all of the input <i>at the same time</i>, that being the visible and masked patch tokens, and the
               previous latent tokens $z_{t-1}$. From its context window, the transformer then generates a new latent spatial state $z_t$ in a single
@@ -176,7 +176,7 @@
               The design allows for masked patches to be rebuilt incrementally, based on the remaining visible patches and the short-term latent context
               of the transformers. It supports frame-by-frame decoding and further helps maintain consistency over time. The tokenizer is trained as a
               masked autoencoder, parts of e.g. an image can be replaced with special masking tokens, leaving it to the temporal consistency and
-              representation capabilities to rediscover the masked patches, as a full image is the expected output still \cite{burchi2025accurate}.<br />
+              representation capabilities to rediscover the masked patches, as a full image is the expected output still \cite{burchi2025accurate} \cite{hafner2025training}.<br />
               <br />
               The causal tokenizer is trained as its own component before any further training. The loss for such training is a composition of mean
               squared error (MSE) and perceptual similarity (LPIPS) loss like so:
@@ -199,14 +199,14 @@
             </div>
             <h4>Not There Yet</h4>
             <p class="blog-p">
-              Curious readers might have noticed that the causal tokenizer lacks any logic regarding actions or their effects on world dynamics. At present,
+              Curious readers might have noticed that the causal tokenizer lacks any logic regarding actions or their effects on world dynamics \cite{hafner2025training}. At present,
               it is solely made to represent the world's evolving state over time, but not what happens when the agent does something to it. This is the
               task of the <b>interactive dynamics model</b>, Dreamer's core world model. However, in order to meaningfully approach this dynamics model,
               four concepts have to be reviewed first.<br />
               <br /><br />
               <b>Flow Matching:</b><br />
               Generally speaking, the flow matching paradigm aims to have a model map a corrupted observation $x_\tau$ to the increment that denoises it,
-              this increment being called the <i>velocity vector</i> $v_\tau = x_1 - x_\tau$ with $x_1$ being the uncorrupted observation \cite{lipman2022flow}.
+              this increment being called the <i>velocity vector</i> $v_\tau = x_1 - x_\tau$ with $x_1$ being the uncorrupted observation \cite{hafner2025training} \cite{lipman2022flow}.
               Applying $v$ to the corrupted observation denoises that observation. Flow matching models learn the vector field that provides incremental
               denoising directions for said corrupted input, while traditional diffusion models typically predict the denoised sample or noise as such
               directly. Note that the 
@@ -255,7 +255,7 @@
               This bootstrapping loss essentially establishes is that <i>a single</i> however large step-size $d$ behaves like the composite of
               two $d/2$ steps \cite{frans2024one}. Coarse steps are this way ensured to remain directionally meaningful. And that is literally the only effect taking
               place when applying bigger than $d_{min}$ step sizes, it assures they behave like many small steps, and for those the flow matching
-              loss forms the break of recursion.<br />
+              loss forms the break of recursion \cite{frans2024one} \cite{hafner2025training}.<br />
               <br /><br />
               <b>Diffusion Forcing:</b><br />
               Given some sequential data, for example, the frames of a video. Diffusion forcing corrupts the frames by assigning a different
@@ -299,7 +299,7 @@
               <br />
               <b>Putting the concepts together:</b><br />
               Coming back from concepts to the specific application, Dreamer 4 conceptually implements shortcut forcing within the interactive dynamics model
-              through a distinct parameterization scheme. During training, the step size $d$ is sampled uniformly from powers of $2$ bounded by a maximum
+              through a distinct parameterization scheme \cite{hafner2025training}. During training, the step size $d$ is sampled uniformly from powers of $2$ bounded by a maximum
               number of refinement steps $K_{\max}$:  $d \in \{\frac{1}{1}, \frac{1}{2}, \frac{1}{4}, \frac{1}{8}, \dots, \frac{1}{K_{\max}}\}$. Then, for a
               given $d$, the signal level $\tau$ is sampled uniformly from the discrete range  $\tau \sim U({0, 1/d, 2/d, \dots, 1 - 1/d})$, ensuring that
               each denoising step $\tau \rightarrow \tau + d$ remains strictly within the denoising state range $[0,1]$. For example, with $d=1/4$, $\tau$ is
@@ -328,7 +328,7 @@
               <p class="blog-img-caption">Example of an Interactive Dynamics Model pretraining token sequence for a timestep</p>
             </div>
             <p class="blog-p">
-              The dynamics model takes in the <i>latent tokens</i> $z_t$, produced by the causal tokenizer's encoder. Signal level and step-size need to
+              The dynamics model takes in the <i>latent tokens</i> $z_t$, produced by the causal tokenizer's encoder \cite{hafner2025training}. Signal level and step-size need to
               be provided as well, as the shortcut model approach is defined as $f_\theta(x_\tau, \tau, d)$. Both $\tau$ and $d$ are distinct values, embedded
               through their own lookup tables, with these embeddings getting concatenated along the channel dimension to form a single <i>condition token</i>.<br />
               <br />
@@ -364,7 +364,7 @@
             </p>
             <h3>Imagination Training</h3>
             <p class="blog-p">
-              Having constructed a dynamics model that can see and simulate a next state's evolution, the final piece of the puzzle is the agent itself.
+              Having constructed a dynamics model that can see and simulate a next state's evolution, the final piece of the puzzle is the agent itself \cite{hafner2025training}.
               <i>How does an agent learn to make good decisions within this simulated reality?</i> Dreamer 4 answers this with RL, but also adds a twist
               to it: <i>the entire learning process happens inside the dream.</i>
             </p>
@@ -415,7 +415,7 @@
               In parallel, the <i>reward head</i> outputs predictions for the next $L$ rewards $r_{t:t+L}$. The policy and reward predicitions are each
               compared to the true trajectory from the dataset through the probability of them occuring. The comparisons of predicted and actual
               probabilities are then summed to form the resulting log-likelihood losses, which get backpropagated to train the agent token representation
-              as well as <i>policy head and the reward head</i>:
+              as well as <i>policy head and the reward head</i> \cite{hafner2025training}:
               $$\mathcal{L}_\text{MTP}(\theta) = - \sum_{n=0}^{L} \ln p_\theta(a_{t+n} \mid h_t) - \sum_{n=0}^{L} \ln p_\theta(r_{t+n} \mid h_t)$$
               MTP only trains components that predict explicit next-step quantities, meaning policy and reward head.
             </p>
@@ -435,7 +435,7 @@
               $$\mathcal{L}(\theta)=-\sum_{t=1}^{T}\ln p_{\theta}\left(\text{symlog}(R_{t}^{\lambda})\ |\ s_{t}\right)$$
               <i>optimizes the value head</i> for alignment with the recursive return structure implied through the simulated rollouts. The value target is
               represented through a <i>two-hot symlog</i> parameterization. This compresses large-scale differences into a smoother learning space, while allowing
-              later decompression back to real-world reward scales. The policy head uses either categorical or vectorized binary outputs depending on the
+              later decompression back to real-world reward scales \cite{hafner2025training}. The policy head uses either categorical or vectorized binary outputs depending on the
               environment’s action space. 
             </p>
             <hr /><br />
@@ -496,11 +496,11 @@
               PMPO as a concept may seem unintuitive, but it has a point: PMPO disregards advantage magnitudes and uses only their sign.
               Positive advantages place states in $D^+$, negatives in $D^-$. Each set, each state in the set, is weighted equally in the
               loss, regardless of size or scale of the original advantages. Updates therefore depend only on whether actions were beneficial
-              or harmful towards optimizing attaining the reward, not on how strongly. This is to ensure balanced influence from arbitrarily
+              or harmful towards optimizing attaining the reward, not on how strongly \cite{hafner2025training}. This is to ensure balanced influence from arbitrarily
               sized positive and negative feedback. In other words, <i>the resolution of policy changes is cut in order to be immune to it.</i>
               What the model disregards is also what it can't fall for, so to say.<br />
               <br />
-              <b>To summarize the overall training steps required to get here:</b>
+              <b>To summarize the overall training steps required to get here \cite{hafner2025training}:</b>
             </p>
             <ol class="blog-ul">
                 <li>Train the causal tokenizer to replicate sensory input through autoencoding</li>
@@ -530,7 +530,7 @@
               smaller subset where action labels were actually made available to Dreamer 4, grounding its predictions in observed actions.
               Every task completion run was limited to a duration of $30$ minutes. Dreamer 4’s policy was able to operate in these new,
               unseen worlds relying only on imagined experience, solving the diamond mining task at a level and with a speed comparable to
-              expert human players.
+              expert human players \cite{hafner2025training}.
             </p>
             <h3>Perfect Plan, Perfect Planner?</h3>
             <p class="blog-p">
@@ -547,9 +547,9 @@
               <br />
               The paper further acknowledges the simulated physics and game mechanics being not perfect, and small inaccuracies can, despite
               several reducing measures in place, accumulate, making dreams diverge from reality. Even worse, the agent might learn to
-              "exploit" the flawed physics encountered in divergent dreams, rendering it useless when deployed.<br />
+              "exploit" the flawed physics encountered in divergent dreams, rendering it useless when deployed \cite{hafner2025training}.<br />
               <br />
-              Unlike its predecessors, Dreamer 4 cannot be trained with end-to-end gradient flow through its entire model. Its decision to
+              Unlike its predecessors, Dreamer 4 cannot be trained with end-to-end gradient flow through its entire model \cite{hafner2025training} \cite{hafner2020mastering} \cite{hafner2023mastering}. Its decision to
               split into two distinct models can be considered both a limitation and a strength. Improvements in policy learning might not
               translate into refinements to the sensory embeddings. At the same time, this new approach offers efficient offline pretraining
               capabilities.
