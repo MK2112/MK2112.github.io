@@ -133,8 +133,8 @@
               model on the position of the patch in the original image. This is achieved by summing element-wise with the frame patch information \cite{hafner2025training}.<br />
               <br />
               The encoding transformer deals with all of the input <i>at the same time</i>, that being the visible and masked patch tokens, and the
-              previous latent tokens $z_{t-1}$. From its context window, the transformer then generates a new latent spatial state $z_t$ in a single
-              forward pass. All tokens are updated at the same time through self-attention, which allows certain parts of the input to consider certain
+              previous latent tokens $z_{t-1}$. From its context window, the transformer then generates a new, $\text{tanh}$-activated latent spatial state $z_t$, all within a single
+              forward pass \cite{hafner2025training}. All tokens are updated at the same time through self-attention, which allows certain parts of the input to consider certain
               other tokens of the current input, as well as tokens from earlier steps still within the context window.<br />
               <br />
               Given this input to its context, the encoding transformer outputs one updated embedding for each input token. Only the latest embeddings
