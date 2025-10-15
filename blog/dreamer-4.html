@@ -138,7 +138,7 @@
               other tokens of the current input, as well as tokens from earlier steps still within the context window.<br />
               <br />
               Given this input to its context, the encoding transformer outputs one updated embedding for each input token. Only the latest embeddings
-              for the latent tokens are kept, which form . This is different from the more well-known autoregressive models that generate tokens one after
+              for the latent tokens are kept, which form $z_t$. This is different from the more well-known autoregressive models that generate tokens one after
               another. In Dreamer 4's causal tokenizer, both the full sensory information at the current time step and the previous hidden state $z_{t-1}$
               are available \cite{burchi2025accurate}. This allows the model to update all latent tokens together. The outputs for the latent tokens replace $z_{t-1}$ with $z_t$.<br />
               <br />

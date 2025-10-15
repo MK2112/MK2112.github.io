@@ -92,7 +92,7 @@
               Compared to training on the big dataset, is it possible to sample a substantially smaller subset of the deduplicated Pile
               that would be able to preserve the capabilities in models trained on it?<br/>
               Jean Kaddour's work on MiniPile indicates that this is indeed possible. By producing MiniPile, Kaddour achieved
-              competitive performance to The deduplicated Pile with just $\sim 1\%$ of the unedited, original dataset. But, given this
+              competitive performance to the deduplicated Pile with just $\sim 1\%$ of the unedited, original dataset. But, given this
               idea as basis, can we replicate this? And if so, could we push this further? And, more importantly, would perceived
               effects of MiniPile and potential improvements hold across different model sizes?
             </p>
@@ -118,7 +118,7 @@
               elect to retain, while unwanted, noisy, derogatory or otherwise uninformative content can be excluded in bulk.
               In fact, that's exactly what we do next. With the clustered dataset and the $20$ retrieved texts per cluster, we now
               manually audit the texts and based on them, disregard a cluster for further processing if example texts fit into 
-              the categories for excludable clusters as layed out in the MiniPile paper:
+              the categories for excludable clusters as laid out in the MiniPile paper:
             </p>
             <ul class="blog-p">
               <li>Near-duplicate documents,</li>
@@ -149,7 +149,7 @@
               yield significant performance gains.<br />
               <br />
               With size-density-proportionate sampling, I found an improvement. This modified sampling technique
-              weighs both cluster size and cluster density when selecting samples from the non-exlcuded clusters.
+              weighs both cluster size and cluster density when selecting samples from the non-excluded clusters.
               The formula for the cluster proportion, by which we would then randomly sample the calculated amount, is given by:
               
               $$\text{Cluster Proportion}_i = \frac{|C_i|}{|\bigcup_j C_j|} \cdot (1 - \omega \cdot \rho(C_i))$$
@@ -161,7 +161,7 @@
               both fundamental patterns while still explicitly encouraging to consider diverse edge cases alike.<br />
               <br />
               Motivated by the results, I scaled down the size-density-sampled dataset size from $946k$ to $250k$ examples.
-              The original MiniPile, aswell as the size-density-sampled and the pico-size-density-sampled MiniPile
+              The original MiniPile, as well as the size-density-sampled and the pico-size-density-sampled MiniPile
               were trained on with a Pythia 160M and a Pythia 1.4B model.
             </p>
             <div class="blog-img">

@@ -88,7 +88,7 @@
               In Reinforcement Learning, a so-called agent learns to optimize attaining rewards within an environment through 
               trial-and-error. An agent's actions can alter environment states and affect which if any rewards get emitted from
               the environment. Rewards can happen to be sparse or delayed \cite{sutton2018reinforcement}, making it hard
-              to directly associate them with the actions that caused them. This is why rather than learning direct actio-reactio
+              to directly associate them with the actions that caused them. This is why rather than learning direct action-reaction
               associations, RL agents optimize generalizable strategies for action selection. To attain an agent's ability of
               exercising optimal strategies, the training has to balance a trade-off between exploiting known, rewarding actions
               and exploring new, potentially informative trajectories \cite{jiang2023importance}.<br />
@@ -135,14 +135,14 @@
               Hidden state $h_t$ and latent representation $z_t$ also serve as input for a reward predicting MLP, 
               forecasting $\hat{r}_t$. After obtaining $x_t$ and deriving $\hat{x}_t$ and $\hat{r}_t$, another action 
               $a_t$ is induced, influencing $h_{t+1}$. Consequently, $\hat{r}_{t+1}$ can be interpreted as the predicted
-              reward for $a_t$. Notably, $a_t$ along with $r_t$ are sourced externally. Their occurence closes the learning
+              reward for $a_t$. Notably, $a_t$ along with $r_t$ are sourced externally. Their occurrence closes the learning
               loop for the RSSM.<br />
               In addition to being a part of the input for image and reward predictor, the hidden state $h_t$, is also
               utilized to predict $z_t$ through $\hat{z}_t$. Understanding the reason for the existence of the transition
               predictor and resulting $\hat{z}_t$ is crucial for the intuition for DreamerV2. Hidden state $h_t$ undergoes
               gradient-based optimization caused by the reward predictor, the image predictor, and the disparity between
               $z_t$ and $\hat{z}_t$, the synthetic latent representation. The latter is attained by minimizing the 
-              Kullack-Leibler divergence. Therefore, the closer the categorical vectors $\hat{z}_t$ to $z_t$, the more
+              Kullback-Leibler divergence. Therefore, the closer the categorical vectors $\hat{z}_t$ to $z_t$, the more
               realistic the environment information encoded within $h_t$ will be. Following real-world exposure and
               accompanying optimization, the model-derived $\hat{z}$ can substitute actual observations $z$.
               Essentially, DreamerV2 establishes a fully simulated environment for conducting RL, where
@@ -199,7 +199,7 @@
               actor and critic optimize each other.<br />
               The policy refinement is done from a sampled state onwards based on imagined state representations $\hat{z}_t$ only.
               No actual engagement with an environment is necessary for policy refinement. This increases DreamerV2's performance during model
-              learning to such an extend that DreamerV2 does not require simulation in order to refine a policy. The actor network then can later
+              learning to such an extent that DreamerV2 does not require simulation in order to refine a policy. The actor network then can later
               be used to provide a choice of action for the world model for further situational exploration and thus more focused data collection.
             </p>
             <h3>Updates for DreamerV3</h3>
@@ -215,7 +215,7 @@
               <br />
               In the case that encountered environment dynamics turn out to be too easy/mild, having the KL divergence get very small, 
               DreamerV2 could learn to produce a very deterministic or uninformative prior distribution that articulates little
-              about the actual diversity of possible states. In other words, the model would inadvertedly and accidentally train itself into an
+              about the actual diversity of possible states. In other words, the model would inadvertently and accidentally train itself into an
               overly simplistic world view. DreamerV3 implements what the authors call KL balancing and "Free Bits" to counteract this.<br />
               For each timestep, the respective dynamics loss ($L_{dyn}$) and the representation loss ($L_{rep}$) are truncated below a threshold of
               $1 \text{nat}$ ($\approx 1.44 \text{bits}$). In other words, as long as the KL divergence between the prior and the posterior is
@@ -231,7 +231,7 @@
               this too, but to help prevent the categorical distributions from becoming deterministic, DreamerV3 additionally implements a mixture of
               $99\%$ of the predicted softmax output with $1\%$ of a uniform distribution. Yes, we assign an always same
               probability to all categories with an 'intensity' of $1\%$ with regards to the predicted softmax output.
-              This is done to meaningfully yet subtly and non-distoringly assign some relevance to all categories, even if
+              This is done to meaningfully yet subtly and non-distortingly assign some relevance to all categories, even if
               the model is confident about a certain category to avoid falling into full on determinism. This is referred to as "$1\%$ Unimix".<br />
               <br />
               Let's take a look at the actor. Remember that the actor is trained to predict the next action based on the current state and the predicted next state.
@@ -254,7 +254,7 @@
               In total, this symexp-twohot loss function forces the network to increase the probability in the distinct bins that correspond to the actual value.<br />
               <br />
               Several structural changes were made. In DreamerV3, the actor and critic networks replace their ELU activations with Swish and
-              adds RMSNorm for normalization. While they found that layer norm wasn't providing improvements for DreamerV2, RMSNorm was found to be beneficial,
+              add RMSNorm for normalization. While they found that layer norm wasn't providing improvements for DreamerV2, RMSNorm was found to be beneficial,
               especially as the RSSM was updated to use the paper's own Block GRU architecture, which is still a GRU, but extended with block-diagonal recurrent
               weights, meaning the recurrent weights are divided into blocks, in this case it is $8$ blocks specifically. Each block is connected to a different
               part of the input.

@@ -141,7 +141,7 @@
               In practical contexts, a 5G signal at 28 GHz experiences much higher path loss compared to a 4G signal
               at 2 GHz over the same distance, often resulting in tens of decibels increase in loss (e.g., around 29 dB
               higher path loss for 28 GHz vs. 2 GHz given a distance of 1 km). This necessitates more sophisticated
-              equalization techniques, and we have to research and apply more increasingly
+              equalization techniques, and we have to research and apply more advanced
               equalization techniques as they reward us with higher data rates \cite{senic2022challenges}.
               Path loss really is just one of several challenges, though.
             </p>
@@ -268,7 +268,7 @@
               Where:
             </p>
             <ul class="blog-ul">
-              <li>$H(j\omega)$ is the function producing the channel fequency response, we know this from ZF</li>
+              <li>$H(j\omega)$ is the function producing the channel frequency response, we know this from ZF</li>
               <li>$H^*(j\omega)$ is the complex conjugate of this channel frequency response</li>
             </ul>
             <p class="blog-p">
@@ -337,8 +337,8 @@
               By subtracting the dedicated pre- and postcursor ISI estimates from
               the incoming signal, DFE avoids the noise amplification problem of
               linear equalizers and explicitly addresses non-linear factors like
-              postcursor ISI \cite{reuter2002mitigating}. DFE much more closely follows of a line of
-              distinguishing the signal and its behavior from what the channel
+              postcursor ISI \cite{reuter2002mitigating}. DFE much more neatly
+              distinguishes the signal and its behavior from what the channel
               induces upon it. However, things aren't all that perfect.<br />
               DFE introduces a new vulnerability: error propagation. If the
               receiver makes a wrong decision about a symbol, that incorrect
