@@ -500,7 +500,7 @@
               sized positive and negative feedback. In other words, <i>the resolution of policy changes is cut in order to be immune to it.</i>
               What the model disregards is also what it can't fall for, so to say.<br />
               <br />
-              <b>To summarize the overall training steps required to get here \cite{hafner2025training}:</b>
+              <b>To summarize the training steps to get here \cite{hafner2025training}:</b>
             </p>
             <ol class="blog-ul">
                 <li>Train the causal tokenizer to replicate sensory input through autoencoding</li>
@@ -518,17 +518,17 @@
             </ol><br />
             <h3>Minecraft Diamonds, Real-World Robots</h3>
             <p class="blog-p">
-              For the first time ever, Dreamer 4 enables training an agent to find diamonds in Minecraft, while the agent never once has
-              to actually play for training. The policy is exclusively trained through imagination and from pre-collected datasets. This
+              For the first time, this new Dreamer 4 algorithm enables training an agent to find diamonds in Minecraft, while the agent never once has
+              to actually play for training. The policy can exclusively be learnt from imagination and from pre-collected datasets. This
               demonstrates that a world model can learn not just the appearance of an environment, but also its underlying mechanics and
               causal structure, and that an agent can use this learned model to piece together unusually long and complex sequences
-              ($\sim20,000$ steps) of actions to achieve a distant goal.<br />
+              ($\sim20,000$ steps) of actions to achieve even distant goals.<br />
               <br />
-              Mining a diamond in Minecraft requires a lengthy and precise series of actions including gathering wood, crafting the right
-              tools, and digging down or climbing down a cave into underground environments. The model was exposed only to a 2,541 hours
-              long video dataset of human play from e.g. YouTube, providing the visual and task diversity for robust modeling, and a much
-              smaller subset where action labels were actually made available to Dreamer 4, grounding its predictions in observed actions.
-              Every task completion run was limited to a duration of $30$ minutes. Dreamer 4’s policy was able to operate in these new,
+              Mining a diamond in Minecraft requires a lengthy and rather precise series of actions including gathering wood, crafting the right
+              tools, upgrading them and digging down or climbing down a cave into underground environments. The model was exposed only to a $2,541$ hours
+              long video dataset of human play from, e.g., YouTube, providing all the visual and task diversity necessary for world modeling, and a much
+              smaller subset for finetuning where action labels were actually made available to Dreamer 4, grounding its predictions in observed actions.
+              Every task completion run was limited to a duration of $30$ minutes. Dreamer 4’s policy was able to operate in new,
               unseen worlds relying only on imagined experience, solving the diamond mining task at a level and with a speed comparable to
               expert human players \cite{hafner2025training}.
             </p>
