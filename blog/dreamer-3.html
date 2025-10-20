@@ -85,7 +85,7 @@
             </p>
             <h3>The Reinforcement Learning Problem</h3>
             <p class="blog-p">
-              In Reinforcement Learning, a so-called agent learns to optimize attaining rewards within an environment through 
+              In RL, a so-called agent learns to optimize attaining rewards within an environment through 
               trial-and-error. An agent's actions can alter environment states and affect which if any rewards get emitted from
               the environment. Rewards can happen to be sparse or delayed \cite{sutton2018reinforcement}, making it hard
               to directly associate them with the actions that caused them. This is why rather than learning direct action-reaction
@@ -97,9 +97,9 @@
               Both trial-and-error and the sparse-delayed reward problem
               can amount to a high number of interactions with the environment necessary to learn a good policy, i.e. a high
               sample complexity \cite{kakade2003sample}. This is where Dreamer comes into play.<br />
-              With Dreamer, a world model is trained to efficiently develop abstractions capturing the dynamics of the environment.
-              The model is then used to fully simulate environment behavior, allowing for the agent to learn from imagined dynamic
-              trajectories. This in turn allows an agent to get exposed to a broader range of experiences, developing a more robust,
+              With Dreamer, a world model gets optimized to efficiently develop abstractions capturing the dynamics of the environment.
+              This model is then used to fully simulate environment behavior over time, enabling the agent to learn from these imagined dynamic
+              trajectories. This allows an agent to get exposed to a broader range of experiences, developing a more robust,
               yet flexible policy.
             </p>
             <h3>The World Model</h3>
@@ -253,7 +253,7 @@
               the closer entry. It is an added measure of resolution for the target value, while keeping the encoding itself simple.
               In total, this symexp-twohot loss function forces the network to increase the probability in the distinct bins that correspond to the actual value.<br />
               <br />
-              Several structural changes were made. In DreamerV3, the actor and critic networks replace their ELU activations with Swish and
+              Several structural changes were made for version 3. In DreamerV3, the actor and critic networks replace their ELU activations with Swish and
               add RMSNorm for normalization. While they found that layer norm wasn't providing improvements for DreamerV2, RMSNorm was found to be beneficial,
               especially as the RSSM was updated to use the paper's own Block GRU architecture, which is still a GRU, but extended with block-diagonal recurrent
               weights, meaning the recurrent weights are divided into blocks, in this case it is $8$ blocks specifically. Each block is connected to a different

@@ -239,7 +239,7 @@
                   $b'' = f_\theta(x', \tau + d/2, d/2)$, which in the end produces the fully denoised input $x_1$.</li>
               <li>Formulate the target velocity these two half steps should be compared against like so:
                   $v_\text{target}=\text{sg}(b' + b'')/2$, where $\text{sg}(\cdot)$ expresses that the model does not receive gradient
-                  updates with respect to $b'$ or $b''$ from this addition to construct this label. This label is model-derived, and
+                  updates with respect to $b'$ or $b''$ from this addition to construct this label. This label is model-derived, and
                   not provided by a dataset. Each half-step prediction is optimized independently. Notice that this $v_\text{target}$
                   is a pseudo-target constructed by the model itself to express the geometric expectation that
                   $\hat v = f_\theta(x_\theta, \theta, d)$ should be 'logically constructable' from two smaller, half-step
@@ -248,7 +248,7 @@
             <p class="blog-p">
               For a finest possible step size, $d_{min}$, the model is trained with the <i>default flow-matching loss</i>. Larger step sizes get
               evaluated with a <i>bootstrap loss</i> distilling them into two smaller steps \cite{frans2024one}. As stated before, training a shortcut model amounts to
-              teaching a single predictor $f_\theta$​ to be correct at multiple granularities of step-size and noising. The recursion comes in with
+              teaching a single predictor $f_\theta$ to be correct at multiple granularities of step-size and noising. The recursion comes in with
               the loss calculation:
               $$v_\text{target} = \begin{cases} x_{1}-x_0 & \text{if}\ d = d_{min}\\ sg(b'+b'')/2 & \text{else} \end{cases}$$
               $$\mathcal{L}(\theta)=||f_\theta(x_\tau, \tau, d) - v_\text{target}||^2$$
