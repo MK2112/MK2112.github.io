@@ -199,11 +199,11 @@
             </div>
             <h4>Not There Yet</h4>
             <p class="blog-p">
-              Curious readers might have noticed that the causal tokenizer lacks any logic regarding actions or their effects on world dynamics \cite{hafner2025training}. At present,
+              Curious readers might have noticed that the causal tokenizer lacks any logic regarding the modeling of actions and their effects on world dynamics \cite{hafner2025training}. At present,
               it is solely made to represent the world's evolving state over time, but not what happens when the agent does something to it. This is the
               task of the <b>interactive dynamics model</b>, Dreamer's core world model. However, in order to meaningfully approach this dynamics model,
               four concepts have to be reviewed first.<br />
-              <br /><br />
+              <br />
               <b>Flow Matching:</b><br />
               Generally speaking, the flow matching paradigm aims to have a model map a corrupted observation $x_\tau$ to the increment that denoises it,
               this increment being called the <i>velocity vector</i> $v_\tau = x_1 - x_\tau$ with $x_1$ being the uncorrupted observation \cite{hafner2025training} \cite{lipman2022flow}.
@@ -220,7 +220,7 @@
               I want to note that the loss uses a fixed vector $(x_1 - x_0)$ as target, which stands in contrast to the varying degree of velocity required for
               denoising of respectively alternating noising levels applied to $x_\tau$. However, the conditioning over time and across several $\tau$
               allow the model to learn scaled velocity vectors for different noise levels still.<br />
-              <br /><br />
+              <br />
               <b>Shortcut Models:</b><br />
               Shortcut models extend flow matching by training the model to make coherent predictions for, again, different $\tau$, but now also
               different $K$ and therefore different step sizes $d$ \cite{frans2024one}. In that sense, the flow matching objective gets extended: The model should be
@@ -256,14 +256,14 @@
               two $d/2$ steps \cite{frans2024one}. Coarse steps are this way ensured to remain directionally meaningful. And that is literally the only effect taking
               place when applying bigger than $d_{min}$ step sizes, it assures they behave like many small steps, and for those the flow matching
               loss forms the break of recursion \cite{frans2024one} \cite{hafner2025training}.<br />
-              <br /><br />
+              <br />
               <b>Diffusion Forcing:</b><br />
               Given some sequential data, for example, the frames of a video. Diffusion forcing corrupts the frames by assigning a different
               signal level $\tau$ to every frame. With the sequential character and the step-specific noising, a loss calculation can be assigned
               to each frame that takes denoising, <i>but also</i> sequential consistency into account. A less noised image this way can inform the
               denoising of a more strongly noised follow-up frame. This can then also be extrapolated to those scenarios where a next
               sequentially-logical frame is to be generated, given only noise as input.<br />
-              <br /><br />
+              <br />
               <b>Shortcut Forcing:</b><br />
               Shortcut forcing fuses the ideas of shortcut models and diffusion forcing. Shortcut models predict velocity vectors $\hat{v}$.
               Each $\hat{v}$ expresses the state-specific changes to be made. The model focuses on the detailed, rapid state-level changes,
@@ -277,7 +277,7 @@
               made in $x$-space, like diffusion would do, the model's internal logic remains in flow matching's $v$-space.</i><br />
               <br />
               A shortcut forcing model is trained with a loss depending on the denoising step size $d$ and the signal level $\tau$. <i>For step size</i>
-              $d = d_\text{min}$, this loss is the MSE between $\hat x$ and $x_1$. <i>For larger step sizes</i> $d>d_\text{min}$, the bootstrap loss is
+              $d = d_\text{min}$ this loss is the MSE between $\hat x$ and $x_1$. <i>For larger step sizes</i> $d>d_\text{min}$, the bootstrap loss is
               computed. The predicted denoised $\hat x$ that the model outputs first gets converted into a predicted velocity vector $\hat v$. The loss
               then measures the MSE between $\hat v$ and $v_{\text{target}} = \text{sg}(b' + b'')/2$, which, as discussed above, is derived from the two
               half-step predictions $b'$ and $b''$: $\mathcal{L}=(1-\tau)^2 ||\hat v - v_\text{target}||^2$.<br />
@@ -313,7 +313,7 @@
               <br />
               All of this is quite complicated, but the core idea at this point is that the interactive dynamics model is made to efficiently, yet dynamically
               consistently can handle various degrees of difficulty in denoising an input, while at the same having different budgets for this denoising task,
-              as $d$ and $\tau$ both vary during training, purposely making the training more robust against various operational conditions.
+              as $d$ and $\tau$ both vary during training, purposely making the training more robust against a broader variety of operational conditions.
             </p>
             <h4>Predicting a Future</h4>
             <p class="blog-p">
@@ -330,15 +330,15 @@
             <p class="blog-p">
               The dynamics model takes in the <i>latent tokens</i> $z_t$, produced by the causal tokenizer's encoder \cite{hafner2025training}. Signal level and step-size need to
               be provided as well, as the shortcut model approach is defined as $f_\theta(x_\tau, \tau, d)$. Both $\tau$ and $d$ are distinct values, embedded
-              through their own lookup tables, with these embeddings getting concatenated along the channel dimension to form a single <i>condition token</i>.<br />
+              through lookup tables, with these embeddings getting concatenated along the channel dimension to form a single <b>condition token</b>.<br />
               <br />
-              The <i>action token</i> goes on to encode the agent's interaction signal at each timestep, serving as the bridge between action and latent dynamics.
+              The <b>action token</b> goes on to encode the agent's interaction signal at each timestep, serving as the bridge between action and latent dynamics.
               The type and the amount of distinct actions are task-specific. Actions may also consist of components. Every action component, whether continuous,
               categorical, or binary, is embedded individually: continuous values are linearly projected (using some small linear layer to map into embedding
               space), while discrete components use specific embedding lookups. The resulting component embeddings sum into a unified, action-count-independent
               representation. Note that the paper refers to one action token, but multiple tokens expressing multiple actions at the same time are still possible.<br />
               <br />
-              <i>Register tokens</i> are learned, but "free-floating" embeddings, appended to the timestep's sequence to enrich the information exchange between
+              <b>Register tokens</b> are learned, but "free-floating" embeddings, appended to the timestep's sequence to enrich the information exchange between
               the aforementioned token types across the context. In other words, register tokens do not represent any specific input, but act as adaptive
               information buckets, capturing more cross-token dependencies and more global context. Through training, these tokens learn intermediate
               representations, enabling the dynamics model to reason more coherently across time.<br />
@@ -439,7 +439,7 @@
               environment’s action space. 
             </p>
             <hr /><br />
-            <p class="blog-p">
+            <p class="blog-p" style="margin-top: 0;">
               <b>Digression - Symlog and Symexp:</b><br />
               A remaining question might be: <i>why does $\text{symlog-symexp}$ two-hot help making DreamerV3 and 4 robust for handling different scales and values?</i>
               $\text{Symlog}$ gets applied to labels to stabilize learning when rewards have very different magnitudes (tiny, huge, sparse, noisy).
@@ -459,9 +459,9 @@
             </p>
             <hr /><br />
             <p class="blog-p">
-              At this point, beginning from dataset-encoded latents $z_t$, the policy head may sample actions, the dynamics model can generate $\hat{z}_{t+1}$,
-              and the reward and value heads can evaluate the outcomes. Ditching the reliance on the causal tokenizer for using dynamics model-generated
-              $\hat z_{t+1}$ as the dynamics model's input for the next timestep, the dynamics model now can imagine sequences and reward them.<br />
+              Beginning from dataset-encoded latents $z_t$, the policy head may now sample actions, the dynamics model can generate $\hat{z}_{t+1}$,
+              and the reward and value heads can evaluate the outcomes. Ditching reliance on the causal tokenizer for using dynamics model-generated
+              $\hat z_{t+1}$ as the dynamics model's input for the next timestep, the dynamics model can imagine and reward sequences now.<br />
               <br />
               Each sequence imagined this way can yield synthetic experience. This is used to further refine policy and value through <i>purely internal RL</i>.
               The world model remains <i>frozen</i> during this stage, only the policy and value heads continue adapting, ensuring that imagination is
@@ -551,7 +551,7 @@
               <br />
               Unlike its predecessors, Dreamer 4 cannot be trained with end-to-end gradient flow through its entire model \cite{hafner2025training} \cite{hafner2020mastering} \cite{hafner2023mastering}. Its decision to
               split into two distinct models can be considered both a limitation and a strength. Improvements in policy learning might not
-              translate into refinements to the sensory embeddings. At the same time, this new approach offers efficient offline pretraining
+              translate into refinements to the sensory embeddings. At the same time, Dreamer 4's approach offers new, efficient offline pretraining
               capabilities.
             </p>
           </div>
