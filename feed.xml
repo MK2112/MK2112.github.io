@@ -59,8 +59,8 @@
       <title>Installing 64-Bit Linux on a 32-Bit EFI Device</title>
       <link>https://mk2112.github.io/blog/64-bit-linux-on-32-bit-efi.html</link>
       <description>Modern computing increasingly presents calculated constraints. The ASUS X205TA, a machine architecturally capable 
-                of 64-bit computing, is restricted to 32-bit operation by its EFI. This is a post about circumvention, understanding
-                system boundaries and methodically dismantling them.</description>
+                of 64-bit computing, is restricted to 32-bit operation by its EFI. This post is about circumvention, understanding
+                system boundaries and dismantling them.</description>
       <pubDate>Fri, 29 Nov 2024 02:35:09 GMT</pubDate>
       <guid isPermaLink="true">https://mk2112.github.io/blog/64-bit-linux-on-32-bit-efi.html</guid>
     </item>
