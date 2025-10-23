@@ -441,7 +441,7 @@
             <hr /><br />
             <p class="blog-p">
               <b>Digression - Symlog and Symexp:</b><br />
-              The question remains, <i>why does $\text{symlog-symexp}$ two-hot help making DreamerV3 and 4 robust for handling different scales and values?</i>
+              A remaining question might be: <i>why does $\text{symlog-symexp}$ two-hot help making DreamerV3 and 4 robust for handling different scales and values?</i>
               $\text{Symlog}$ gets applied to labels to stabilize learning when rewards have very different magnitudes (tiny, huge, sparse, noisy).
               $\text{Symexp}$ then gets applied to network outputs to convert the learned symlogged predictions back to their true scale. This is very much
               an original idea of DreamerV3 and 4 \cite{hafner2023mastering} \cite{hafner2025training}. Suppose the following $\text{sign}(x)$ function:

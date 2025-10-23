@@ -98,7 +98,7 @@ body {
     margin-left: 0;
     margin-right: 0;
     background-color: var(--paper-grey);
-    font-family: ui-sans-serif, Segoe UI, Helvetica Neue, Roboto, --apple-system, Arial, sans-serif;
+    font-family: Georgia, serif;
 }
 
 p {
@@ -321,10 +321,6 @@ footer .brackets {
 
 .work {
     border-radius: 1px;
-}
-
-.work:hover {
-    background-color: var(--highlight-light);
 }
 
 .work-title {
