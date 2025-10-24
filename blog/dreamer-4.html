@@ -176,7 +176,7 @@
               The design allows for masked patches to be rebuilt incrementally, based on the remaining visible patches and the short-term latent context
               of the transformers. It supports frame-by-frame decoding and further helps maintain consistency over time. The tokenizer is trained as a
               masked autoencoder, parts of e.g. an image can be replaced with special masking tokens, leaving it to the temporal consistency and
-              representation capabilities to rediscover the masked patches, as a full image is the expected output still \cite{burchi2025accurate} \cite{hafner2025training}.<br />
+              representation capabilities to rediscover the masked patches, as a full image is the expected output still \cite{burchi2025accurate}\cite{hafner2025training}.<br />
               <br />
               The causal tokenizer is trained as its own component before any further training. The loss for such training is a composition of mean
               squared error (MSE) and perceptual similarity (LPIPS) loss like so:
@@ -206,7 +206,7 @@
               <br />
               <b>Flow Matching:</b><br />
               Generally speaking, the flow matching paradigm aims to have a model map a corrupted observation $x_\tau$ to the increment that denoises it,
-              this increment being called the <i>velocity vector</i> $v_\tau = x_1 - x_\tau$ with $x_1$ being the uncorrupted observation \cite{hafner2025training} \cite{lipman2022flow}.
+              this increment being called the <i>velocity vector</i> $v_\tau = x_1 - x_\tau$ with $x_1$ being the uncorrupted observation \cite{hafner2025training}\cite{lipman2022flow}.
               Applying $v$ to the corrupted observation denoises that observation. Flow matching models learn the vector field that provides incremental
               denoising directions for said corrupted input, while traditional diffusion models typically predict the denoised sample or noise as such
               directly. Note that the 
@@ -255,7 +255,7 @@
               This bootstrapping loss essentially establishes is that <i>a single</i> however large step-size $d$ behaves like the composite of
               two $d/2$ steps \cite{frans2024one}. Coarse steps are this way ensured to remain directionally meaningful. And that is literally the only effect taking
               place when applying bigger than $d_{min}$ step sizes, it assures they behave like many small steps, and for those the flow matching
-              loss forms the break of recursion \cite{frans2024one} \cite{hafner2025training}.<br />
+              loss forms the break of recursion \cite{frans2024one}\cite{hafner2025training}.<br />
               <br />
               <b>Diffusion Forcing:</b><br />
               Given some sequential data, for example, the frames of a video. Diffusion forcing corrupts the frames by assigning a different
@@ -444,7 +444,7 @@
               A remaining question might be: <i>why does $\text{symlog-symexp}$ two-hot help making DreamerV3 and 4 robust for handling different scales and values?</i>
               $\text{Symlog}$ gets applied to labels to stabilize learning when rewards have very different magnitudes (tiny, huge, sparse, noisy).
               $\text{Symexp}$ then gets applied to network outputs to convert the learned symlogged predictions back to their true scale. This is very much
-              an original idea of DreamerV3 and 4 \cite{hafner2023mastering} \cite{hafner2025training}. Suppose the following $\text{sign}(x)$ function:
+              an original idea of DreamerV3 and 4 \cite{hafner2023mastering}\cite{hafner2025training}. Suppose the following $\text{sign}(x)$ function:
               $$\text{sign}(x) = 
                 \begin{cases} 
                 1 & \text{if } x \gt 0 \\
@@ -549,7 +549,7 @@
               several reducing measures in place, accumulate, making dreams diverge from reality. Even worse, the agent might learn to
               "exploit" the flawed physics encountered in divergent dreams, rendering it useless when deployed \cite{hafner2025training}.<br />
               <br />
-              Unlike its predecessors, Dreamer 4 cannot be trained with end-to-end gradient flow through its entire model \cite{hafner2025training} \cite{hafner2020mastering} \cite{hafner2023mastering}. Its decision to
+              Unlike its predecessors, Dreamer 4 cannot be trained with end-to-end gradient flow through its entire model \cite{hafner2020mastering}\cite{hafner2023mastering}\cite{hafner2025training}. Its decision to
               split into two distinct models can be considered both a limitation and a strength. Improvements in policy learning might not
               translate into refinements to the sensory embeddings. At the same time, Dreamer 4's approach offers new, efficient offline pretraining
               capabilities.
