@@ -107,7 +107,7 @@
               and classification tasks \cite{chen2024combined}.<br />
               <br />
               <b>Masked language models can understand more deeply, while autoregressive models can produce coherent text easily, but at the cost
-                 of a genuine bidirectional grasp of this text.</b><br />
+                 of a genuinely bidirectional grasp.</b><br />
               <br />
               Both masked models and autoregressive models don't directly work on text, as in, the sequence of letters and symbols.
               Much rather, they require text to be embedded into a numeric
@@ -139,11 +139,11 @@
               autoregressive models or the "fill-in-the-blank" masked models, DLMs operate through iterative denoising. This technique
               gradually transforms something we will call noise into coherent text, and it does so through a learned reverse diffusion
               processes that occurs all across the to-be-generated text at once.<br />
-              To introduce DLMs, I will refer mostly to the foundational example of the transformer-based <b>LLaDA (Large Language
-              Diffusion with masking)</b> model from \cite{nie2025large}.<br />
+              To introduce DLMs, I will refer mostly to the foundational example of the transformer-based <i>LLaDA (Large Language
+              Diffusion with masking)</i> model from \cite{nie2025large}.<br />
               <br />
               Generally, diffusion as a concept models a distribution $p_\theta(x)$ via a forward data masking process and a reverse
-              prediction process. <b>Pre-Training of LLaDA</b> begins with a clean sequence of tokens, $x_0$, sampled from the training data.
+              prediction process. Pre-Training of LLaDA begins with a clean sequence of tokens, $x_0$, sampled from the training data.
               According to \cite{nie2025large}, we chronologically run two processes on this:<br />
               <br />
               1. <b>The Forward Process:</b> We systematically "corrupt" $x_0$. For LLaDA, this corruption is a masking process.
@@ -152,8 +152,8 @@
               each with a probability of $t$. At $t=1$, the sequence is fully masked, denoted $x_1$. We don't actually have a process
               that unfolds over time, but this works as a beautiful vehicle for the notation that follows and for clarity. Actually, we are
               sampling $t$ uniformly from $[0, 1]$ for our token sequence $x$. We train the model on a wide spectrum of partially
-              masked sequences, $x_t$. <b>We therefore expose the model during training not only to different data, but also to
-              different stages of this data's corruption.</b><br />
+              masked sequences, $x_t$. <i>We therefore expose the model during training not only to different data, but also to
+              different stages of this data's corruption.</i><br />
               <br />
               2. <b>The Reverse Process:</b> This is where the learning happens. The model, referred to as a <i>Mask Predictor</i>,
               is given a corrupted sequence $x_t$ and is tasked to predict the original, unmasked tokens for all masked positions
@@ -195,8 +195,8 @@
               <p class="blog-img-caption">Inference has the DLM reconstruct a non-existent/fully noised $\text{response}$. Image Source: \cite{nie2025large}</p>
             </div>
             <p class="blog-p">
-              At this point one might ask, <b>"Didn't BERT do something similar, like masking and predicting masked tokens? And if so, why is this diffusion modeling so
-              new then?"</b> Masked language models and DLMs conceptually have one thing in common: The word "mask" and that's about it. BERT fills a fixed number of
+              At this point one might ask, <i>"Didn't BERT do something similar, like masking and predicting masked tokens? And if so, why is this diffusion modeling so
+              new then?"</i> Masked language models and DLMs conceptually have one thing in common: The word "mask" and that's about it. BERT fills a fixed number of
               "gaps" one at a time, whereas a DLM like LLaDA treats the entire sequence as a single corpus where parallel inferences happen all simultaneously.
               LLaDA also uses a continuously and randomly varying mask ratio, while traditional masked language models use a fixed one.<br />
               <br />
@@ -204,7 +204,7 @@
               This is an upper ceiling, not restricting where information ends within that generation length. But doesn't that mean LLaDA's inference
               is either wasteful or too small? Does a response's diffusion process always have to span across the entire generation length, because there is a
               possibility that all of it will be occupied by text after diffusion? This is where things start to become less rosy for DLMs, because yes, this
-              can be wasteful and it restricts us in terms of how long generated texts can become. <b>This is a glaring constraint not present in autoregressive models.</b>
+              can be wasteful and it restricts us in terms of how long generated texts can become. <i>This is a glaring constraint not present in autoregressive models.</i>
             </p>
             <h4>Fixing Generation Length Constraints</h4>
             <p class="blog-p">
@@ -239,9 +239,9 @@
               enhanced the reasoning abilities of autoregressive models. In said autoregressive models, reasoning often involves breaking down complex tasks
               into step-by-step chains of thought spread across the context window, to ease per-token complexity in their choice. You could argue that this
               is deeply related to the autoregressive nature itself, we have to front-load a chain-of-thought to only then generate a well-referenced answer.
-              And we just saw how differently DLMs generate text. <b>Is RL and the idea of chain-of-thought therefore applicable to DLMs in the first place?</b><br />
+              And we just saw how differently DLMs generate text. <i>Is RL and the idea of chain-of-thought therefore applicable to DLMs in the first place?</i><br />
               <br />
-              The work of \cite{zhao2025d1} on their <b>d1</b> framework provides quite a resounding "yes." The authors developed a novel RL algorithm adapted
+              The work of \cite{zhao2025d1} on their <i>d1</i> framework provides quite a resounding <i>"yes."</i> The authors developed a novel RL algorithm adapted
               for the non-autoregressive nature of DLMs, to then successfully adapt a pre-trained LLaDA model into a diffusion-based reasoning engine.
               Experiments confirm that d1 consistently outperforms the base SFT model across multiple mathematical and logical reasoning benchmarks, proving
               that the diffusion paradigm is not a dead end for advanced capabilities but a new, fast-paced ground for them.
@@ -266,7 +266,7 @@
               However, DLMs still face challenges in local consistency, computational efficiency for short outputs, and context handling, with their
               efficiency gains still depending heavily on the evaluation metric, use case and the resource availability to afford running them.<br />
               <br />
-              <b>With all that, why did I say I was so stoked about (B)DLMs?</b><br />
+              <b>With all that, why am I so stoked about (B)DLMs?</b><br />
               It is precisely because of their approach. Their capabilities could be intensely valuable in rapidly informing systems like world models,
               where dynamic states of an observed environment are learned and predicted over time. The ability to treat text as a spatial medium where
               tokens exist in a sort of malleable plane, exposed to potentially iterative, parallel refinement, could represent a qualitative leap if

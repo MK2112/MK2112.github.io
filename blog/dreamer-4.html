@@ -301,7 +301,7 @@
               Coming back from concepts to the specific application, Dreamer 4 conceptually implements shortcut forcing within the interactive dynamics model
               through a distinct parameterization scheme \cite{hafner2025training}. During training, the step size $d$ is sampled uniformly from powers of $2$ bounded by a maximum
               number of refinement steps $K_{\max}$:  $d \in \{\frac{1}{1}, \frac{1}{2}, \frac{1}{4}, \frac{1}{8}, \dots, \frac{1}{K_{\max}}\}$. Then, for a
-              given $d$, the signal level $\tau$ is sampled uniformly from the discrete range  $\tau \sim U({0, 1/d, 2/d, \dots, 1 - 1/d})$, ensuring that
+              given $d$, the signal level $\tau$ is sampled uniformly from the discrete range  $\tau \sim U({0, \frac{1}{d}, \frac{2}{d}, \dots, 1 - \frac{1}{d}})$, ensuring that
               each denoising step $\tau \rightarrow \tau + d$ remains strictly within the denoising state range $[0,1]$. For example, with $d=1/4$, $\tau$ is
               drawn from $\{0, \frac{1}{4}, \frac{2}{4}, \frac{3}{4}\}$, so the maximal step always terminates at the fully denoised state $\tau + d = 1$.<br />
               <br />
@@ -324,8 +324,8 @@
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
-              <img src="../img/d4_token_pretrain.png" alt="Example of an Interactive Dynamics Model pretraining token sequence for a timestep" style="width: 80%" />
-              <p class="blog-img-caption">Example of an Interactive Dynamics Model pretraining token sequence for a timestep</p>
+              <img src="../img/d4_token_pretrain.png" alt="Example of an Interactive Dynamics Model pretraining token sequence for one timestep" style="width: 80%" />
+              <p class="blog-img-caption">Example of an Interactive Dynamics Model pretraining token sequence for one timestep</p>
             </div>
             <p class="blog-p">
               The dynamics model takes in the <i>latent tokens</i> $z_t$, produced by the causal tokenizer's encoder \cite{hafner2025training}. Signal level and step-size need to
@@ -350,8 +350,8 @@
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
-              <img src="../img/d4_dynamics_pretrain.png" alt="Pretraining timestep of the Interactive Dynamics Model" style="width: 80%" />
-              <p class="blog-img-caption">Pretraining timestep of the Interactive Dynamics Model</p>
+              <img src="../img/d4_dynamics_pretrain.png" alt="A pretraining timestep of the Interactive Dynamics Model" style="width: 80%" />
+              <p class="blog-img-caption">A pretraining timestep of the Interactive Dynamics Model</p>
             </div>
             <p class="blog-p">
               According to its paradigm, model training proceeds under the shortcut forcing objective, developing an implicit understanding of temporal
@@ -380,8 +380,8 @@
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
-              <img src="../img/d4_token_finetune.png" alt="Example of an Interactive Dynamics Model finetuning token sequence for a timestep" style="width: 80%" />
-              <p class="blog-img-caption">Example of an Interactive Dynamics Model finetuning token sequence for a timestep</p>
+              <img src="../img/d4_token_finetune.png" alt="Example of an Interactive Dynamics Model finetuning token sequence for one timestep" style="width: 80%" />
+              <p class="blog-img-caption">Example of an Interactive Dynamics Model finetuning token sequence for one timestep</p>
             </div>
             <p class="blog-p">
               One can think of the agent token as a dedicated stand-in, offering workspace for the MLP heads. Agent tokens attend to all modalities,
