@@ -98,7 +98,7 @@ body {
     margin-left: 0;
     margin-right: 0;
     background-color: var(--paper-grey);
-    font-family: Georgia, serif;
+    font-family: ui-sans-serif, Segoe UI, Helvetica Neue, Roboto, --apple-system, Arial, sans-serif;
 }
 
 p {
