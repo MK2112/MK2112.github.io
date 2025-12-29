@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="index, follow">
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="The Geometry of Low-Rank Adaptation" />
+    <meta property="og:description" content="Exploring why LoRA works and what this really means" />
+    <meta property="og:url" content="https://mk2112.github.io/blog/lora-geometry.html" />
+    <meta property="og:image" content="https://mk2112.github.io/img/og/og_lora-geo.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="The Geometry of Low-Rank Adaptation" />
+    <meta name="twitter:description" content="Exploring why LoRA works and what this really means" />
+    <meta name="twitter:image" content="https://mk2112.github.io/img/og/og_lora-geo.png" />
+    <meta name="twitter:creator" content="@marcus_or_so" />
+    <link rel="icon" type="image/svg+xml" sizes="any" href="../favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../js/no-flash.js"></script>
+    <link rel="alternate" type="application/rss+xml" title="Blog RSS" href="../feed.xml" />
+    <link href="../css/style.css" rel="stylesheet" />
+    <link 
+      rel="stylesheet" 
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
+      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
+      crossorigin="anonymous"
+    />
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
+      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
+      crossorigin="anonymous"
+    ></script>
+    <script 
+      defer 
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
+      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
+      crossorigin="anonymous"
+      onload="renderMathInElement(document.body);"
+    ></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/es/languages/python.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script defer src="../js/citeseer.js" type="text/javascript" onload="renderBibtex(['blog-entry']);"></script>
+    <script defer src="../js/main.js" onload="setupKatex();"></script>
+    <script defer src="../js/search.js"></script>
+    <script defer src="../js/theme-toggle.js"></script>
+    <script defer src="../js/image-enlarge.js"></script>
+    <title>The Geometry of Low-Rank Adaptation</title>
+    <meta name="description" content="Exploring why LoRA works and what this really means" />
+    <link rel="canonical" href="https://mk2112.github.io/blog/lora-geometry.html" />
+  </head>
+  <body>
+    <header>
+      <h1>
+        <a class="static-anchor" title="Marcus Koppelmann" href="../index.html">Marcus Koppelmann</a>
+        <p>Blog</p>
+      </h1>
+      <nav>
+        <a class="dynamic-anchor" title="Projects" href="../projects.html">projects</a>
+        <a class="dynamic-anchor" title="Blog" href="../blog.html"><b>blog</b></a>
+        <a class="dynamic-anchor" title="Resume" href="../resume.html">resume</a>
+      </nav>
+    </header>
+    <div class="fade-in">
+      <div id="search-overlay" class="hidden">
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search...">
+          <div id="search-results"></div>
+        </div>
+      </div>
+      <main id="main-projects">
+        <div class="project">
+          <h2>The Geometry of Low-Rank Adaptation</h2>
+          <p class="thin project-p">December 2025 • Reading Time: 12 Minutes</p>
+          <div class="blog-entry">
+            <p class="blog-p">
+              Fine-tuning billion-parameter models like LLMs is expensive, slow, and it produces
+              monolithic copies that have to be stored and run seperately. This 'deployment wall'
+              has become a major barrier to customizing foundation models at scale.<br />
+              <br />
+              Low-Rank Adaptation (LoRA) is widely known to sidestep this 'wall' entirely.
+              Even though it appears almost trivial, LoRA has spawned an entire, very much active
+              research ecosystem. This post examines why LoRA works so well. As LoRA is really
+              well documented, this post is not primarily about <i>what</i> it does, but the
+              mechanics of its effectiveness and implications.
+            </p>
+            <h3>The Wager</h3>
+            <p class="blog-p">
+              Standard fine-tuning modifies weights through mini-batch gradient descent.
+              The difference between pre-trained weights $W_0$ and the resulting fine-tuned
+              weights $W'$ is the update matrix $\Delta W$, i.e., the changes to $W_0$ learnt
+              during fine-tuning:
+              
+              $$W' = W_0 + \Delta W$$
+
+              Full fine-tuning, i.e. fine-tuning of the entire pre-trained model, learns a
+              unique $\Delta W$ per task. Notice in particular that $\Delta W$ as a matrix is
+              as large as $W_0$ itself. By 2021, evidence began to suggest that pre-trained
+              models learn within only low-dimensional subspaces \cite{aghajanyan2021intrinsic}. LoRA takes this notion
+              and aims to apply it to fine-tuning: $\Delta W$ has to somehow be turned into a
+              low-rank structure. Achieving this structural feat could then have us express
+              the fine-tuning information in a much smaller subspace without sacrificing performance.
+              To achieve this, LoRA decomposes $\Delta W$ into two low-rank matrices:
+              $$\Delta W = \frac{\alpha}{r} BA$$
+              where $B \in \mathbb{R}^{d \times r}$, $A \in \mathbb{R}^{r \times k}$ and, crucially,
+              $r \ll \min\{d, k\}$. The scaling factor $\alpha$ regulates the degree to which the adapter
+              contributes and learns, higher $\alpha$ meaning stronger 'nudges' and updates. The division
+              by $r$ normalizes $\alpha$ across the specific rank choice, making $\alpha$ tunable
+              independently of $r$.<br />
+              <br />
+              Instead of training the massive $\Delta W$, we train only the much smaller matrices $B$ and
+              $A$ while freezing $W_0$. For GPT-3 (175B parameters), this reduces trainable parameters by
+              a factor of $10,000$, from 175 billion to just millions of parameters to train in order for
+              fine-tuning to have a desirable effect \cite{hu2022lora}.<br />
+              LoRA can be applied across the entire model, or selectively to specific layers. For example,
+              in Transformers and Vision Transformers, it's most commonly applied to the query and value
+              projection matrices in self-attention mechanisms, though it can also be applied to the
+              feed-forward network layers.<br />
+              LoRA commonly initializes $A$ with random Gaussian values and $B$ with zeros, ensuring
+              $\Delta W = BA = 0$ initially. The model starts identical to its pre-trained state. Yet
+              this zero-initialized adapter somehow receives learning signal. This is counter-intuitive.
+              If the original model stays frozen, and $BA$ initally, purposely doesn't contribute, how
+              does the adapter ever start to learn <i>anything</i> at all?
+            </p>
+            <h3>Learning Better From Not Contributing</h3>
+            <p class="blog-p">
+              As introduced by \cite{hu2022lora}, LoRA's forward pass is simply: $h = (W_0 + BA)x = W_0x + BAx$.
+              LoRA only works the way it does because it is merged with the frozen weight outputs
+              through addition. 
+              Think of it like so: LoRA works because outputs from the frozen $W_0$ and the adapter's
+              $BA$ merge through addition. During backpropagation, if $\frac{\partial L}{\partial h}$
+              is the gradient flowing back, the chain rule at this point in the model gives:
+              $$\frac{\partial L}{\partial W_0} = \frac{\partial L}{\partial h} \cdot x^T, \quad \frac{\partial L}{\partial (BA)} = \frac{\partial L}{\partial h} \cdot x^T$$
+              The gradient with respect to the addition operation $(W_0x + BAx)$ copies identically
+              and <i>fully</i> to both branches. The gradient $\frac{\partial L}{\partial h} \cdot x^T$
+              flows to frozen $W_0$ (where it is promptly discarded) and to $BA$. In other words, $B$ and
+              $A$ receive the <i>exact same gradient</i> that would update $W_0$ in full fine-tuning.
+              And through this, even though LoRA in the beginning didn't contribute anything, the
+              optimization pressure is identical for both branches no matter what, and only the
+              capacity to respond is constrained to this low rank $r$. Thanks to that one addition
+              operation we made, the adapter now has to learn the most efficient update over $W_0$
+              that is possible. And $BA$ is nudged away from the initial zero-multiplication setup
+              accordingly, beginning to contribute to the addition more meaningfully.
+              You can see how this 'nothing to contribute, yet learning' paradox is actually a
+              really meaningful on-ramp for LoRA to learn to contribute to what $W_0$ on its own is already
+              capable of \cite{kexuefm9590}.
+            </p>
+            <h3>The Asymmetry of $\large{A}$ and $\large{B}$</h3>
+            <p class="blog-p">
+              I kind of brushed over this, but note how we had just treated the matrices $B$ and $A$
+              differently from one another. Early work treated the two symmetrically, and both
+              would, e.g., be randomly initialized. Recent research reveals however that $A$ and $B$
+              play fundamentally different roles \cite{kratsios2025sharp} \cite{zhu2024asymmetry}:
+            </p>
+            <ul class="blog-ul">
+              <li><b>Matrix $A$</b> can be viewed as the <i>down</i>-projection. It takes high-dimensional
+              input into LoRA and projects it into our rank-$r$ subspace like a <i>feature extractor</i>.</li>
+              <li><b>Matrix $B$</b> can then be seen as the <i>up</i>-projection, as it projects back
+              from $r$-space to the output dimension, thereby acting as the <i>task-specific projector</i>.</li>
+            </ul>
+            <p class="blog-p">
+              If this is true, we can probably assume that the pre-trained model itself already is
+              quite capable of extracting meaningful input features. Under this assumption, $A$ would
+              only need minimal training, or none at all.
+              This was investigated in \cite{kratsios2025sharp} by freezing $A$ with a random orthogonal initialization.
+              Train only the zero-initialized $B$. And indeed, this 'asymmetric LoRA' would in some
+              instances even outperform standard LoRA while cutting the fine-tunable LoRA parameter
+              count in half again. This implies $B$ meaningfully learns how to nudge the $W_0$ output
+              with what $B$ encounters in the $r$-space during fine-tuning.
+            </p>
+            <h3>The Singular Value Perspective</h3>
+            <p class="blog-p">
+              If we can narrow down LoRA's learning requirements to only the reconstruction from
+              this $r$-space through $B$, we should dig further and ask why low-rank updates work
+              in the first place. Singular Value Decomposition (SVD) provides some geometric intuition.
+              SVD decomposes any fine-tuning matrix $\Delta W$ into three components $\Delta W = U\Sigma V^T$:
+            </p>
+            <ul class="blog-ul">
+              <li>$U$ provides an orthogonal basis for the output space, constituting the fundamental 'thinking patterns' or independent directions along which the transformation acts.</li>
+              <li>$\Sigma$ is a diagonal matrix of singular values, sorted by magnitude. Each singular value measures how important its corresponding direction in $U$ is, i.e., how much variance and nuance it explains. Large singular values indicate directions where the transformation has significant meaning.</li>
+              <li>$V^T$ provides the orthogonal basis for the input space.</li>
+            </ul>
+            <p class="blog-p">
+              Think of it like this: $V^T$ rotates the input into a special coordinate system,
+              $\Sigma$ scales along principal axes (some strongly, some weakly), and $U$ rotates
+              the result into output space. The singular values in $\Sigma$ tell us which of
+              these scaling directions actually matter.<br />
+              <br />
+              The Eckart-Young-Mirsky theorem implicitly connects this to LoRA: Keeping only the top-$r$
+              singular values from $\Sigma$ gives the best possible rank $r$ for our low-rank
+              approximation in terms of minimizing the reconstruction error. The critical
+              information concentrates in just these few principal components. And to come full
+              circle, LoRA implicitly fleshes out exactly this $r$-space approximation of the
+              ideal $\Delta W$ in the parameter realm. It doesn't choose $r$ though, and neither
+              does SVD. We do that ourselves. The rank $r$ is a hyperparameter for LoRA (parameter
+              space), top-$r$ is a hyperparameter for SVD (geometric). Both help in showing the
+              impact of the choices of $r$ and that compressing learnt information to a smaller
+              $r$-space is feasibly possible in the geometric realm as well.<br />
+              <br />
+              This geometric insight actually helped shape SVD-aware variants, which make this
+              connection even more explicit. AdaLoRA parameterizes updates directly in SVD-like
+              form as $P\Lambda Q$ (where $\Lambda$ is diagonal, analogous to $\Sigma$) and
+              dynamically prunes singular values during training based on their importance \cite{mao2025survey} \cite{yang2025lowrankadaptationfoundationmodels},
+              automating the search for the hyperparameter $r$.<br />
+              IncreLoRA does this incrementally, starting at rank $1$ and progressively adding
+              singular directions when needed, growing the adapter to optimal complexity \cite{mao2025survey}.
+              SVD thus is made to contribute to an adaptive discovery of which dimensions actually
+              matter for the given fine-tuning task.
+            </p>
+            <h3>Replacing Full Fine-Tuning?</h3>
+            <p class="blog-p">
+              For years, matching full fine-tuning performance suggested equivalence. This intuition
+              was recently debunked.
+              In \cite{shuttleworth2024lora}, a conducted SVD analysis of $W'$ revealed that full fine-tuning actually made
+              small adjustments along <i>existing</i> singular vectors of $W_0$. In other words, the
+              update $\Delta W$ mainly adjusts the importance weights along directions that already
+              existed in $W_0$. LoRA in contrast introduced <i>new</i> high-ranking singular vectors
+              nearly orthogonal to all the pre-trained ones weakly established in $W_0$, called
+              <i>intruder dimensions</i>. Instead of only 'nudging' what $W_0$ was fundamentally
+              capable of already, LoRA counterintuitively creates these entirely new principal
+              directions, i.e., new feature extraction patterns. In other words, even when LoRA and
+              full fine-tuning achieve the same accuracy on the fine-tuning task, the solutions they
+              arrive at have very different geometries.<br />
+              <br />
+              And this difference has consequences. Low-rank constraints may preserve pre-training
+              knowledge \cite{biderman2024loralearnsforgets}, but intruder dimensions correlate with distribution forgetting and
+              brittleness in sequential learning \cite{shuttleworth2024lora}. The reality depends on task, data, and LoRA
+              configuration (especially rank and scaling factor $\alpha$). In total, different
+              solutions may induce distinct out-of-distribution behaviors. So, one should treat
+              choosing LoRA over full fine-tuning exactly like choosing between distinct adaptation
+              strategies with distinct respective trade-offs.
+            </p>
+            <h3>Geometric Constraint Optimization</h3>
+            <p class="blog-p">
+              We already discussed the similarities of LoRA and SVD for the parameter space and
+              the geometric space, respectively. But coming back to this notion of similarity,
+              LoRA itself can be viewed as a <i>geometric constraint optimization</i>.<br />
+              <br />
+              Standard fine-tuning allows weights to move anywhere in parameter space. LoRA
+              constrains $\Delta W$ to a low-dimensional subspace bottleneck.
+              This serves three functions:
+            </p>
+            <ul class="blog-ul">
+              <li>A limited update complexity reduces exposure to overfitting scenarios.</li>
+              <li>LoRA directs updates toward solutions 'related' to $W_0$ in structured ways. Beyond the risk for intruder dimensions, LoRA indeed preserves pre-trained knowledge while enabling task-specific adaptation.</li>
+              <li>The rank bottleneck forces an identification of the most critical directions of change, isolating principal components.</li>
+            </ul>
+            <p class="blog-p">
+              Think of LoRA as a tool for navigating neural network adaptation geometry here.
+              If simple low-rank constraints work this well, future variants might explore
+              increasingly sophisticated constraint manifolds, maybe even further exploring
+              and learning optimal subspace geometry per fine-tuning run. This is an active
+              area of research, with methods like LoRA-GA and LoRA-Pro exploring how to better
+              align LoRA's updates with those of full fine-tuning.
+            </p>
+            <h3>Open Questions</h3>
+            <p class="blog-p">
+              We saw that, especially recently, the view on what exactly it is that LoRA
+              achieves is starting to become more nuanced. Beyond this increasing consciousness
+              of the entailed subspace geometry, open questions remain on why and when low-rank
+              updates are actually sufficient. We do not know the properties that define the
+              'task space' in which LoRA navigates. But suppose we have such a task and want to
+              apply LoRA, can we automate optimal adapter placement and initialization beyond the
+              current heuristics?
+            </p>
+            <h3>Conclusion</h3>
+            <p class="blog-p">
+              LoRA rests on a rarely elegant hypothesis: adapting foundation models reduces to a
+              low-rank problem. And while this proved true, LoRA is way more than a 'cheap tool
+              for fine-tuning'. It offers unique properties, comes with distinct trade-offs and
+              asks deeper questions about learning, generalization, and knowledge
+              structure in massive models. In that sense, the unreasonable effectiveness
+              of low-rank adaptation is only beginning to be understood.
+            </p>
+          </div>
+          <div id="references"></div>
+        </div>
+      </main>
+      <footer>
+        <a class="highlight" target="_blank" title="GitHub" href="https://github.com/mk2112">
+          <div>GitHub</div>
+          <div class="emphasise">mk2112</div>
+        </a>
+        <a class="highlight" title="Mail">
+          <div>Mail</div>
+          <div class="emphasise">mk2112<span class="brackets">[at]</span>protonmail<span class="brackets">[dot]</span>com</div>
+        </a>
+        <a class="highlight" target="_blank" title="Privacy" href="../privacy.html">
+          <div>Privacy</div>
+          <div class="emphasise">statement</div>
+        </a>
+        <a class="highlight" target="_blank" title="RSS" href="https://mk2112.github.io/feed.xml">
+          <div>RSS</div>
+          <div class="emphasise">feed</div>
+        </a>
+      </footer>
+    </div>
+    <div id="bibtex" style="display: none">
+        <div id="hu2022lora">
+          <p>@article{hu2022lora,
+                title={LoRA: Low-Rank Adaptation of Large Language Models},
+                author={Hu, Edward J and Shen, Yelong and Wallis, Phillip and Allen-Zhu, Zeyuan and Li, Yuanzhi and Wang, Shean and Wang, Lu and Chen, Weizhu and others},
+                journal={ICLR},
+                volume={1},
+                number={2},
+                pages={3},
+                year={2022},
+            }</p>
+          <a>https://arxiv.org/abs/2106.09685</a>
+        </div>
+        <div id="aghajanyan2021intrinsic">
+          <p>@inproceedings{aghajanyan2021intrinsic,
+                title={Intrinsic Dimensionality Explains the Effectiveness of Language Model Fine-Tuning},
+                author={Aghajanyan, Armen and Gupta, Sonal and Zettlemoyer, Luke},
+                booktitle={Proceedings of the 59th annual meeting of the association for computational linguistics and the 11th international joint conference on natural language processing (volume 1: long papers)},
+                pages={7319--7328},
+                year={2021},
+            }</p>
+          <a>https://aclanthology.org/2021.acl-long.568.pdf</a>
+        </div>
+        <div id="zhu2024asymmetry">
+          <p>@article{zhu2024asymmetry,
+                title={Asymmetry in Low-Rank Adapters of Foundation Models},
+                author={Zhu, Jiacheng and Greenewald, Kristjan and Nadjahi, Kimia and Borde, Haitz S{\'a}ez De Oc{\'a}riz and Gabrielsson, Rickard Br{\"u}el and Choshen, Leshem and Ghassemi, Marzyeh and Yurochkin, Mikhail and Solomon, Justin},
+                journal={arXiv preprint arXiv:2402.16842},
+                year={2024},
+            }</p>
+          <a>https://arxiv.org/abs/2402.16842</a>
+        </div>
+        <div id="kratsios2025sharp">
+          <p>@article{kratsios2025sharp,
+                title={Sharp Generalization Bounds for Foundation Models with Asymmetric Randomized Low-Rank Adapters},
+                author={Kratsios, Anastasis and Cheng, Tin Sum and Lucchi, Aurelien and Borde, Haitz S{\'a}ez de Oc{\'a}riz},
+                journal={arXiv preprint arXiv:2506.14530},
+                year={2025},
+            }</p>
+          <a>https://arxiv.org/abs/2506.14530</a>
+        </div>
+        <div id="mao2025survey">
+          <p>@article{mao2025survey,
+                title={A Survey on LoRA of Large Language Models},
+                author={Mao, Yuren and Ge, Yuhang and Fan, Yijiang and Xu, Wenyi and Mi, Yu and Hu, Zhonghao and Gao, Yunjun},
+                journal={Frontiers of Computer Science},
+                volume={19},
+                number={7},
+                pages={197605},
+                year={2025},
+                publisher={Springer},
+            }</p>
+          <a>https://link.springer.com/content/pdf/10.1007/s11704-024-40663-9.pdf</a>
+        </div>
+        <div id="shuttleworth2024lora">
+          <p>@article{shuttleworth2024lora,
+                title={LoRA vs Full Fine-tuning: An Illusion of Equivalence},
+                author={Shuttleworth, Reece and Andreas, Jacob and Torralba, Antonio and Sharma, Pratyusha},
+                journal={arXiv preprint arXiv:2410.21228},
+                year={2024},
+            }</p>
+          <a>https://arxiv.org/abs/2410.21228</a>
+        </div>
+        <div id="biderman2024loralearnsforgets">
+          <p>@misc{biderman2024loralearnsforgets,
+                title={LoRA Learns Less and Forgets Less}, 
+                author={Dan Biderman and Jacob Portes and Jose Javier Gonzalez Ortiz and Mansheej Paul and Philip Greengard and Connor Jennings and Daniel King and Sam Havens and Vitaliy Chiley and Jonathan Frankle and Cody Blakeney and John P. Cunningham},
+                year={2024},
+                eprint={2405.09673},
+                archivePrefix={arXiv},
+                primaryClass={cs.LG}, 
+            }</p>
+          <a>https://arxiv.org/abs/2405.09673</a>
+        </div>
+        <div id="yang2025lowrankadaptationfoundationmodels">
+          <p>@misc{yang2025lowrankadaptationfoundationmodels,
+                title={Low-Rank Adaptation for Foundation Models: A Comprehensive Review}, 
+                author={Menglin Yang and Jialin Chen and Jinkai Tao and Yifei Zhang and Jiahong Liu and Jiasheng Zhang and Qiyao Ma and Harshit Verma and Regina Zhang and Min Zhou and Irwin King and Rex Ying},
+                year={2025},
+                eprint={2501.00365},
+                archivePrefix={arXiv},
+                primaryClass={cs.LG},
+            }</p>
+          <a>https://arxiv.org/abs/2501.00365</a>
+        </div>
+        <div id="kexuefm9590">
+          <p>@online{kexuefm9590,
+                title={LoRA from a Gradient Perspective: Introduction, Analysis, Conjectures, and Extensions},
+                author={Jianlin Su},
+                year={2023},
+                month={Apr},
+            }</p>
+          <a>https://kexue.fm/archives/9590</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
