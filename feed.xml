@@ -7,6 +7,15 @@
     <generator>rfeed v1.1.1</generator>
     <docs>https://github.com/svpino/rfeed/blob/master/README.md</docs>
     <item>
+      <title>The Geometry of Low-Rank Adaptation</title>
+      <link>https://mk2112.github.io/blog/lora-geometry.html</link>
+      <description>Low-Rank Adaptation is widely applied for efficient fine-tuning. While simple, the implications of its effectiveness
+                remain insufficiently understood. This post examines the geometry of low-rank updates and shows
+                that LoRA is more than just another approximation of full fine-tuning.</description>
+      <pubDate>Mon, 29 Dec 2025 07:23:18 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/lora-geometry.html</guid>
+    </item>
+    <item>
       <title>Dreamer 4 and the Quest for Robust World Models</title>
       <link>https://mk2112.github.io/blog/dreamer-4.html</link>
       <description>Dreamer 4 provides great insights into the future of capable autonomous agents.
