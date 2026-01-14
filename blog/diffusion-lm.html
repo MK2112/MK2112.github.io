@@ -94,30 +94,22 @@
               Autoregressive models, like GPT-4o or GPT-o3, excel at generating coherent text. They do this unidirectionally, only ever being
               able to refer to any past text to generate some next word. Using said models through ChatGPT, this seems to work just fine,
               but note that it isn't the same as formulating a sentence as a whole or choosing words with respect to something that you want
-              to lead up to later on. Autoregressive models also struggle with long-range dependencies due to their limited in size context window \cite{hosseini2024efficient}.
-              I challenge you to feed a state-of-the-art autoregressive model the Harry Potter Series and afterwards have it be able to recount any
-              details from "The Philosopher's Stone". While future autoregressive models may apply ever-larger context windows, each increase comes
-              at a steep price, requiring disproportionately greater resources for both training and inference. In fact, this cost generally grows
-              quadratically with the context size \cite{muhtasham2023explorecontext}.<br />
+              to lead up to later on. Autoregressive models also struggle with long-range dependencies due to their limited context window size \cite{hosseini2024efficient}. While future autoregressive models may apply ever-larger context windows, each increase comes
+              at the price of requiring disproportionately greater resources for both training and inference. In fact, this cost generally grows quadratically with the context size \cite{muhtasham2023explorecontext}.<br />
               <br />
-              Masked models, like BERT, are adept at understanding contextual, and bidirectional relationships. However, there are clear limitations
-              in their fill-in-the-blank approach: Being able to fill in blanks requires some context first \cite{devlin2019bert}. Using BERT to generate text from zero
-              can lead to incoherent or nonsensical outputs \cite{samuel2024berts}. And this is what put autoregressive models in the lead for text generation
+              Masked models, like BERT, are adept at understanding contextual, and bidirectional relationships. However, there are clear limitations in their fill-in-the-blank approach: Being able to fill in blanks requires some context first, some user input for example \cite{devlin2019bert}. Using BERT to generate text from zero can lead to incoherent or nonsensical outputs \cite{samuel2024berts}. And this is what put autoregressive models in the lead for text generation
               <i>(again, see ChatGPT)</i>. BERT has its place in the field though, masked models excel at tasks where text is given already, like understanding
               and classification tasks \cite{chen2024combined}.<br />
               <br />
-              <b>Masked language models can understand more deeply, while autoregressive models can produce coherent text easily, but at the cost
-                 of a genuinely bidirectional grasp.</b><br />
+              <b>Masked language models can understand more deeply, while autoregressive models can produce coherent text easily, but at the cost of a genuinely bidirectional grasp.</b><br />
               <br />
               Both masked models and autoregressive models don't directly work on text, as in, the sequence of letters and symbols.
-              Much rather, they require text to be embedded into a numeric
-              representation, which is a sequence of tokens. A token is a numerical vector expressing a distinct chunk of text present in the data.
+              Much rather, they require text to be embedded into some numeric
+              representation, which is represented commonly as a sequence of tokens. A token is a numerical vector expressing a distinct chunk of text present in the data.
               Text can be embedded into chunks, and decoded from them back into the original text again \cite{liao2020probabilistically}.<br />
               <br />
-              With the history covered, from here, let's actually step back and generalize some of the terms we just encountered. At its core, any
-              language model aims to capture the true, albeit unknown, distribution of language, i.e. which phrases are made up of which letters to
-              express something using syntax, semantics and pragmatics. Borrowing the syntax from \cite{nie2025large}, this goal can be formalized
-              and expressed as minimizing the so-called Kullback-Leibler-Divergence between the true textual data distribution $p_{\text{true}}(x)$
+              With the history covered, from here, let's actually step back and generalize some of the terms we just mentioned. At the core, any language model aims to capture the true, albeit unknown, distribution of language, i.e. which phrases are made up of which letters to
+              express something using syntax, semantics and pragmatics. Borrowing the syntax from \cite{nie2025large}, this goal can be formalized as minimizing the so-called Kullback-Leibler-Divergence between the true textual data distribution $p_{\text{true}}(x)$
               and the approximation of that distribution $p_\theta(x)$ which in turn is embedded in the language model's parameters $\theta$ and
               expressed through that model's
               generated text. Autoregressive language models achieve the approximation of a true textual data distribution by factorizing the
@@ -127,10 +119,9 @@
               expresses is that a sequence of choices to sample individual tokens one after another will iteratively amount to the approximation of an
               overall textual data distribution.<br />
               <br />
-              If you don't know what this formula means or if you feel like you're getting stuck here because of it, don't worry about it.
-              This is about as complicated as it will get. Also, as you see below the formula, I will at all times make an effort to explain
-              the expression fully after showing it, so you don't need to depend on reading them, because throwing around formulas to convey
-              a topic is just pretentious.
+              If you don't know what this formula means or if you feel like you're about to get stuck here because of it, don't worry about it.
+              This is about as complicated as it will get here. Also, as you see below the formula, I will explain
+              the expression fully after showing it, so you don't need to depend on reading them.
             </p>
             <h3>The Mechanics of Diffusion in Language Models</h3>
             <p class="blog-p">
