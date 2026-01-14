@@ -11,21 +11,15 @@
     <link href="./css/style.css" rel="stylesheet" />
     <link 
       rel="stylesheet" 
-      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" 
-      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" 
-      crossorigin="anonymous"
+      href="./assets/katex/katex.min.css" 
     />
     <script 
       defer 
-      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" 
-      integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" 
-      crossorigin="anonymous"
+      src="./assets/katex/katex.min.js" 
     ></script>
     <script 
       defer 
-      src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" 
-      integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" 
-      crossorigin="anonymous"
+      src="./assets/katex/contrib/auto-render.min.js" 
       onload="renderMathInElement(document.body);"
     ></script>
     <script defer src="./js/main.js" onload="setupKatex();"></script>
@@ -53,6 +47,34 @@
         </div>
       </div>
       <main id="main-projects">
+        <a class="static-anchor" title="Conflicting Few-Shots" href="https://github.com/mk2112/conflicting-few-shots" target="_blank">
+          <div class="project">
+            <div class="project-description">
+              <div>
+                <h2 id="conflicting-few-shots">
+                  Conflicting Few-Shots
+                </h2>
+                <p class="thin project-p">January 2026 • NLP</p>
+                <p align="justify">
+                  We examine how LLMs handle prompts with semantically conflicting examples, finding that recent models respond in very
+                  different ways. Some ignore the conflicts, some rely on positional biases, and others dynamically re-evaluate
+                  information based on where and how often conflicts appear. Model size and baseline accuracy do not reliably predict
+                  these behaviors. In some cases, well-placed inconsistencies can even improve performance, highlighting the importance
+                  of careful, model-specific prompt engineering.
+                </p>
+              </div>
+              <div>
+                <img
+                  class="project-img"
+                  style="filter: grayscale(100%) brightness(1.25) contrast(1.10); object-position: 0% 55% !important;"
+                  src="./img/projects/pexels-photo-1616781.jpeg"
+                  alt="Conflicting Few-Shots"
+                />
+                <p class="img-p">Photo by Jos van Ouwerkerk (via Pexels.com)</p>
+              </div>
+            </div>
+          </div>
+        </a>
         <a class="static-anchor" title="DreamStride" href="https://github.com/mk2112/dreamstride" target="_blank">
           <div class="project">
             <div class="project-description">
@@ -72,10 +94,10 @@
                 <img
                   class="project-img"
                   style="filter: brightness(1.1) contrast(1.05); object-position: 0% 55% !important;"
-                  src="https://images.pexels.com/photos/6153362/pexels-photo-6153362.jpeg"
+                  src="./img/projects/pexels-photo-6153362.jpeg"
                   alt="DreamStride"
                 />
-                <p class="img-p">Photo by Cottonbro Studios</p>
+                <p class="img-p">Photo by Cottonbro Studios (via Pexels.com)</p>
               </div>
             </div>
           </div>
@@ -100,10 +122,10 @@
                 <img
                   class="project-img"
                   style="filter: invert(100%);"
-                  src="https://images.pexels.com/photos/4004375/pexels-photo-4004375.jpeg"
+                  src="./img/projects/pexels-photo-4004375.jpeg"
                   alt="MiniCorpus"
                 />
-                <p class="img-p">Photo by Evie Shaffer</p>
+                <p class="img-p">Photo by Evie Shaffer (via Pexels.com)</p>
               </div>
             </div>
           </div>
@@ -126,10 +148,10 @@
               <div>
                 <img
                   class="project-img"
-                  src="https://images.pexels.com/photos/7203700/pexels-photo-7203700.jpeg"
+                  src="./img/projects/pexels-photo-7203700.jpeg"
                   alt="MobileYOLOv3"
                 />
-                <p class="img-p">Photo by SHVETS Production</p>
+                <p class="img-p">Photo by SHVETS Production (via Pexels.com)</p>
               </div>
             </div>
           </div>
@@ -153,10 +175,10 @@
               <div>
                 <img
                   class="project-img"
-                  src="https://images.pexels.com/photos/6045366/pexels-photo-6045366.jpeg"
+                  src="./img/projects/pexels-photo-6045366.jpeg"
                   alt="GPTemplate"
                 />
-                <p class="img-p">Photo by Skylar Kang</p>
+                <p class="img-p">Photo by Skylar Kang (via Pexels.com)</p>
               </div>
             </div>
           </div>
@@ -180,10 +202,10 @@
               <div>
                 <img
                   class="project-img"
-                  src="https://images.pexels.com/photos/114820/pexels-photo-114820.jpeg"
+                  src="./img/projects/pexels-photo-114820.jpeg"
                   alt="Any_To_Any.py"
                 />
-                <p class="img-p">Photo by Mike Bird</p>
+                <p class="img-p">Photo by Mike Bird (via Pexels.com)</p>
               </div>
             </div>
           </div>
