@@ -11,7 +11,7 @@
       <link>https://mk2112.github.io/blog/lora-geometry.html</link>
       <description>Low-Rank Adaptation is widely applied for efficient fine-tuning. While simple, the implications of its effectiveness
                 remain insufficiently understood. This post examines the geometry of low-rank updates and shows
-                that LoRA is more than just another approximation of full fine-tuning.</description>
+                that LoRA is more than just another approximation of fine-tuning.</description>
       <pubDate>Mon, 29 Dec 2025 07:23:18 GMT</pubDate>
       <guid isPermaLink="true">https://mk2112.github.io/blog/lora-geometry.html</guid>
     </item>
