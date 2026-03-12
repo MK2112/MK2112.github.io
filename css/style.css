@@ -98,7 +98,7 @@ body {
     margin-left: 0;
     margin-right: 0;
     background-color: var(--paper-grey);
-    font-family: ui-sans-serif, Segoe UI, Helvetica Neue, Roboto, --apple-system, Arial, sans-serif;
+    font-family: 'Source Serif 4', ui-serif, Georgia, 'Times New Roman', serif;
 }
 
 p {
@@ -608,4 +608,72 @@ nav b {
     font-style: italic;
     margin-top: 2rem;
     margin-bottom: 0;
+}
+
+.blog-toc {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 11rem;
+    width: 175px;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-size: 11px;
+    margin-top: 9.3rem;
+    margin-left: 1rem;
+    max-height: calc(100vh - 13rem);
+    overflow-y: auto;
+    z-index: 50;
+}
+
+@media (min-width: 1200px) {
+    .blog-toc {
+        display: block;
+    }
+}
+
+.blog-toc-title {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--mist-grey);
+    margin-bottom: 16px;
+    font-size: 10px;
+    line-height: 1.25;
+}
+
+.blog-toc ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: blog-toc;
+}
+
+.blog-toc li {
+    counter-increment: blog-toc;
+}
+
+.blog-toc a {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    color: var(--mist-grey);
+    text-decoration: none;
+    line-height: 1.5;
+    padding: 4px 0 4px 10px;
+    margin-left: -12px;
+    border-left: 2px solid transparent;
+    transition: color 0.2s, border-left-color 0.2s;
+    font-size: 11px;
+}
+
+.blog-toc a::before {
+    content: counter(blog-toc, decimal-leading-zero);
+    font-size: 9px;
+    opacity: 0.4;
+    flex-shrink: 0;
+}
+
+.blog-toc a:hover,
+.blog-toc a.active {
+    color: inherit;
+    border-left-color: var(--mist-grey);
 }
