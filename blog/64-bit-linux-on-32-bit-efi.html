@@ -85,19 +85,16 @@
             </p>
             <h4>What is EFI?</h4>
             <p class="blog-p">
-              EFI (Extensible Firmware Interface) is the more modern replacement for the legacy BIOS (Basic Input/Output System).
-              It serves as the core interface between a computer's chipset firmware and the installed operating system, acting
-              essentially as a mediator between the two to provide the booting operating system with control over the hardware resources needed for operation.<br />
+              EFI (Extensible Firmware Interface) replaces the legacy BIOS (Basic Input/Output System).
+              Both essentially act as mediators between the computer's chipset firmware and the installed operating system 
+              to provide the booting operating system with control over the hardware resources needed for operation.<br />
+              Beyond what BIOS could provide, EFI offers faster boot times and improved security features for this resource control task.<br />
               <br />
-              EFI is designed to address limitations of BIOS, offering for example:<br />
-              <br />
-              $\rightarrow$ Faster boot times, <br />
-              $\rightarrow$ Improved security features, and <br />
-              $\rightarrow$ Support for larger storage devices. <br />
-              <br />
-              The ASUS X205TA comes with 32-bit EFI. It uses 32-bit addressing, limiting compatibility with 64-bit bootloaders.
-              Systems with 64-bit CPUs but 32-bit EFI firmware, like the ASUS X205TA, cannot natively boot 64-bit operating systems, 
-              as they expect a compatible 64-bit EFI or BIOS environment. In other words, we need a workaround.
+              Curiously, the ASUS X205TA comes with 64-bit-capable hardware but 32-bit EFI configured.
+              A 32-bit EFI cannot sufficiently provide control over the hardware to a 64-bit-demanding operating system's bootloader.
+              Due to this limitation the ASUS X205TA cannot boot 64-bit operating systems, all while its hardware is perfectly capable of just that.
+              To get a 64-bit operating system to run, we have to find a way of tricking the boot process into somehow ignoring any 32-bit EFI constraints.
+              How can we go about that? Where to start? As a first step, we should ask ...
             </p>
             <h4>What is GRUB?</h4>
             <p class="blog-p">
