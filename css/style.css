@@ -677,3 +677,13 @@ nav b {
     color: inherit;
     border-left-color: var(--mist-grey);
 }
+
+.publications .highlight {
+    color: var(--text-color);
+    border-bottom: none;
+}
+
+.publications .second-line {
+    display: block;
+    margin-left: 0.25rem;
+}
