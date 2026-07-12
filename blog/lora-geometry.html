@@ -118,30 +118,22 @@
               If the original model stays frozen, and $BA$ initally, purposely doesn't contribute, how
               does the adapter ever start to learn <i>anything</i> at all?
             </p>
-            <h3>Learning Better From Not Contributing</h3>
+            <h3>Learning Without Contributing</h3>
             <p class="blog-p">
-              As introduced by \cite{hu2022lora}, LoRA's forward pass is simply: $h = (W_0 + BA)x = W_0x + BAx$.
-              LoRA only works the way it does because it is merged with the frozen weight outputs
-              through addition. 
-              Think of it like so: LoRA works because outputs from the frozen $W_0$ and the adapter's
-              $BA$ merge through addition. During backpropagation, if $\frac{\partial L}{\partial h}$
-              is the gradient flowing back, the chain rule at this point in the model gives:
+              We saw that LoRA's forward pass is expressed as $h = (W_0 + BA)x = W_0x + BAx$ \cite{hu2022lora}. 
+              Imagine for a moment that we used multiplication instead of addition: $h = W_0x \cdot BAx$.
+              This sounds like a reasonable approach at first. We could even initialize $BA$ to identity.
+              However, through multiplication, $\frac{\partial L}{\partial W_0x} = BAx \cdot \frac{\partial L}{\partial h}$ and $\frac{\partial L}{\partial BAx} = W_0x \cdot \frac{\partial L}{\partial h}$, meaning
+              the gradient of each branch gets modulated by the other's output. If one is small, the other's gradient shrinks.
+              LoRA therefore cannot learn independently, resulting in a slow start and unstable gradients throughout.
+              Replacing the multiplication with the original addition addresses this behavior elegantly.
+              During backpropagation, $\frac{\partial L}{\partial h}$ forks at the addition:
               $$\frac{\partial L}{\partial W_0} = \frac{\partial L}{\partial h} \cdot x^T, \quad \frac{\partial L}{\partial (BA)} = \frac{\partial L}{\partial h} \cdot x^T$$
-              The gradient with respect to the addition operation $(W_0x + BAx)$ copies identically
-              and <i>fully</i> to both branches. The gradient $\frac{\partial L}{\partial h} \cdot x^T$
-              flows to frozen $W_0$ (where it is promptly discarded) and to $BA$. In other words, $B$ and
-              $A$ receive the <i>exact same gradient</i> that would update $W_0$ in full fine-tuning.
-              And through this, even though LoRA in the beginning didn't contribute anything, the
-              optimization pressure is identical for both branches no matter what, and only the
-              capacity to respond is constrained to this low rank $r$. Thanks to that one addition
-              operation we made, the adapter now has to learn the most efficient update over $W_0$
-              that is possible. And $BA$ is nudged away from the initial zero-multiplication setup
-              accordingly, beginning to contribute to the addition more meaningfully.
-              You can see how this 'nothing to contribute, yet learning' paradox is actually a
-              really meaningful on-ramp for LoRA to learn to contribute to what $W_0$ on its own is already
-              capable of \cite{kexuefm9590}.
+              Both branches, the contributions of LoRA and the model, always receive the <i>identical</i> gradient. $W_0$ drops it (as we freeze it), while $BA$ can learn from it.
+              In other words, even at the start, where the outputs of $BA$ are just non-contributing zeros, $BA$ always receives the same meaningful gradient that would update $W_0$.
+              Therefore, thanks to the addition operation, LoRA can learn and improve meaningfully from the start \cite{kexuefm9590}.
             </p>
-            <h3>The Asymmetry of $\large{A}$ and $\large{B}$</h3>
+            <h3>Asymmetry of $\large{A}$ and $\large{B}$</h3>
             <p class="blog-p">
               I kind of brushed over this, but note how we had just treated the matrices $B$ and $A$
               differently from one another. Early work treated the two symmetrically, and both
@@ -164,7 +156,7 @@
               count in half again. This implies $B$ meaningfully learns how to nudge the $W_0$ output
               with what $B$ encounters in the $r$-space during fine-tuning.
             </p>
-            <h3>The Singular Value Perspective</h3>
+            <h3>A Singular Value Perspective</h3>
             <p class="blog-p">
               If we can narrow down LoRA's learning requirements to only the reconstruction from
               this $r$-space through $B$, we should dig further and ask why low-rank updates work
@@ -177,7 +169,7 @@
               <li>$V^T$ provides the orthogonal basis for the input space.</li>
             </ul>
             <p class="blog-p">
-              Think of it like this: $V^T$ rotates the input into a special coordinate system,
+              You can think of it like this: $V^T$ rotates the input into a special coordinate system,
               $\Sigma$ scales along principal axes (some strongly, some weakly), and $U$ rotates
               the result into output space. The singular values in $\Sigma$ tell us which of
               these scaling directions actually matter.<br />
@@ -249,24 +241,12 @@
               area of research, with methods like LoRA-GA and LoRA-Pro exploring how to better
               align LoRA's updates with those of full fine-tuning.
             </p>
-            <h3>Open Questions</h3>
+            <h3>Conclusion and Open Questions</h3>
             <p class="blog-p">
-              We saw that, especially recently, the view on what exactly it is that LoRA
-              achieves is starting to become more nuanced. Beyond this increasing consciousness
-              of the entailed subspace geometry, open questions remain on why and when low-rank
-              updates are actually sufficient. We do not know the properties that define the
-              'task space' in which LoRA navigates. But suppose we have such a task and want to
-              apply LoRA, can we automate optimal adapter placement and initialization beyond the
-              current heuristics?
-            </p>
-            <h3>Conclusion</h3>
-            <p class="blog-p">
-              LoRA rests on a rarely elegant hypothesis: adapting foundation models reduces to a
-              low-rank problem. And while this proved true, LoRA is way more than a 'cheap tool
-              for fine-tuning'. It offers unique properties, comes with distinct trade-offs and
-              asks deeper questions about learning, generalization, and knowledge
-              structure in massive models. In that sense, the unreasonable effectiveness
-              of low-rank adaptation is only beginning to be understood.
+              Especially recently, the view on what exactly LoRA achieves is starting to become more nuanced.
+              Beyond an increasing consciousness of the entailed subspace geometry, open questions remain on why and when low-rank
+              updates are actually sufficient. We do not know the properties that define said 'task space' in which LoRA navigates.
+              Can we automate optimal adapter placement, rank search and initialization beyond the current heuristics?
             </p>
           </div>
           <div id="references"></div>
