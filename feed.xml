@@ -7,6 +7,15 @@
     <generator>rfeed v1.1.1</generator>
     <docs>https://github.com/svpino/rfeed/blob/master/README.md</docs>
     <item>
+      <title>Distribution Fine-Tuning on a Budget</title>
+      <link>https://mk2112.github.io/blog/dft-compressed.html</link>
+      <description>Distribution Fine-Tuning extends per-token likelihood with a global distributional objective by rewarding generations that look more like a
+                human reference text in embedding space, penalizing those generations that don't. Where the original setup worked at 14B on six GPUs, I attempted
+                to compress it to a 1.2B model on a single GPU. Pointing in a promising direction, the resulting pipeline quickly delivers measurable MMD reduction.</description>
+      <pubDate>Thu, 30 Jul 2026 13:34:12 GMT</pubDate>
+      <guid isPermaLink="true">https://mk2112.github.io/blog/dft-compressed.html</guid>
+    </item>
+    <item>
       <title>The Geometry of Low-Rank Adaptation</title>
       <link>https://mk2112.github.io/blog/lora-geometry.html</link>
       <description>Low-Rank Adaptation is widely applied for efficient fine-tuning. While simple, the implications of its effectiveness
