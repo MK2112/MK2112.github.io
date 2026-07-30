@@ -73,55 +73,55 @@
             <p class="blog-p">
               Contemporary language models generate text that is plausible on the token-level yet tending towards homogeneity when viewed as a whole.
               Supervised fine-tuning further adapts the per-token likelihoods while providing no mechanism for shaping or controlling the statistics of
-              an output distribution across all the tokens making it up. This leaves room for the model to produce text with identifiable stylistic
+              an output distribution across all the tokens that make it up. This leaves room for the model to learn to produce text with identifiable stylistic
               fingerprints, which can manifest as distinct sentence rhythms, overused transitions, or narrow sets of vocabulary choices, even as the
-              per-token accuracy is indistinguishable from human-written reference.<br />
+              per-token accuracy becomes indistinguishable from human-written reference.<br />
               <br />
               In order to replace the per-token likelihood objective with a more global, distributional one, Rosmine proposed Distribution Fine-Tuning (DFT) \cite{rosmine2026dft}.
               It optimizes the Maximum Mean Discrepancy (MMD) \cite{gretton2012kernel} between the model's output distribution and a reference corpus of human text,
-              using a kernel-based estimator that assigns per-sample rewards in a REINFORCE \cite{williams1992reinforce} loop. On a 14B model, DFT improved MMD by 49%
+              using a kernel-based estimator that assigns per-sample rewards in a REINFORCE \cite{williams1992reinforce} loop. On a 14B model, DFT improved MMD by $49\%$
               and raised judge-model win rates against human text from $24\%$ (SFT) to $40\%^1$, with a 164% improvement in creativity scores \cite{rosmine2026dft}. I highly recommend
-              reading Rosmine's post on this.<br />
-              <br />
-              The original DFT was performed on six RTX 6000 Ada GPUs with additional cloud H100s reserved for the SFT full-fine-tuning baseline and a dedicated 8B
-              embedding model running alongside the policy. My question became whether this scale would be a hard requirement. This post documents a reproduction of DFT
-              under resource constraints that differ by roughly two to three orders of magnitude: a single RTX 3060, a 1.2B model, no dedicated embedding model, and
-              approximately 2,400 training examples from RefinedWeb. My reproduction exposed a set of measurement and infrastructure bugs that I found quite interesting.
-              The debugged pipeline ultimately ended up producing measurable distributional improvements despite severe resource compression.
+              reading Rosmine's post.<br />
             </p>
-            <div class="blog-img">
-              <!--Enlarge: 50%-->
-              <img src="../img/dft_budget_compression.png" alt="Relative Scales of applied resource budgets for my DFT run" style="width: 70%" />
-              <p class="blog-img-caption">Relative Scales of applied resource budgets for my DFT run</p>
-            </div>
             <p class="footnote-p">
               $^1$ The original post states its headline results as MMD and JMQ scores directly ($\footnotesize{0.018}$ vs. $\footnotesize{0.037}$ MMD, $\footnotesize{0.80}$ vs. 
               $\footnotesize{0.49}$ JMQ for the 14B model), not as win-rate percentages. The $\footnotesize{40\%}$ / $\footnotesize{24\%}$ win-rate figures used here follow from
               the post's own definition \cite{rosmine2026dft}, $\footnotesize{JMQ = 2 \times \text{win rate}}$, applied to those two JMQ values. They are not directly quoted,
               though they agree with the post's separately stated "JMQ improved by $\footnotesize{63\%}$" to within rounding.
             </p>
+            <p class="blog-p">
+              The original DFT was performed on six RTX 6000 Ada GPUs with additional cloud H100s reserved for the SFT full-fine-tuning baseline and a dedicated 8B
+              embedding model running alongside the policy. My question became whether this scale would be a hard requirement. This post documents a reproduction of DFT
+              under resource constraints that differ by orders of magnitude: a single RTX 3060, a 1.2B model, no dedicated embedding model and
+              approximately 2,400 training examples from RefinedWeb. After some debugging, my pipeline ultimately ended up producing measurable distributional improvements
+              despite the imposed severe resource compression.
+            </p>
+            <div class="blog-img">
+              <!--Enlarge: 50%-->
+              <img src="../img/dft_budget_compression.png" alt="Relative Scales of applied resource budgets for my DFT run" style="width: 70%" />
+              <p class="blog-img-caption">Relative Scales of applied resource budgets for my DFT run</p>
+            </div>
             <h3>Distribution Fine-Tuning</h3>
             <p class="blog-p">
-              Standard SFT maximizes the log-likelihood of each training token. Its objective depends only on the probability assigned to the observed next token, not
-              on how a set of sampled tokens then relates to a reference set overall. Two models with identical per-token perplexity on held-out data can therefore
-              produce output populations with noticably different statistics, expressed e.g. through different n-gram frequencies, different rates and kinds of
+              Standard SFT maximizes the log-likelihood of each fine-tuning token. The objective depends only on the probability assigned to the observed next token, not
+              on how a set of sampled tokens then relates to some reference set overall. Two models with identical per-token perplexity on held-out data can therefore
+              produce output populations with noticably different global statistics, expressed e.g. through different n-gram frequencies, different rates and kinds of
               structural repetition, different topical keyword distributions, or just an inflationary use of em dashes.<br />
               <br />
-              DFT replaces the local objective with a distributional one. At each training step, the policy samples a batch of completions, embeds them alongside a fixed
+              DFT replaces the local, purely token-level objective with a higher-level distributional one. At each training step, the policy samples a batch of completions, embeds them alongside a fixed
               reference pool of human-written text, and computes a per-sample reward derived from the kernel structure of the joint embedding set. For a generated
-              sample $i$ against $n-1$ other generations and $m$ reference samples, under an RBF kernel $k$, the reward can be formulated like so:
+              sample $i$ against $n-1$ other generations and $m$ reference samples, under an RBF kernel $k$, a reward can be formulated like so:
 
               $$r_i = \frac{2}{n-1}\sum_{j \neq i} k(x_i, x_j) - \frac{2}{m}\sum_{l} k(x_i, y_l)$$
 
               This is twice the contribution of sample $i$ to an unbiased estimator of $\text{MMD}^2(P_\theta, P_\text{ref})$. Despite the name, reward $r_i$ functions
-              as a cost in the usual RL sense: the REINFORCE training loss is $\mathbb{E}[r_i \cdot \log \pi_\theta(x_i)]$, meaning that a higher $r_i$ pushes
-              log-probability down. A high $r_i$ is caused by high redundancy with other outputs of the model, the so-called within-batch similarity. On the other hand,
-              low $r_i$ is caused by high similarity to the human-written reference pool.<br />
-              In other words, this multi-purpose reward signal enables penalizing mode collapse (the redundant generations) and also off-target drift (generations far
+              as a cost in the usual RL sense. The REINFORCE training loss is $\mathbb{E}[r_i \cdot \log \pi_\theta(x_i)]$, meaning that a higher $r_i$ pushes
+              log-probability down. A high $r_i$ is caused by high redundancy with other outputs of the model, which is the so-called within-batch similarity. On the other hand,
+              a low $r_i$ implies a high similarity to the human-written reference pool.<br />
+              In other words, this multi-purpose reward signal enables penalizing mode collapse (the redundant generations) as well as off-target drift (generations far
               from reference) while reinforcing the generation of those texts that are simultaneously novel relative to the model and similar relative to the
               human-written reference.<br />
-              <br />
-              Assembled, these components make up a single per-step loop rather than two interacting ones. For each prompt in a batch, the policy samples a small group
+              For each prompt in a batch, the policy samples a small group
               of completions. Every completion in that group, together with a fixed pool of reference human text, is embedded and run through the RBF kernel to produce
               one $r_i$ per generated sample via the above formula. These rewards are then used directly as the per-sample weight in the REINFORCE loss, and a single
               backward pass updates the LoRA adapters before the next batch of prompts is drawn.<br />
@@ -134,7 +134,6 @@
             <p class="blog-p">
               Imposing the hardware budget of a single RTX 3060 requires rethinking most of the original recipe. At the same time, the underlying mechanism and
               objective of DFT should survive each substitution as intact as possible.<br />
-              <br />
               The original uses relatively standard decoder-only Qwen3 transformer policy models. I substitute LFM2.5-1.2B-Instruct for its smaller parameter
               count and relatively high information density. It gets loaded in NF4 precision with double quantization \cite{dettmers2023qlora}. I chose
               LoRA \cite{hu2021lora} adapters of rank 64 on attention and MLP/FFN projections and enabled gradient checkpointing.<br />
@@ -148,7 +147,6 @@
               Training on 185K documents at 4B to 14B policy model scale translates to roughly two to three thousand examples at 1.2B scale given the same per-sample
               compute budget. While the original draws from FineWeb \cite{penedo2024fineweb}, I substituted RefinedWeb \cite{penedo2023refinedweb} for this
               reproduction and used $\approx 2400$ training examples from it, with a held-out validation set of $127$ completions.<br />
-              <br />
               Multi-GPU training comes with support for large effective batches and thousands of optimizer steps. Our effective batch size is 32 (one device, two
               generations per prompt, sixteen gradient accumulation steps), yielding approximately $150$ optimizer steps over the full dataset. This compression of
               the step budget by roughly two orders of magnitude makes several default hyperparameter choices actively misleading. The effective batch size
@@ -207,7 +205,7 @@
               <img src="../img/dft_mmd_training_curve.png" alt="MMD development over the course of training" style="width: 80%" />
               <p class="blog-img-caption">MMD development over the course of training</p>
             </div>
-            <h3>Results</h3>
+            <h3>Results and Conclusion</h3>
             <p class="blog-p">
               A complete run produced a monotonic reduction in the training-loop evaluation MMD from $\approx 0.350$ to $0.247$. A separate,
               held-out comparison at the end of training (base model vs. best checkpoint, $12$ prompts) showed a smaller yet still meaningful reduction in
@@ -218,7 +216,7 @@
               drift compared to the base model.<br />
               <br />
               The two runs, the original one and mine, should not be treated as directly comparable, because they differ in model scale, embedding space,
-              data budget, and step count by roughly two to three orders of magnitude each. They also draw from different underlying web corpora. The
+              data budget, and step count by orders of magnitude each. They also draw from different underlying web corpora. The
               original uses FineWeb, built specifically as a more heavily filtered and deduplicated successor to RefinedWeb, which is what I use here to
               see whether a certain tolerance in data quality exists. The corpus doubles as the reference pool the reward function measures distance
               against, so a difference in corpus filtering standard is a difference in what "matching the reference" target means, not merely a
