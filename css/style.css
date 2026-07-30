@@ -687,3 +687,12 @@ nav b {
     display: block;
     margin-left: 0.25rem;
 }
+
+.footnote-p {
+    color: var(--mist-grey);
+    font-size: 0.9rem;
+    font-weight: 100;
+    font-style: italic;
+    margin-top: 2rem;
+    margin-bottom: 35px;
+}
