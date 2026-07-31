@@ -128,6 +128,13 @@
                 }
             });
 
+            var bottomMargin = 5;
+            var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - bottomMargin;
+
+            if (atBottom) {
+                currentItem = headingItems[headingItems.length - 1];
+            }
+
             var nextLink = toc.querySelector('a[href="#' + currentItem.id + '"]');
             if (!nextLink || nextLink === activeLink) return;
 
