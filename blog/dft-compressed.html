@@ -150,7 +150,7 @@
               model itself, with its LoRA adapter disabled accordingly. Hidden states from three layers, first, middle, and last, are mean-pooled and concatenated
               into a $6144$-dimensional vector, with the main idea being that these layers sufficiently and meaningfully captured representations of different degrees of
               abstraction and granularity in their meaning. Every forward pass for embedding extraction runs one sequence at a time.
-              Batching is not used, the reasons for which will become clear later.<br />
+              Batching is not used, which will become clear later.<br />
               <br />
               The training on $185 \text{K}$ documents at 4B to 14B policy model is scaled down to roughly two to three thousand examples at 1.2B scale given the
               same per-sample compute budget. While the original draws from FineWeb \cite{penedo2024fineweb}, I substituted $\approx 2400$ training examples and another $127$
