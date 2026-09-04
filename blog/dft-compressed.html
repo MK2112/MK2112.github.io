@@ -71,86 +71,94 @@
           <p class="thin project-p">July 2026 • Reading Time: 10 Minutes</p>
           <div class="blog-entry">
             <p class="blog-p">
-              Contemporary language models generate text that is plausible on the token-level yet tending towards homogeneity when viewed as a whole.
-              Supervised fine-tuning further adapts the per-token likelihoods while providing no mechanism for shaping or controlling the statistics of
-              an output distribution across all the tokens that make it up. This leaves room for the model to learn to produce text with identifiable stylistic
-              fingerprints, which can manifest as distinct sentence rhythms, overused transitions, or narrow sets of vocabulary choices, even as the
-              per-token accuracy becomes indistinguishable from human-written reference.<br />
+              Contemporary language models generate plausible text on the per-token level, yet they tend towards homogeneity when looking at the produced text
+              as a whole. Supervised fine-tuning further adapts the per-token likelihoods while providing no mechanism for shaping or controlling the statistics of
+              an output distribution across these tokens. This leaves a gap in the model training, through with said model learns to produce text with identifiable
+              stylistic character. We know this, it manifests through distinct sentence rhythms, overused transitions, or narrow sets of vocabulary choices. Crucially,
+              it remains even as the per-token accuracy becomes indistinguishable from human-written reference.<br />
               <br />
               In order to replace the per-token likelihood objective with a more global, distributional one, Rosmine proposed Distribution Fine-Tuning (DFT) \cite{rosmine2026dft}.
               It optimizes the Maximum Mean Discrepancy (MMD) \cite{gretton2012kernel} between the model's output distribution and a reference corpus of human text,
-              using a kernel-based estimator that assigns per-sample rewards in a REINFORCE \cite{williams1992reinforce} loop. On a 14B model, DFT improved MMD by $49\%$
-              and raised judge-model win rates against human text from $24\%$ (SFT) to $40\%^1$, with a 164% improvement in creativity scores \cite{rosmine2026dft}. I highly recommend
-              reading Rosmine's post.<br />
+              using a kernel-based estimator for assigning per-sample rewards in a REINFORCE \cite{williams1992reinforce} loop. On a 14B model, DFT improved MMD by $49\%$
+              and raised judge-model win rates against human text from $24\%$ (SFT) to $40\%^1$, with a 164% improvement in creativity scores \cite{rosmine2026dft}.
+              I highly recommend reading Rosmine's post on this.<br />
             </p>
             <p class="footnote-p">
-              $^1$ The original post states its headline results as MMD and JMQ scores directly ($\footnotesize{0.018}$ vs. $\footnotesize{0.037}$ MMD, $\footnotesize{0.80}$ vs. 
+              $^1$ The original post states its headline results directly as MMD and JMQ scores ($\footnotesize{0.018}$ vs. $\footnotesize{0.037}$ MMD, $\footnotesize{0.80}$ vs. 
               $\footnotesize{0.49}$ JMQ for the 14B model), not as win-rate percentages. The $\footnotesize{40\%}$ / $\footnotesize{24\%}$ win-rate figures used here follow from
-              the post's own definition \cite{rosmine2026dft}, $\footnotesize{JMQ = 2 \times \text{win rate}}$, applied to those two JMQ values. They are not directly quoted,
+              the post's own definition \cite{rosmine2026dft}, $\footnotesize{JMQ = 2 \times \text{win rate}}$, applied to the two JMQ values. They are not directly quoted,
               though they agree with the post's separately stated "JMQ improved by $\footnotesize{63\%}$" to within rounding.
             </p>
             <p class="blog-p">
-              The original DFT was performed on six RTX 6000 Ada GPUs with additional cloud H100s reserved for the SFT full-fine-tuning baseline and a dedicated 8B
-              embedding model running alongside the policy. My question became whether this scale would be a hard requirement. This post documents a reproduction of DFT
-              under resource constraints that differ by orders of magnitude: a single RTX 3060, a 1.2B model, no dedicated embedding model and
-              approximately 2,400 training examples from RefinedWeb. After some debugging, my pipeline ultimately ended up producing measurable distributional improvements
-              despite the imposed severe resource compression.
+              The original DFT run utilized six RTX 6000 Ada GPUs with additional cloud H100s reserved for the SFT full-fine-tuning baseline and a dedicated 8B
+              embedding model. I suspected this scale to actually not be a hard requirement, hence, with this post, I want to document a reproduction of DFT
+              under resource constraints that differ by orders of magnitude: restriction to a single RTX 3060, a 1.2B model and $\approx 2,400$ training examples
+              from RefinedWeb. My pipeline ultimately ended up producing proper distributional improvements despite the extreme resource compression.
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
-              <img src="../img/dft_budget_compression.png" alt="Relative Scales of applied resource budgets for my DFT run" style="width: 70%" />
-              <p class="blog-img-caption">Relative Scales of applied resource budgets for my DFT run</p>
+              <img src="../img/dft_budget_compression.png" alt="Relative scales of applied resource budgets for my DFT run" style="width: 70%" />
+              <p class="blog-img-caption">Relative scales of applied resource budgets for my DFT run</p>
             </div>
             <h3>Distribution Fine-Tuning</h3>
             <p class="blog-p">
-              Standard SFT maximizes the log-likelihood of each fine-tuning token. The objective depends only on the probability assigned to the observed next token, not
-              on how a set of sampled tokens then relates to some reference set overall. Two models with identical per-token perplexity on held-out data can therefore
-              produce output populations with noticably different global statistics, expressed e.g. through different n-gram frequencies, different rates and kinds of
-              structural repetition, different topical keyword distributions, or just an inflationary use of em dashes.<br />
+              Vanilla SFT maximizes the log-likelihood for each fine-tuning token. In doing so, it depends only on the probability assigned to the observed next token,
+              specifically not on how a set of sampled tokens then relates to some reference set overall. Two models with identical per-token perplexity on held-out data
+              can therefore produce output populations with noticably different global statistics, expressed e.g. through different $n$-gram frequencies, different rates
+              and kinds of structural repetition, different topical keyword distributions, or just an infamously inflationary use of em-dashes.<br />
               <br />
-              DFT replaces the local, purely token-level objective with a higher-level distributional one. At each training step, the policy samples a batch of completions, embeds them alongside a fixed
-              reference pool of human-written text, and computes a per-sample reward derived from the kernel structure of the joint embedding set. For a generated
-              sample $i$ against $n-1$ other generations and $m$ reference samples, under an RBF kernel $k$, a reward can be formulated like so:
+              DFT now replaces this local objective with a higher-level distributional one. For each training step, the policy samples a batch of completions from the model.
+              The completions and a fixed set of human-written examples are then embedded independently with the same encoder, as two separate samples in a shared embedding space.
+              A Radial Basis Function (RBF) kernel then measures the similarity of each generated completion's embedding to those of the other generated completions and the human examples.
+              The similarities are combined into a reward for each completion, which is used to update the model. In other words, for a generated sample $i$ against $n-1$ other
+              generations and $m$ reference samples, under an RBF kernel $k$, a reward gets formulated like so:
 
               $$r_i = \frac{2}{n-1}\sum_{j \neq i} k(x_i, x_j) - \frac{2}{m}\sum_{l} k(x_i, y_l)$$
 
               This is twice the contribution of sample $i$ to an unbiased estimator of $\text{MMD}^2(P_\theta, P_\text{ref})$. Despite the name, reward $r_i$ functions
               as a cost in the usual RL sense. The REINFORCE training loss is $\mathbb{E}[r_i \cdot \log \pi_\theta(x_i)]$, meaning that a higher $r_i$ pushes
               log-probability down. A high $r_i$ is caused by high redundancy with other outputs of the model, which is the so-called within-batch similarity. On the other hand,
-              a low $r_i$ implies a high similarity to the human-written reference pool.<br />
-              In other words, this multi-purpose reward signal enables penalizing mode collapse (the redundant generations) as well as off-target drift (generations far
-              from reference) while reinforcing the generation of those texts that are simultaneously novel relative to the model and similar relative to the
-              human-written reference.<br />
-              For each prompt in a batch, the policy samples a small group
-              of completions. Every completion in that group, together with a fixed pool of reference human text, is embedded and run through the RBF kernel to produce
-              one $r_i$ per generated sample via the above formula. These rewards are then used directly as the per-sample weight in the REINFORCE loss, and a single
-              backward pass updates the LoRA adapters before the next batch of prompts is drawn.<br />
+              a low $r_i$ implies a high similarity to the human-written reference pool.
+            </p>
+            <div class="blog-img">
+              <!--Enlarge: 50%-->
+              <img src="../img/dft_mmd_reward.png" alt="Model generations and human references form point clouds in a shared embedding space" style="width: 70%" />
+              <p class="blog-img-caption">Model generations and human references form point clouds in a shared embedding space.<br />Each generation's MMD cost informs a REINFORCE update to raise or lower its log-probability trough gradient updates.</p>
+            </div>
+            <p class="blog-p">
+              With this reward signal, DFT allows to penalize both mode collapse (the characteristic LLM-style phrasing) and off-target drift
+              (generations moved away from the human-written reference) while then also reinforcing the generation of those texts that are simultaneously
+              novel relative to the model's phrasing and similar relative to the human-written reference. For each prompt in a batch, the policy samples a
+              small group of completions. Every completion in that group, together with a fixed pool of reference human text, is embedded and run through
+              the RBF kernel to produce one $r_i$ per generated sample via the above formula. These rewards are then used directly as the per-sample weight
+              in the REINFORCE loss, and a single backward pass updates the LoRA adapters before the next batch of prompts is drawn.<br />
               <br />
-              The original DFT utilizes $\approx 185\text{K}$ FineWeb documents at 4B to 14B model scale \cite{rosmine2026dft}. It uses a dedicated Llama-Embed-Nemotron-8B for embeddings,
-              and trains via a sequence of merged LoRA adapters in a ReLoRA \cite{lialin2023relora}-style schedule. The batch size, accumulation steps, and evaluation
-              cadence are all calibrated for a multi-GPU cluster.
+              The original DFT applies $\approx 185\text{K}$ FineWeb documents at 4B to 14B model scale \cite{rosmine2026dft}. It uses a dedicated
+              Llama-Embed-Nemotron-8B for embeddings, and trains via a sequence of merged LoRA adapters in a ReLoRA \cite{lialin2023relora}-style schedule.
+              The batch size, accumulation steps, and evaluation cadence are all calibrated for a multi-GPU cluster.
             </p>
             <h3>Small, Smaller, Substitutions</h3>
             <p class="blog-p">
-              Imposing the hardware budget of a single RTX 3060 requires rethinking most of the original recipe. At the same time, the underlying mechanism and
-              objective of DFT should survive each substitution as intact as possible.<br />
-              The original uses relatively standard decoder-only Qwen3 transformer policy models. I substitute LFM2.5-1.2B-Instruct for its smaller parameter
-              count and relatively high information density. It gets loaded in NF4 precision with double quantization \cite{dettmers2023qlora}. I chose
-              LoRA \cite{hu2021lora} adapters of rank 64 on attention and MLP/FFN projections and enabled gradient checkpointing.<br />
+              Imposing our tight hardware budget of a single RTX 3060 requires rethinking most of the original recipe.
+              At the same time, the underlying mechanism and objective of DFT should survive each substitution as intact as possible.<br />
+              The original uses relatively standard decoder-only Qwen3 transformers policy models. I substitute with LFM2.5-1.2B-Instruct for its smaller parameter
+              count and relatively high information density. It loads in NF4 precision with double quantization \cite{dettmers2023qlora}. I chose
+              LoRA \cite{hu2021lora} adapters of rank $64$ on attention and MLP/FFN projections and gradient checkpointing.<br />
               <br />
-              While the original used Llama-Embed-Nemotron-8B, it is not viable to run any separate embedding model alongside the policy on a single card. Small
-              embedding models exist, but they to me seemed too restricted in their expressiveness. Instead, I compute embeddings directly from the frozen policy
+              While the original used Llama-Embed-Nemotron-8B, it now is just not viable to run any separate embedding model alongside the policy. Small
+              embedding models exist, but they seemed too restricted in their expressiveness to me. Instead, embeddings now are computed directly from the frozen policy
               model itself, with its LoRA adapter disabled accordingly. Hidden states from three layers, first, middle, and last, are mean-pooled and concatenated
-              into a 6144-dimensional embedding vector, with the main idea being that these layers could help in capturing representations of different degrees of
-              abstraction and granularity in their meaning. Every forward pass for embedding extraction runs one sequence at a time. Batching is not used, which will become clear later.<br />
+              into a $6144$-dimensional vector, with the main idea being that these layers sufficiently and meaningfully captured representations of different degrees of
+              abstraction and granularity in their meaning. Every forward pass for embedding extraction runs one sequence at a time.
+              Batching is not used, the reasons for which will become clear later.<br />
               <br />
-              Training on 185K documents at 4B to 14B policy model scale translates to roughly two to three thousand examples at 1.2B scale given the same per-sample
-              compute budget. While the original draws from FineWeb \cite{penedo2024fineweb}, I substituted RefinedWeb \cite{penedo2023refinedweb} for this
-              reproduction and used $\approx 2400$ training examples from it, with a held-out validation set of $127$ completions.<br />
-              Multi-GPU training comes with support for large effective batches and thousands of optimizer steps. Our effective batch size is 32 (one device, two
-              generations per prompt, sixteen gradient accumulation steps), yielding approximately $150$ optimizer steps over the full dataset. This compression of
-              the step budget by roughly two orders of magnitude makes several default hyperparameter choices actively misleading. The effective batch size
-              became 32, yielding approximately 150 optimizer steps over $2400$ training examples, with a cosine learning rate schedule with warmup and EMA decay
+              The training on $185 \text{K}$ documents at 4B to 14B policy model is scaled down to roughly two to three thousand examples at 1.2B scale given the
+              same per-sample compute budget. While the original draws from FineWeb \cite{penedo2024fineweb}, I substituted $\approx 2400$ training examples and another $127$
+              completions for validation from RefinedWeb \cite{penedo2023refinedweb}. The reason was that I wanted to see whether DFT's mechanism would be robust to a certain
+              tolerance in data quality at this scale. Multi-GPU training comes with support for large effective batches and thousands of optimizer steps. Our effective batch
+              size is $32$ (one device, two generations per prompt, sixteen gradient accumulation steps), yielding approximately $150$ optimizer steps over the full dataset.
+              This compression of the step budget by roughly two orders of magnitude makes several default hyperparameter choices actively misleading. The effective batch size
+              became $32$, yielding approximately $150$ optimizer steps over $2400$ training examples, with a cosine learning rate schedule with warmup and EMA decay
               recalibrated to the step budget.
             </p>
             <div class="blog-img">
@@ -160,45 +168,44 @@
             </div>
             <h3>Encountering New Failure Modes</h3>
             <p class="blog-p">
-              The model substitution was not as straightforward as I had hoped, the reason being that LFM2.5 is not a conventional decoder-only transformer.
-              It interleaves six grouped-query attention blocks with ten short-range gated 1D convolutions, which themselves provide increased processing
-              efficiency at the cost of a reduced global receptive field. This is typical practice with the broader Mamba \cite{gu2023mamba} and SSM-hybrid
-              architecture family.<br />
+              The substitution of the model was not straightforward, the reason being that architectually, LFM2.5 is not a conventional decoder-only
+              transformer like Qwen3. Instead, it interleaves six grouped-query attention blocks with ten short-range gated 1D convolutions, which
+              themselves provide increased processing efficiency at the cost of a reduced global receptive field. This is typical practice with the
+              broader Mamba \cite{gu2023mamba} and SSM-hybrid architecture family.<br />
               <br />
               Batched autoregressive generation conventionally pads the shorter sequences and relies on the attention mask to make padding invisible.
-              The mask prevents any real token from attending to a padded position. Such a guarantee does not extend to convolutions. A 1D convolution
+              The mask prevents any real token from attending to a padded position. This guarantee does not extend to convolutions. A 1D convolution
               at position $t$ mixes hidden states at positions $[t-1,\ t,\ t+1]$ unconditionally. The attention mask merely governs what a position
               may attend to, not what a neighboring position's convolution is permitted to consume. A pad-token leading the first real token is not
               invisible to that first real token's convolution, but becomes just another input to it.<br />
               <br />
-              A single corrupted activation at the pad-to-real boundary, injected once in a mostly-attention network, would cause only minor perturbation.
-              The next attention layer's mask would step in and just prevent further contamination. However, in a network where ten of sixteen blocks are
-              convolutional, the corruption is re-injected at every convolutional block and re-mixed with an expanding span of neighboring positions at
+              Injected once into a standard, attention-based network, a single corrupted activation at the pad-to-real boundary would cause only minor perturbation.
+              The next attention layer's mask would by design help and prevent further contamination. However, in a network where ten of sixteen blocks are
+              convolutional, the corruption is re-injected at every convolutional block and re-mixed with a larger span of neighboring positions at
               each pass through the residual stream. Reaching the output layer, the hidden state at the first generated position is a nontrivial mixture
               of padding and content, and every subsequent autoregressive step conditions on that corrupted state. Padding gets attributed informational
-              contribution while there explicitly shouldn't be any, which in turn distorts and misleads training efforts.<br />
+              contribution while there explicitly shouldn't be any, which then in turn distorts and misleads training efforts.<br />
               <br />
-              After concluding such a buggy run, some prompts would generate fluent, on-topic text, while others produced pure repeated-token degeneration,
-              with no legible pattern across prompts. Padding the same prompt to different lengths reproduced the split deterministically. Valid output at
-              the prompt's natural length, degenerate output at a fixed $768$-token pad target. This initially appeared to just be noise, but it really was
-              not. I fixed this pragmatically by eliminating padding through generating one sequence at a time, i.e. batch size $1$. Critically, this must
-              apply to every forward pass through the model, not only the visibly generative ones. The embedding extraction forward passes used to compute
-              MMD, which nicely but catastrophically batched multiple reference and generated texts together with dynamic padding, were the last instance of
-              this bug discovered, precisely because they were just not an obvious suspect. Take this as the broader lesson, but every forward pass through
-              the model deserves equal scrutiny.<br />
+              The first run crashed and burned for this reason. Some prompts would generate fluent, on-topic text, while others produced pure repeated-token
+              degeneration, with no legible pattern across prompts. Padding the same prompt to different lengths reproduced the split deterministically.
+              Valid output at the prompt's natural length, degenerate output at a fixed $768$-token pad target. This appeared to just be noise, and this systematic,
+              architecture-dependent failure mode remained quite elusive. I identified it through by fixing this pragmatically through elimination of padding
+              by generating just one sequence at a time, i.e. batch size $1$. Critically, this must apply to every forward pass through the model, not only the
+              visibly generative ones. The embedding extraction forward passes used to compute MMD, which nicely but catastrophically batched multiple reference
+              and generated texts together with dynamic padding, were the last instance of this bug discovered, precisely because they were just not obviously suspicious.<br />
             </p>
             <h3>Measurement Infrastructure</h3>
             <p class="blog-p">
-              Eval MMD bounced with no visible trend across complete training runs, which to me was a pattern indistinguishable from a model that was not
-              learning. The instability in fact had two compounding causes. The RBF kernel bandwidth was re-estimated via the median heuristic on every
+              Eval MMD bounced with no visible trend across complete training runs, which to me plainly was a pattern indistinguishable from a model that was not
+              learning. In fact, the instability had two compounding causes: the RBF kernel bandwidth was re-estimated via the median heuristic on every
               evaluation call from a small batch of approximately $50$-$75$ samples, so the metric's own scale shifted between measurements independent of
-              any change in the model.<br />
+              any change in the model itself.<br />
               <br />
               The reference side of the comparison used only the small validation split rather than the larger, fixed pool used for training rewards.
-              Fixing both, i.e. computing the bandwidth once from the full $512$-sample pool and freezing it, and reusing that same pool as the evaluation
+              Fixing both, i.e. computing the bandwidth once from the full $512$-sample pool and freezing it, then reusing that same pool as the evaluation
               reference, turned a flat, noisy trace into a monotonic reduction in MMD of $\approx 30\%$ over the run. There were more bugs like this, so
               establishing that the metric was stable enough to resolve the effect size of interest, before adjusting learning rate, reward shape, or
-              any other hyperparameter, would have saved debugging time, but the observed symptoms truthfully looked to be caused by the hyperparameters.
+              any other hyperparameter, would admittedly have saved debugging time, but the observed symptoms truely had looked like they were caused by the hyperparameters.
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
@@ -209,31 +216,30 @@
             <p class="blog-p">
               A complete run produced a monotonic reduction in the training-loop evaluation MMD from $\approx 0.350$ to $0.247$. A separate,
               held-out comparison at the end of training (base model vs. best checkpoint, $12$ prompts) showed a smaller yet still meaningful reduction in
-              MMD of $0.417$ vs. $0.374$. Embedding self-similarity and distinct n-gram metrics did not collapse or even slightly improved in both evaluations.
+              MMD of $0.417$ vs. $0.374$. Embedding self-similarity and distinct $n$-gram metrics did not collapse or even slightly improved in the evaluations.
               I hold this as a point against the alternative explanation that the model achieves lower MMD by narrowing its output diversity toward the
               reference centroid rather than genuinely matching its spread, because if the model were simply shrinking its output distribution, diversity
-              metrics would fall as well. A review of the completions showed coherent text with no increase in repetition or off-topic
+              metrics would also fall. A review of the completions showed coherent text with distinctly no increase in repetition or off-topic
               drift compared to the base model.<br />
               <br />
-              The two runs, the original one and mine, should not be treated as directly comparable, because they differ in model scale, embedding space,
-              data budget, and step count by orders of magnitude each. They also draw from different underlying web corpora. The
-              original uses FineWeb, built specifically as a more heavily filtered and deduplicated successor to RefinedWeb, which is what I use here to
-              see whether a certain tolerance in data quality exists. The corpus doubles as the reference pool the reward function measures distance
-              against, so a difference in corpus filtering standard is a difference in what "matching the reference" target means, not merely a
-              difference in how much data was available. Also, the percentage improvements reported here and in the original ($\approx 30\%$ vs.
-              $49\%$ MMD reduction) are not directly poolable into a single "compute vs. effect size" curve, because they are measured in different
-              embedding spaces against different reference standards, not just at different scales.<br />
+              The two runs, the original one and mine, should not be treated as comparable. They differ in model scale, embedding space,
+              data budget, and step count by orders of magnitude each. They also draw from different underlying web corpora. The corpus doubles as the
+              reference pool the reward function measures distance against, so a difference in corpus filtering standard is a difference in what
+              "matching the reference" target means, not merely a difference in how much data was available. Also, the percentage improvements reported here
+              and in the original ($\approx 30\%$ vs. $49\%$ MMD reduction) are not as such poolable into a single "compute vs. effect size" curve, because they
+              are measured in different embedding spaces against different reference standards, not just at the mentioned, different scales.<br />
               <br />
-              In any event, the claim this result supports is useful, as the DFT mechanism produces a measurable, non-artifactual
-              distributional improvement even when every resource from the original recipe is aggressively compressed or even partially substituted.<br />
+              In any event, the DFT mechanism produces a measurable, non-artifactual distributional improvement even when every resource from the original recipe
+              is aggressively compressed or even partially substituted.<br />
               As for limitations, the evaluation corpus was a little small at $127$ held-out completions, $12$ prompts sampled for qualitative inspection.
               I would argue that this is sufficient to detect the effect size, but not to rule out smaller genuine undercurrents going undetected.
               Judge-model quality was not computed, so this reproduction speaks only to the MMD and diversity axes of the original three-metric evaluation,
-              not to the human-judged quality axis.<br />
+              not to the quality axis judged by humans.<br />
               <br />
               The algorithm, the original measurement, and the original results are Rosmine's \cite{rosmine2026dft}. This post's contribution is the reproduction
               at a different scale, the architecture-dependent failure mode it surfaced, and the debugging methodology that emerged from getting a broken run to a
-              trustworthy one. I really recommend reading the original if the question is what DFT does at scale.
+              trustworthy one. I will continue working on this, I am interested in seeing DFT's effect when using topical datasets.
+              While doing so, I really recommend reading the original post on what DFT does at scale.
             </p>
           </div>
           <div id="references"></div>
