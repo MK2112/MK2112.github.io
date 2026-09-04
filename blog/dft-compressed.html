@@ -73,7 +73,7 @@
             <p class="blog-p">
               Contemporary language models generate plausible text on the per-token level, yet they tend towards homogeneity when looking at the produced text
               as a whole. Supervised fine-tuning further adapts the per-token likelihoods while providing no mechanism for shaping or controlling the statistics of
-              an output distribution across these tokens. This leaves a gap in the model training, through with said model learns to produce text with identifiable
+              an output distribution across these tokens. This leaves a gap in the model training, through which said model learns to produce text with identifiable
               stylistic character. We know this, it manifests through distinct sentence rhythms, overused transitions, or narrow sets of vocabulary choices. Crucially,
               it remains even as the per-token accuracy becomes indistinguishable from human-written reference.<br />
               <br />
@@ -104,7 +104,7 @@
             <p class="blog-p">
               Vanilla SFT maximizes the log-likelihood for each fine-tuning token. In doing so, it depends only on the probability assigned to the observed next token,
               specifically not on how a set of sampled tokens then relates to some reference set overall. Two models with identical per-token perplexity on held-out data
-              can therefore produce output populations with noticably different global statistics, expressed e.g. through different $n$-gram frequencies, different rates
+              can therefore produce output populations with noticeably different global statistics, expressed e.g. through different $n$-gram frequencies, different rates
               and kinds of structural repetition, different topical keyword distributions, or just an infamously inflationary use of em-dashes.<br />
               <br />
               DFT now replaces this local objective with a higher-level distributional one. For each training step, the policy samples a batch of completions from the model.
@@ -113,17 +113,17 @@
               The similarities are combined into a reward for each completion, which is used to update the model. In other words, for a generated sample $i$ against $n-1$ other
               generations and $m$ reference samples, under an RBF kernel $k$, a reward gets formulated like so:
 
-              $$r_i = \frac{2}{n-1}\sum_{j \neq i} k(x_i, x_j) - \frac{2}{m}\sum_{l} k(x_i, y_l)$$
+              $$r_i = \frac{1}{n-1}\sum_{j \neq i} k(x_i, x_j) - \frac{2}{m}\sum_{l} k(x_i, y_l)$$
 
-              This is twice the contribution of sample $i$ to an unbiased estimator of $\text{MMD}^2(P_\theta, P_\text{ref})$. Despite the name, reward $r_i$ functions
-              as a cost in the usual RL sense. The REINFORCE training loss is $\mathbb{E}[r_i \cdot \log \pi_\theta(x_i)]$, meaning that a higher $r_i$ pushes
-              log-probability down. A high $r_i$ is caused by high redundancy with other outputs of the model, which is the so-called within-batch similarity. On the other hand,
-              a low $r_i$ implies a high similarity to the human-written reference pool.
+              This is the contribution of sample $i$ to an unbiased estimator of $\text{MMD}^2(P_\theta, P_\text{ref})$, up to the policy-independent reference self-term.
+              Despite the name, reward $r_i$ functions as a cost in the usual RL sense. The minimized REINFORCE loss is $\mathbb{E}[r_i \cdot \log \pi_\theta(x_i)]$, so
+              minimizing it pushes log-probability down where $r_i$ is high and up where $r_i$ is low.
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
               <img src="../img/dft_mmd_reward.png" alt="Model generations and human references form point clouds in a shared embedding space" style="width: 70%" />
-              <p class="blog-img-caption">Model generations and human references form point clouds in a shared embedding space.<br />Each generation's MMD cost informs a REINFORCE update to raise or lower its log-probability trough gradient updates.</p>
+              <p class="blog-img-caption">Model generations and human references form point clouds in a shared embedding space.<br />
+                Each generation's MMD cost informs a REINFORCE update to raise or lower its log-probability through gradient updates.</p>
             </div>
             <p class="blog-p">
               With this reward signal, DFT allows to penalize both mode collapse (the characteristic LLM-style phrasing) and off-target drift
@@ -155,11 +155,10 @@
               The training on $185 \text{K}$ documents at 4B to 14B policy model is scaled down to roughly two to three thousand examples at 1.2B scale given the
               same per-sample compute budget. While the original draws from FineWeb \cite{penedo2024fineweb}, I substituted $\approx 2400$ training examples and another $127$
               completions for validation from RefinedWeb \cite{penedo2023refinedweb}. The reason was that I wanted to see whether DFT's mechanism would be robust to a certain
-              tolerance in data quality at this scale. Multi-GPU training comes with support for large effective batches and thousands of optimizer steps. Our effective batch
-              size is $32$ (one device, two generations per prompt, sixteen gradient accumulation steps), yielding approximately $150$ optimizer steps over the full dataset.
-              This compression of the step budget by roughly two orders of magnitude makes several default hyperparameter choices actively misleading. The effective batch size
-              became $32$, yielding approximately $150$ optimizer steps over $2400$ training examples, with a cosine learning rate schedule with warmup and EMA decay
-              recalibrated to the step budget.
+              tolerance in data quality at this scale. Multi-GPU training comes with support for large effective batches and thousands of optimizer steps.  Our effective batch
+              is $32$ generations per optimizer step (one device, two generations per prompt, sixteen gradient accumulation steps), yielding approximately
+              $150$ optimizer steps over $2400$ training examples, with a cosine learning rate schedule with warmup and EMA decay recalibrated to the step budget.
+              This compression of the step budget by roughly two orders of magnitude makes several default hyperparameter choices actively misleading. 
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
@@ -168,7 +167,7 @@
             </div>
             <h3>Encountering New Failure Modes</h3>
             <p class="blog-p">
-              The substitution of the model was not straightforward, the reason being that architectually, LFM2.5 is not a conventional decoder-only
+              The substitution of the model was not straightforward, the reason being that architecturally, LFM2.5 is not a conventional decoder-only
               transformer like Qwen3. Instead, it interleaves six grouped-query attention blocks with ten short-range gated 1D convolutions, which
               themselves provide increased processing efficiency at the cost of a reduced global receptive field. This is typical practice with the
               broader Mamba \cite{gu2023mamba} and SSM-hybrid architecture family.<br />
@@ -189,8 +188,8 @@
               The first run crashed and burned for this reason. Some prompts would generate fluent, on-topic text, while others produced pure repeated-token
               degeneration, with no legible pattern across prompts. Padding the same prompt to different lengths reproduced the split deterministically.
               Valid output at the prompt's natural length, degenerate output at a fixed $768$-token pad target. This appeared to just be noise, and this systematic,
-              architecture-dependent failure mode remained quite elusive. I identified it through by fixing this pragmatically through elimination of padding
-              by generating just one sequence at a time, i.e. batch size $1$. Critically, this must apply to every forward pass through the model, not only the
+              architecture-dependent failure mode remained quite elusive. I fixed this by lifting the need for padding and generating just one sequence at a time,
+              i.e. batch size $1$. Critically, this must apply to every forward pass through the model, not only the
               visibly generative ones. The embedding extraction forward passes used to compute MMD, which nicely but catastrophically batched multiple reference
               and generated texts together with dynamic padding, were the last instance of this bug discovered, precisely because they were just not obviously suspicious.<br />
             </p>
@@ -205,7 +204,7 @@
               Fixing both, i.e. computing the bandwidth once from the full $512$-sample pool and freezing it, then reusing that same pool as the evaluation
               reference, turned a flat, noisy trace into a monotonic reduction in MMD of $\approx 30\%$ over the run. There were more bugs like this, so
               establishing that the metric was stable enough to resolve the effect size of interest, before adjusting learning rate, reward shape, or
-              any other hyperparameter, would admittedly have saved debugging time, but the observed symptoms truely had looked like they were caused by the hyperparameters.
+              any other hyperparameter, would admittedly have saved debugging time, but the observed symptoms truly had looked like they were caused by the hyperparameters.
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
@@ -235,11 +234,28 @@
               I would argue that this is sufficient to detect the effect size, but not to rule out smaller genuine undercurrents going undetected.
               Judge-model quality was not computed, so this reproduction speaks only to the MMD and diversity axes of the original three-metric evaluation,
               not to the quality axis judged by humans.<br />
+            </p>
+            <h3>Instruct or Base?</h3>
+            <p class="blog-p">
+              Base models do not lack the markers for human-likeness in their writing, but any form of coherent control over it \cite{xu2026base}. The original
+              post hinted at this already \cite{rosmine2026dft}, but I wanted to look further into the base model behavior. A brief run with
+              LFM2.5-2.6B-Base was started. As there is no finetuned distribution to move away from, DFT only moves LoRA weights within the raw pretraining
+              manifold and MMD stagnates, inducing at best undetectable surface statistics.<br />
+              DFT on instruct models is not without risk either. In its REINFORCE setting, MMD may reward detector-fooling surface diversity,
+              which is cheaply satisfied by rambling, loosely coherent text rather than dense writing, bleeding coherence and relevance.
+            </p>
+            <h3>Outlook</h3>
+            <p class="blog-p">
+              MMD matches completion embeddings, having conditioning never constrain training. To that end, one extension could be a joint kernel over both
+              prompt and completion via $k_{prompt} \times k_{gen}$. It would introduce a means of comparison and attraction towards generations issued from similar prompts.
+              Aforementioned loosely coherent generations would in turn have a harder time being rewarded.
+              Intuitively, this would be great for base models, but I'd be cautious. Including the prompts for response regulation will foreseeably not
+              induce instruction following behavior. Instruct models should react more strongly, but they could overfit to the prompt
+              distribution if it is left unregulated.<br />
               <br />
-              The algorithm, the original measurement, and the original results are Rosmine's \cite{rosmine2026dft}. This post's contribution is the reproduction
-              at a different scale, the architecture-dependent failure mode it surfaced, and the debugging methodology that emerged from getting a broken run to a
-              trustworthy one. I will continue working on this, I am interested in seeing DFT's effect when using topical datasets.
-              While doing so, I really recommend reading the original post on what DFT does at scale.
+              The algorithm, as well as the original measurements and results are Rosmine's \cite{rosmine2026dft}. This post's contribution is the reproduction
+              at a different scale, the architecture-dependent failure mode it surfaced, and the debugging methodology that emerged from getting to a
+              trustworthy run. I highly recommend reading the original post on what DFT does at scale.
             </p>
           </div>
           <div id="references"></div>
@@ -348,6 +364,15 @@
               year={1992},
             }</p>
           <a>https://link.springer.com/article/10.1007/BF00992696</a>
+        </div>
+        <div id="xu2026base">
+          <p>@article{xu2026base,
+              title={Base Models Look Human To AI Detectors},
+              author={Xu, Yixuan Even and Zhong, Ziqian and Raghunathan, Aditi and Fang, Fei and Kolter, J Zico},
+              journal={arXiv preprint arXiv:2605.19516},
+              year={2026},
+            }</p>
+            <a>https://arxiv.org/abs/2605.19516</a>
         </div>
         <div id="rosmine2026dft">
           <p>@online{rosmine2026dft,
