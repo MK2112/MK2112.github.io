@@ -113,11 +113,12 @@
               The similarities are combined into a reward for each completion, which is used to update the model. In other words, for a generated sample $i$ against $n-1$ other
               generations and $m$ reference samples, under an RBF kernel $k$, a reward gets formulated like so:
 
-              $$r_i = \frac{1}{n-1}\sum_{j \neq i} k(x_i, x_j) - \frac{2}{m}\sum_{l} k(x_i, y_l)$$
-
-              This is the contribution of sample $i$ to an unbiased estimator of $\text{MMD}^2(P_\theta, P_\text{ref})$, up to the policy-independent reference self-term.
-              Despite the name, reward $r_i$ functions as a cost in the usual RL sense. The minimized REINFORCE loss is $\mathbb{E}[r_i \cdot \log \pi_\theta(x_i)]$, so
-              minimizing it pushes log-probability down where $r_i$ is high and up where $r_i$ is low.
+              $$r_i = \frac{2}{n-1}\sum_{j \neq i} k(x_i, x_j) - \frac{2}{m}\sum_{\ell=1}^{m} k(x_i, y_\ell)$$
+ 
+              This is the per-sample score-function coefficient for minimizing $\mathrm{MMD}^2(P_\theta, P_\text{ref})$. The within-generation term is doubled because each
+              policy sample appears in both arguments of the symmetric kernel term $k(x_i,x_j)$. It is therefore not a literal additive decomposition of $\mathrm{MMD}^2$.
+              The reference self-term remains policy-independent. Despite the name, reward $r_i$ functions as a cost in the usual RL sense. The minimized REINFORCE loss is
+              $\mathbb{E}[r_i \cdot \log \pi_\theta(x_i)]$, so minimizing it pushes log-probability down where $r_i$ is high and up where $r_i$ is low.
             </p>
             <div class="blog-img">
               <!--Enlarge: 50%-->
