@@ -243,18 +243,16 @@
               LFM2.5-2.6B-Base was started. As there is no finetuned distribution to move away from, DFT only moves LoRA weights within the raw pretraining
               manifold and MMD stagnates, inducing at best undetectable surface statistics.<br />
               DFT on instruct models is not without risk either. In its REINFORCE setting, MMD may reward detector-fooling surface diversity,
-              which is cheaply satisfied by rambling, loosely coherent text rather than dense writing, bleeding coherence and relevance.
+              which is cheaply satisfied by rambling, loosely coherent text rather than dense writing.
             </p>
             <h3>Outlook</h3>
             <p class="blog-p">
               MMD matches completion embeddings, having conditioning never constrain training. To that end, one extension could be a joint kernel over both
               prompt and completion via $k_{prompt} \times k_{gen}$. It would introduce a means of comparison and attraction towards generations issued from similar prompts.
-              Aforementioned loosely coherent generations would in turn have a harder time being rewarded.
-              Intuitively, this would be great for base models, but I'd be cautious. Including the prompts for response regulation will foreseeably not
-              induce instruction following behavior. Instruct models should react more strongly, but they could overfit to the prompt
-              distribution if it is left unregulated.<br />
+              Aforementioned loosely coherent generations would in turn have a harder time getting rewarded.
+              Intuitively, this would be great for base models. I'd be cautious. Including the prompts for response regulation will foreseeably not induce sufficient instruction following behavior. Instruct models should react more strongly, but they could overfit to the prompt distribution if it is left unregulated.<br />
               <br />
-              The algorithm, as well as the original measurements and results are Rosmine's \cite{rosmine2026dft}. This post's contribution is the reproduction
+              The algorithm, as well as the original measurements and results, are Rosmine's \cite{rosmine2026dft}. This post's contribution is the reproduction
               at a different scale, the architecture-dependent failure mode it surfaced, and the debugging methodology that emerged from getting to a
               trustworthy run. I highly recommend reading the original post on what DFT does at scale.
             </p>
