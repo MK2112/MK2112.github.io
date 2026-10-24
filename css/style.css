@@ -613,8 +613,8 @@ nav b {
     left: 0;
     top: 11rem;
     width: 175px;
-    font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 11px;
+    font-family: 'Source Serif 4', ui-serif, Georgia, 'Times New Roman', serif;
+    font-size: 13px;
     margin-top: 9.3rem;
     margin-left: 1rem;
     max-height: calc(100vh - 13rem);
@@ -659,7 +659,7 @@ nav b {
     margin-left: -12px;
     border-left: 2px solid transparent;
     transition: color 0.2s, border-left-color 0.2s;
-    font-size: 11px;
+    font-size: 13px;
 }
 
 .blog-toc a::before {
